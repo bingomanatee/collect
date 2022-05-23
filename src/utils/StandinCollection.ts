@@ -45,7 +45,9 @@ export class StandinCollection implements collectionObj<any, any, any> {
 
   form: FormEnum = FormEnum.object;
 
-  get(_key: any): any {}
+  get(_key: any): any {
+    return null;
+  }
 
   hasItem(_item: any): boolean {
     return false;
@@ -57,7 +59,9 @@ export class StandinCollection implements collectionObj<any, any, any> {
 
   items: any[] = [];
 
-  keyOf(_item: any): any {}
+  keyOf(_item: any): any {
+    return undefined;
+  }
 
   keys: any[] = [];
 
