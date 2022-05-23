@@ -3,6 +3,7 @@ import { FormEnum, TypeEnum } from './types';
 import MapCollection from './MapCollection';
 import ScalarCollection from './ScalarCollection';
 import StringCollection from './StringCollection';
+import ArrayCollection from './ArrayCollection';
 
 export default store => {
   let out;
@@ -13,6 +14,10 @@ export default store => {
 
     case TypeEnum.string:
       out = new StringCollection(store);
+      break;
+
+    case FormEnum.array:
+      out = new ArrayCollection(store);
       break;
 
     default:

@@ -1,4 +1,3 @@
-import { isNum } from './utils/tests';
 import {
   booleanMode,
   collectionObj,
@@ -47,38 +46,26 @@ export default class StringCollection extends IntIndexedCollection
    * acts like array.splice; inserts a string into/over part of the item;
    * @param key
    * @param item
-   * @param endKey
    */
-  set(key: number, item: string, endKey?: number) {
-    if (!isNum(endKey)) {
-      endKey = key;
-    }
-
+  set(key: number, item: string) {
     const prefix = this.store.substring(0, key) || '';
-    const suffix =
-      this.store.substring(typeof endKey === 'number' ? endKey : key) || '';
+    const suffix = this.store.substring(key + 1) || '';
     this.store = prefix + item + suffix;
     return this;
   }
 
-  get(key: number, endKey?: number) {
-    return this.store.substring(
-      key,
-      typeof endKey === 'number' ? endKey : key + 1
-    );
+  get(key: number) {
+    return this.store.substring(key, key + 1);
   }
 
-  delete(key: number | Array<number>, endKey?: number) {
+  delete(key: number | Array<number>) {
     if (Array.isArray(key)) {
       this.store = this.store.split.filter((_char, index) => {
         return !key.includes(index);
       });
       return this;
     }
-    if (typeof endKey !== 'number') {
-      endKey = key + 1;
-    }
-    return this.set(key, '', endKey);
+    return this.set(key, '');
   }
 
   deleteItem(

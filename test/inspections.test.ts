@@ -35,20 +35,36 @@ describe('inspections', () => {
   });
 
   describe('Map', () => {
-    const m = new Map<any, any>([
-      ['x', 100],
-      ['y', 200],
-    ]);
+    it('has the expected inspection behavior', () => {
+      const m = new Map<any, any>([
+        ['x', 100],
+        ['y', 200],
+      ]);
 
-    const mc = create(m);
+      const mc = create(m);
 
-    expect(mc.size).toBe(2);
+      expect(mc.size).toBe(2);
+      expect(mc.hasItem(200)).toBeTruthy();
+      expect(mc.hasItem(500)).toBeFalsy();
+      expect(mc.keys).toEqual(['x', 'y']);
+      expect(mc.items).toEqual([100, 200]);
+      expect(mc.keyOf(200)).toBe('y');
+      expect(mc.keyOf(400)).toBeUndefined();
+    });
+  });
 
-    expect(mc.hasItem(200)).toBeTruthy();
-    expect(mc.hasItem(500)).toBeFalsy();
-    expect(mc.keys).toEqual(['x', 'y']);
-    expect(mc.items).toEqual([100, 200]);
-    expect(mc.keyOf(200)).toBe('y');
-    expect(mc.keyOf(400)).toBeUndefined();
+  describe('Array', () => {
+    it('has the expected inspection behavior', () => {
+      const list = ['a', 1, 'b', 2, 'c', 3];
+
+      const ac = create(list);
+
+      expect(ac.size).toBe(6);
+      expect(ac.hasItem('a')).toBeTruthy();
+      expect(ac.hasItem(3)).toBeTruthy();
+      expect(ac.hasItem(4)).toBeFalsy();
+
+      expect(ac.keys).toEqual([0, 1, 2, 3, 4, 5]);
+    });
   });
 });

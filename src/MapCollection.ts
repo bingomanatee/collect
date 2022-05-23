@@ -1,5 +1,6 @@
 import CompoundCollection from './CompoundCollection';
-import { collectionObj, Iter, orderingFn, reduceAction } from './types';
+import { collectionObj, orderingFn, reduceAction } from './types';
+import { Stopper } from './utils/Stopper';
 
 export default class MapCollection extends CompoundCollection
   implements collectionObj<Map<any, any>, any, any> {
@@ -42,7 +43,7 @@ export default class MapCollection extends CompoundCollection
   }
 
   reduce(looper: reduceAction, initial?: any) {
-    const iter = new Iter();
+    const iter = new Stopper();
 
     let out = initial;
 

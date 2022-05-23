@@ -1,12 +1,7 @@
 import Collection from './Collection';
 import { clone } from './utils/change';
-import {
-  filterAction,
-  Iter,
-  iterFlow,
-  loopAction,
-  reduceAction,
-} from './types';
+import { filterAction, loopAction, reduceAction } from './types';
+import { Stopper, stopperEnum } from './utils/Stopper';
 
 /**
  * This is a baseline
@@ -58,7 +53,7 @@ export default abstract class CompoundCollection extends Collection {
   }
 
   forEach(loop: loopAction) {
-    const iter = new Iter();
+    const iter = new Stopper();
     for (const key in this.keys) {
       loop(this.get(key), key, this.store, iter);
       if (!iter.isActive) {
@@ -78,12 +73,12 @@ export default abstract class CompoundCollection extends Collection {
   }
 
   map(loop: loopAction) {
-    const iter = new Iter();
+    const iter = new Stopper();
     const outCollection = this.clone().clear();
     for (const key in this.keys) {
       const keyValue = this.get(key);
       const item = loop(keyValue, key, this.store, iter);
-      if (iter.state !== iterFlow.stop) outCollection.set(key, item);
+      if (iter.state !== stopperEnum.stop) outCollection.set(key, item);
       if (!iter.isActive) return outCollection;
     }
     return outCollection;
@@ -91,7 +86,7 @@ export default abstract class CompoundCollection extends Collection {
 
   reduce(looper: reduceAction, initial?: any) {
     let out = initial;
-    const iter = new Iter();
+    const iter = new Stopper();
 
     for (const key in this.keys) {
       const next = looper(out, this.get(key), key, this.store, iter);

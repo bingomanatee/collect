@@ -1,3 +1,5 @@
+import { Stopper } from './utils/Stopper';
+
 export enum TypeEnum {
   string = 'string',
   number = 'number',
@@ -30,7 +32,7 @@ export type loopAction = (
   item: any,
   key: keyType,
   store: any,
-  flow: Iter
+  flow: Stopper
 ) => any;
 
 export type reduceAction = (
@@ -38,14 +40,14 @@ export type reduceAction = (
   item: any,
   key: keyType,
   store: any,
-  iter: Iter
+  iter: Stopper
 ) => any;
 
 export type filterAction = (
   item: string,
   key: number,
   value: string,
-  iter: Iter
+  iter: Stopper
 ) => boolean;
 
 export type someValues = Array<any>;
@@ -81,12 +83,10 @@ export type collectionObj<StoreType, KeyType, ItemType> = {
   // changes
   set: (
     key: KeyType,
-    value: any,
-    endKey?: any
+    value: any
   ) => collectionObj<StoreType, KeyType, ItemType>; // self
   delete: (
-    key: KeyType | Array<KeyType>,
-    endKey?: KeyType
+    key: KeyType | Array<KeyType>
   ) => collectionObj<StoreType, KeyType, ItemType>; // self
   /*
   deleteItem: (
@@ -122,28 +122,3 @@ export type collectionObj<StoreType, KeyType, ItemType> = {
   ) => collectionObj<ValueType, KeyType, ItemType>;
   */
 };
-
-export enum iterFlow {
-  continue,
-  last, // process the return value, but stop iteration
-  stop, //do not process the return value - stop immediately
-}
-
-export class Iter {
-  public state = iterFlow.continue;
-
-  get isActive() {
-    return this.state === iterFlow.continue;
-  }
-
-  get isStopped() {
-    return this.state === iterFlow.stop;
-  }
-
-  final() {
-    this.state = iterFlow.last;
-  }
-  stop() {
-    this.state = iterFlow.stop;
-  }
-}

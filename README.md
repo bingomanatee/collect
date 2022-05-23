@@ -71,6 +71,10 @@ keys, where objects require string keys. Maps can take virtually anything as a k
 however in this module **DO NOT USE ARRAYS AS KEYS**. This can confuse methods like delete which will break apart
 arrays passed in the keys field and treat the array contents as individual keys. 
 
+### Does it _change the store_ or _return a new store_? 
+
+All the methods that _loop through and change_ the collection return a NEW store
+
 ### Reflection
 
 **reflection** properties express the keys/items in discrete collections or identify the type or form
@@ -88,6 +92,7 @@ Inclusion tests uses `===` to compare candidates to members in hasKey/hasItem.
 * **items**: any[] a list of the items in the colleciton
 * **keyOf(item)**: (key | undefined) the key under which an item is stored; returs undefined if the colleciton doesn't have the item
 * **get(key)**: (item | undefined) retrieves the item stored at the provided key. 
+* 
 ### Changes 
 
 these methods _do_ modify the store, adding, deleting, or changing one or more key/value pairs. 
@@ -121,7 +126,7 @@ Do not modify the store from the inside of the looping function.
 * **clone()** (new collection) returns a new Collection instance with a cloned copy of the store in the target collection, 
 * **map((item, key, store, iter) => newItem)**: (new Collection) with the same keys and store type as the target collecgtion \
   but a different set of items. the return value of the looping function is used in place of the target collections' value. \
-  The resulting colleciton will have the same keys as the target -- UNLESS you call iter.stop() or iter.final() \
+  The resulting collection will have the same keys as the target -- UNLESS you call iter.stop() or iter.final() \
   in which case the response is a subset of the target collections' keys. 
 * **filter((item, key, store, iter) => boolean)**: (new Collection) a new collection whose keys are <= the keys of the original store.\
   Each item in the copied collection are exactly equal to those in the target collection. 

@@ -1,5 +1,6 @@
 import Collection from './Collection';
-import { collectionObj, Iter, loopAction, reduceAction } from './types';
+import { collectionObj, loopAction, reduceAction } from './types';
+import { Stopper } from './utils/Stopper';
 
 /**
  * this is the base class for items in which the keys are not named strings but are
@@ -15,7 +16,7 @@ export abstract class IntIndexedCollection extends Collection {
   }
 
   forEach(action: loopAction) {
-    const iter = new Iter();
+    const iter = new Stopper();
 
     const originalValue = this.store;
     const items = this.items;
@@ -33,7 +34,7 @@ export abstract class IntIndexedCollection extends Collection {
     action: reduceAction,
     initial: any = ''
   ): collectionObj<any, any, any> {
-    const iter = new Iter();
+    const iter = new Stopper();
 
     const originalValue = this.store;
     const items = this.items;
