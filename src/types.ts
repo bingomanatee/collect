@@ -103,7 +103,8 @@ export type collectionObj<StoreType, KeyType, ItemType> = {
   clone: () => collectionObj<StoreType, KeyType, ItemType>; // new collection with cloned item
   map: (action: loopAction) => collectionObj<StoreType, KeyType, ItemType>; // new collection with mutated set
   filter: (action: filterAction) => collectionObj<StoreType, KeyType, ItemType>; // a new collection wth some of the values;
-  reduce: (action: reduceAction, initial: any) => any; // a new collection with a different value.
+  reduce: (action: reduceAction, initial: any) => any; // an arbitrary value, computed by lkooping over the store
+  reduceC: (action: reduceAction, initial: any) => collectionObj<any, any, any>; // a new collection for the output of reduce
   // note : the new collection may not be the same type as the start collection
 
   // boolean

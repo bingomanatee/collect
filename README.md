@@ -71,9 +71,18 @@ keys, where objects require string keys. Maps can take virtually anything as a k
 however in this module **DO NOT USE ARRAYS AS KEYS**. This can confuse methods like delete which will break apart
 arrays passed in the keys field and treat the array contents as individual keys. 
 
-### Does it _change the store_ or _return a new store_? 
+### Targeting/store reference, return value
 
-All the methods that _loop through and change_ the collection return a NEW store
+Any method that changes the data operates on a new store. That includes set, delete, filter, map, sort, etc. 
+If yuu want to retain a reference to the old version, call `.clone()` on the collection to get a new copy 
+of the collection(based on clone of the store) before calling your operation. For convenience, there is a '.c' 
+property that is an alias to clone. 
+
+The `reduce` method is kind of an outlier in that its return type is often not limited to compound values, so it returns 
+a value. If you know for a fact that your reduce method *is* returning a compound, call `.reduceC'`, 
+which callls reduce and puts its output into a new collecction in a single call. 
+
+Any method that does not return a needed value (eg, get, )
 
 ### Reflection
 
@@ -92,7 +101,7 @@ Inclusion tests uses `===` to compare candidates to members in hasKey/hasItem.
 * **items**: any[] a list of the items in the colleciton
 * **keyOf(item)**: (key | undefined) the key under which an item is stored; returs undefined if the colleciton doesn't have the item
 * **get(key)**: (item | undefined) retrieves the item stored at the provided key. 
-* 
+
 ### Changes 
 
 these methods _do_ modify the store, adding, deleting, or changing one or more key/value pairs. 
