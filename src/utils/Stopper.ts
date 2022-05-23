@@ -15,11 +15,20 @@ export class Stopper {
     return this.state === stopperEnum.stop;
   }
 
+  get isComplete() {
+    return this.state !== stopperEnum.continue;
+  }
+
+  get isLast() {
+    return this.state === stopperEnum.last;
+  }
+
   final() {
     this.state = stopperEnum.last;
   }
 
   stop() {
+    // stop and DO NOT USE the last returned value
     this.state = stopperEnum.stop;
   }
 }

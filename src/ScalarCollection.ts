@@ -5,6 +5,16 @@ export default class ScalarCollection extends Collection {
     return 0;
   }
 
+  get(_key) {
+    this.err('key');
+    return 0;
+  }
+
+  set(_key, _item) {
+    this.err('set');
+    return this;
+  }
+
   hasKey(_item) {
     this.err('hasKey');
     return null;
@@ -34,12 +44,12 @@ export default class ScalarCollection extends Collection {
     return [];
   }
 
-  delete() {
+  deleteKey() {
     this.err('delete');
   }
 
   clear() {
-    this.store = undefined;
+    this._store = undefined;
   }
 
   forEach() {

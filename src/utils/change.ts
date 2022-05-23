@@ -26,6 +26,47 @@ export function clone(value, type?: DefEnum) {
   return out;
 }
 
+export function makeEmpty(likeThis, type?: DefEnum) {
+  if (!isThere(type)) {
+    type = detectType(likeThis);
+  }
+  let out = likeThis;
+  switch (type) {
+    case TypeEnum.number:
+      out = 0;
+      break;
+
+    case TypeEnum.string:
+      out = '';
+      break;
+
+    case FormEnum.map:
+      out = new Map();
+      break;
+
+    case FormEnum.object:
+      out = {};
+      break;
+
+    case FormEnum.array:
+      out = [];
+      break;
+
+    case TypeEnum.date:
+      out = new Date();
+      break;
+
+    case FormEnum.set:
+      out = new Set();
+      break;
+
+    case TypeEnum.symbol:
+      out = Symbol();
+      break;
+  }
+  return out;
+}
+
 /**
  * merge similar form
  * @param value

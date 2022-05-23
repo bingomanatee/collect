@@ -1,7 +1,8 @@
 import Collection from './Collection';
-import { clone } from './utils/change';
+import { clone, makeEmpty } from './utils/change';
 import { filterAction, loopAction, reduceAction } from './types';
 import { Stopper, stopperEnum } from './utils/Stopper';
+import { Match } from './utils/Match';
 
 /**
  * This is a baseline
@@ -20,25 +21,49 @@ export default abstract class CompoundCollection extends Collection {
   }
 
   hasItem(item: any) {
-    return this.store.has(item);
+    return Array.from(this.items).some(storeItem =>
+      Match.sameItem(storeItem, item, this)
+    );
   }
 
   hasKey(key: any) {
-    return this.keys.includes(key);
+    if (this.store.has(key)) return true;
+    for (const storeKey of this.keys) {
+      if (Match.sameKey(storeKey, key, this)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   set(key, item) {
+    for (const storeKey of this.keys) {
+      if (Match.sameKey(storeKey, key, this)) {
+        this.store.set(storeKey, item);
+        return this;
+      }
+    }
     this.store.set(key, item);
     return this;
   }
 
   get(key) {
-    return this.store.get(key);
+    return this.reduce((found, item, itemKey, _store, stopper) => {
+      if (Match.sameKey(itemKey, key, this)) {
+        stopper.final();
+        return item;
+      }
+      return found;
+    }, undefined);
   }
 
-  delete(key) {
-    this.store.delete(key);
+  deleteKey(key) {
+    this.store.deleteKey(key);
     return this;
+  }
+
+  deleteItem(item: any | any[]) {
+    return this.filter(oItem => !Match.sameItem(oItem, item, this));
   }
 
   clear() {
@@ -47,16 +72,30 @@ export default abstract class CompoundCollection extends Collection {
   }
 
   filter(test: filterAction) {
-    const out = this.clone();
-    out.store = this.store.filter(test);
-    return out;
+    const tempC = Collection.create(makeEmpty(this.store, this.type));
+    const stopper = new Stopper();
+    for (const key of this.keys) {
+      const item = this.get(key);
+      const use = test(item, key, this.store, stopper);
+      if (stopper.isStopped) {
+        break;
+      }
+      if (use) {
+        tempC.set(key, item);
+      }
+      if (stopper.isLast) {
+        break;
+      }
+    }
+    this._store = tempC.store;
+    return this;
   }
 
   forEach(loop: loopAction) {
-    const iter = new Stopper();
+    const stopper = new Stopper();
     for (const key in this.keys) {
-      loop(this.get(key), key, this.store, iter);
-      if (!iter.isActive) {
+      loop(this.get(key), key, this.store, stopper);
+      if (stopper.isComplete) {
         break;
       }
     }
@@ -73,13 +112,17 @@ export default abstract class CompoundCollection extends Collection {
   }
 
   map(loop: loopAction) {
-    const iter = new Stopper();
+    const stopper = new Stopper();
     const outCollection = this.clone().clear();
     for (const key in this.keys) {
       const keyValue = this.get(key);
-      const item = loop(keyValue, key, this.store, iter);
-      if (iter.state !== stopperEnum.stop) outCollection.set(key, item);
-      if (!iter.isActive) return outCollection;
+      const item = loop(keyValue, key, this.store, stopper);
+      if (stopper.state !== stopperEnum.stop) {
+        outCollection.set(key, item);
+      }
+      if (stopper.isComplete) {
+        return outCollection;
+      }
     }
     return outCollection;
   }
@@ -90,7 +133,9 @@ export default abstract class CompoundCollection extends Collection {
 
     for (const key in this.keys) {
       const next = looper(out, this.get(key), key, this.store, iter);
-      if (iter.isStopped) return out;
+      if (iter.isStopped) {
+        return out;
+      }
       out = next;
       if (!iter.isActive) {
         break;
@@ -98,5 +143,10 @@ export default abstract class CompoundCollection extends Collection {
     }
 
     return out;
+  }
+
+  reduceC(action, start) {
+    const value = this.reduce(action, start);
+    return Collection.create(value);
   }
 }

@@ -66,33 +66,40 @@ export type valueOrCollectionObj = valueType | collectionObj<any, any, any>;
 
 export type orderingFn = (item1: any, item2: any) => number;
 
+export type comparatorFn = (k1, k2) => boolean;
+export type comparatorObj = {
+  compKeys?: comparatorFn;
+  compItems?: comparatorFn;
+};
+
 export type collectionObj<StoreType, KeyType, ItemType> = {
   // reflection
-  store: StoreType;
+  readonly store: StoreType;
   form: FormEnum;
   type: DefEnum;
   size: number;
   hasItem: (item: ItemType) => boolean;
   hasKey: (key: KeyType) => boolean;
   keys: any[];
-  get: (key: KeyType) => any;
   items: any[];
   keyOf: (item: ItemType) => KeyType | undefined; // the _first_ key of a given item
   // an item may be associated with more than one key -- this is the first one.
+  get: (key: KeyType) => any;
+
+  // comparison
+  withComp: (action: () => any, config: comparatorObj) => any; // performs operations with the given comparators operating, then returns current ones.
 
   // changes
   set: (
     key: KeyType,
     value: any
   ) => collectionObj<StoreType, KeyType, ItemType>; // self
-  delete: (
+  deleteKey: (
     key: KeyType | Array<KeyType>
   ) => collectionObj<StoreType, KeyType, ItemType>; // self
-  /*
   deleteItem: (
     item: ItemType | Array<ItemType>
-  ) => collectionObj<ValueType, KeyType, ItemType>; // self
-*/
+  ) => collectionObj<ItemType, KeyType, ItemType>; // self
   clear: () => collectionObj<StoreType, KeyType, ItemType>; // self
   sort: (sorter?: orderingFn) => collectionObj<StoreType, KeyType, ItemType>; // self
   // reverse: () => collectionObj<ValueType, KeyType, ItemType>; // self;
@@ -101,7 +108,7 @@ export type collectionObj<StoreType, KeyType, ItemType> = {
 
   forEach: (action: loopAction) => collectionObj<StoreType, KeyType, ItemType>; // self
   clone: () => collectionObj<StoreType, KeyType, ItemType>; // new collection with cloned item
-  map: (action: loopAction) => collectionObj<StoreType, KeyType, ItemType>; // new collection with mutated set
+  map: (action: loopAction) => collectionObj<StoreType, KeyType, ItemType>; // mutates properties
   filter: (action: filterAction) => collectionObj<StoreType, KeyType, ItemType>; // a new collection wth some of the values;
   reduce: (action: reduceAction, initial: any) => any; // an arbitrary value, computed by lkooping over the store
   reduceC: (action: reduceAction, initial: any) => collectionObj<any, any, any>; // a new collection for the output of reduce
@@ -122,4 +129,4 @@ export type collectionObj<StoreType, KeyType, ItemType> = {
     mode?: booleanMode
   ) => collectionObj<ValueType, KeyType, ItemType>;
   */
-};
+} & comparatorObj;

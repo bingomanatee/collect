@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { DefEnum, FormEnum, TypeEnum } from '../types';
-import { ABSENT } from './../types';
+import { ABSENT } from '../types';
 
 export function typeTest(type) {
   return value => typeof value === type;

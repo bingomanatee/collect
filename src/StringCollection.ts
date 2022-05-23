@@ -6,6 +6,7 @@ import {
   orderingFn,
 } from './types';
 import { IntIndexedCollection } from './IntIndexedCollection';
+import { Match } from './utils/Match';
 
 export default class StringCollection extends IntIndexedCollection
   implements collectionObj<string, number, string> {
@@ -50,20 +51,21 @@ export default class StringCollection extends IntIndexedCollection
   set(key: number, item: string) {
     const prefix = this.store.substring(0, key) || '';
     const suffix = this.store.substring(key + 1) || '';
-    this.store = prefix + item + suffix;
+    this._store = prefix + item + suffix;
     return this;
   }
 
   get(key: number) {
+    if (key < 0 || key > this.size) return undefined;
     return this.store.substring(key, key + 1);
   }
 
-  delete(key: number | Array<number>) {
+  deleteKey(key: number | Array<number>) {
     if (Array.isArray(key)) {
-      this.store = this.store.split.filter((_char, index) => {
-        return !key.includes(index);
+      return this.filter((_item, itemKey) => {
+        const use = !Match.sameKey(itemKey, key, this);
+        return use;
       });
-      return this;
     }
     return this.set(key, '');
   }
@@ -71,27 +73,22 @@ export default class StringCollection extends IntIndexedCollection
   deleteItem(
     item: Array<string> | string
   ): collectionObj<string, number, string> {
-    const without = this.reduce(
-      (memo: string, char: string, _index: number, _value: string, _stop) => {
-        if (Array.isArray(item)) {
-          if (item.includes(char)) {
-            return memo;
-          }
-        } else {
-          if (char === item) {
-            return memo;
-          }
-        }
-        return memo + char;
-      },
-      ''
-    );
-    this.store = without.store;
+    if (Array.isArray(item)) {
+      return this.filter(otherItem => !Match.sameItem(otherItem, item, this));
+    }
+    let newStore: string = this.store;
+    let length = newStore.length;
+    do {
+      length = newStore.length;
+      newStore = newStore.replace(item, '');
+    } while (newStore && newStore.length < length);
+
+    this._store = newStore;
     return this;
   }
 
   clear() {
-    this.store = '';
+    this._store = '';
     return this;
   }
 
@@ -119,15 +116,16 @@ export default class StringCollection extends IntIndexedCollection
 
   filter(test: filterAction) {
     const originalValue = this.store;
-    const withoutColl = this.reduce((memo, item: string, key: number, iter) => {
-      if (test(item, key, originalValue, iter)) {
-        if (!iter.isStopped) {
-          return memo + item;
+    this._store = this.reduce(
+      (memo, item: string, key: number, _phrase, stopper) => {
+        const use = test(item, key, originalValue, stopper);
+        if (use && stopper.isActive) {
+          return `${memo}${item}`;
         }
-      }
-      return memo;
-    }, '');
-    this.store = withoutColl.store;
+        return memo;
+      },
+      ''
+    );
     return this;
   }
 
@@ -155,7 +153,7 @@ export default class StringCollection extends IntIndexedCollection
       return this.union(other.split(''));
     }
     if (Array.isArray(other)) {
-      const chars = [...this.store.split(''), ...other];
+      const chars = [...this.items, ...other];
       const unique: string = chars.reduce((memo, char: string) => {
         if (memo.includes(char)) {
           return memo;
@@ -169,14 +167,12 @@ export default class StringCollection extends IntIndexedCollection
 
   map(action: loopAction): collectionObj<string, number, string> {
     const out = this.items;
-    const processed = out.reduce((memo, char, index, _value, iter) => {
-      const suffix = action(char, index, this.store, iter);
-      if (iter.isStopped) {
-        return memo;
-      }
-      return memo + suffix;
+    this._store = out.reduce((memo, char, index, _value, stopper) => {
+      if (stopper.isComplete) return memo;
+      const suffix = action(char, index, this.store, stopper);
+      return stopper.isStopped ? memo : memo + suffix;
     });
-    return new StringCollection(processed);
+    return this;
   }
 
   intersection(

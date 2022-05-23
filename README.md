@@ -9,9 +9,93 @@ Collect aims to make accessing collections easier by enforcing APIs to multiple 
 This is similar to the lodash _() object; however Lodash doesn't include Set and Map as collection bases, 
 and doesn't include introspection methods identifying the base collection type. 
 
+## Why did you do this?
+
+I was tired of using a bunch of "bridge" functions and detached systems to introspect, change and modify
+elements depending on the type of store I used. (I created a function called mapReduce 
+to apply "reduce" to a Map class -- not helping)
+
+I wanted to be able to interrupt forEach, reduce, map when I'd done what I wanted to. 
+
+I found "typeof" not granular enough
+
+I wanted to be able to tune checks like "has" to allow similar objects to be true, or to use an compound key in Map
+and have a similar array also match the key: 
+
+You can't do boolean operations on Sets! You'd think that was a fundamental thing. (boolean code to come)
+
+```javascript
+const twoDStore = new Map();
+
+function store3DPoint(x, y, z) {
+  const key = { x, y };
+  const data = { x, y, z };
+  const others = twoDStore.has(key) ? twoDStore.get(key) : [];
+  twoDStore.set(key, [data, ...others]);
+}
+
+store3DPoint(0, 0, 1);
+store3DPoint(0, 0, 2);
+store3DPoint(0, 0, 3);
+
+console.log('twoDStore:', twoDStore);
+
+/**
+ *  Map(3) {
+  { x: 0, y: 0 } => [ { x: 0, y: 0, z: 1 } ],
+  { x: 0, y: 0 } => [ { x: 0, y: 0, z: 2 } ],
+  { x: 0, y: 0 } => [ { x: 0, y: 0, z: 3 } ]
+}
+
+ */
+```
+Why are all the points stored differently? Because the key identity test is using _referential_ comparison. 
+But because comparators are part of the collection api you can do this:
+
+```javascript
+
+const mapStore = create(new Map(), {
+  compKeys(key1, key2) {
+    return key1.x === key2.x && key1.y === key2.y;
+  },
+});
+
+function store3DPoint(x, y, z) {
+  const key = { x, y };
+  const data = { x, y, z };
+  const others = mapStore.hasKey(key) ? mapStore.get(key) : [];
+  mapStore.set(key, [...others, data]);
+}
+
+store3DPoint(0, 0, 1);
+store3DPoint(0, 0, 2);
+store3DPoint(0, 0, 3);
+
+console.log(mapStore.get({ x: 0, y: 0 }));
+/**
+  { x: 0, y: 0, z: 1 },
+  { x: 0, y: 0, z: 2 },
+  { x: 0, y: 0, z: 3 },
+]);
+*/
+```
+
+The same example works with sets - you can keep adding the same "content" objects into a set and because they are reference based,
+the set will keep growing. 
+
+A lot of the terms are ambiguous. Does `myMap.has(item)` mean that the item is a key, or the item is contained in the map?
+does `myMap.delete(3)` delete the key 3, or keys whose items === 3? 
+
+It's also never quite clear when you are doing something that messes with the original store or returning a new reference.
+`Array.reverse()`, for instance, returns the same reference; `Array.sort()` does not. As the store is always a sub-reference
+of the collection, All the collection-returning methods return the target collection; but generally, every time a store
+is altered (map, reverse, filter, delete), the collection's store is a new reference.
+
+Are these huge important differences? Mostly not until they are. 
+
 ## What is a collection? 
 
-A collection is most fundamentally an object that contains multiple items. The term for this sort of structure is 
+A collection is most fundamentally a thing holder. The term for this sort of structure is 
 a _map_ or a _dictionary_: that is a set of **items** referenced by **keys**. 
 This is a concrete expression of a mathematical **function** -- for each key, there is one and only one item. 
 The reverse is not true - an item may appear under more than one key. 
@@ -26,7 +110,7 @@ The terms used here are worth listing:
 * the collection contains zero or more items -- in an array like `[10, 20, 30]`, 10, 20, and 30 are **items**. 
 * the "address" of the items in the collections are called **keys**. In the above array the keys are 0, 1, and 2. 
 * the count of items in the collection are its **size**. In arrays, this is indicated by the `.length` property.
-* attaching an item to a collection with a key is sometimes referred to as **associating** the item with the collection.  
+* attaching an item to a collection with a key is sometimes referred to as **associating** the item with the collection.
 
 ### Collection order
 
@@ -35,6 +119,27 @@ An Array is a clearly ordered collection. A string is clearly ordered as well. O
 strictly ordered; there is no guarantee in which order `Object.keys()`' values are returned, given that properties may
 be added on the fly, inherited, or even (with proxies) dynamic.
 
+```javascript
+/*
+
+Store Type  Ordered    Keyed         Item inclusion Test    Key inclusion test       
+
+Set          no           no          yes                    (N/A)                    "its a pocket of things"
+Map          yes(1)       any         no                     yes                      "its a free association of stuff with stuff"
+Array        yes          posints     yes                    no(2)                    "its a rolodex of cards"
+Object       no           strings     no                     yes                      "its a dictionry of words (and words my dad knows)"
+String       yes          yes         yes                    no(3)                     "its a list of letters"
+
+ */
+```
+1. items' keys in a map are ordered in the same order they came in, but its really not a design feature of a map \
+   nor a quality of a set theory map
+2. you can _indirectly_ test for keys with length knowing all arrays start with zero.
+   But you aren't guaranteed that there is a thing in a given index til you get it
+
+it's also worth noting - collections are _one-dimensional_ - you have a single index, even if the index of a map can be compound. 
+By contrast a database can create compound indexes, made of two or more items. 
+
 ### A note on strings
 
 Strings are *structurally* a scalar; they are not a container. But they may also be thought of as an *array of characters*,
@@ -42,12 +147,20 @@ and this library treats them as such; the keys of a string are the offset of eac
 concerns manipulating strings as a collection that strings are treated as a collection, even though academically, 
 they are not. 
 
+### A note on Objects
+
+Object stores are recreated and destructured at the first change event; do not put complex instances, DOM objects, etc.
+into a collection and expect it to maintain referential identity. You can do so to inspect or iterate over them, but
+the first time you filter, map, delete or reduce them, the object in the store is not going to be your initial target.
+
 ### Sets
 
 Sets are the most sparse collection that exists; they have no keys, or definitive order; they are simply a "bag of items",
 that exists to represent item membership in a collection. A Set may be thought of as a _team_. Players on a team are 
 not required to belong to the team by any order; for instance in a choir the singers are not keyed in any way, they are simply "there."
 
+Sets don't really have keys, or the ability to "get by key"; an attempt is made to do so by iteration, but you
+should NOT trust that you are getting the right one when you call `mySetCollection.get(3)`.
 
 ### Iteration
 
@@ -57,7 +170,7 @@ the entire collection; you may want to stop, for instance, if you are searching 
 Unfortunately in standard iteration functions in Javascript, (reduce, map, forEach) you cannot "bail" halfway through. 
 In this library, a "stopper" instance is passed into each iteration, that allows you to "bail" out of an iteration midway. 
 
-* `forEach` calls an function with the key/value of a single pair
+* `forEach` calls a looping function with the key/value of a single asociation. Unlike javascript forEaches, it comes with a stopper. 
 
 ## collection API
 
@@ -66,7 +179,7 @@ The Collection API is a collection of several groups of methods or properties. T
 
 **key**
 
-Depending on your store, your key choices may be constrianed to strings or numbers; arrays require numeric
+Depending on your store, your key choices may be limited to strings or numbers; arrays require numeric
 keys, where objects require string keys. Maps can take virtually anything as a key: symbols, objects, etc. 
 however in this module **DO NOT USE ARRAYS AS KEYS**. This can confuse methods like delete which will break apart
 arrays passed in the keys field and treat the array contents as individual keys. 
@@ -80,26 +193,28 @@ property that is an alias to clone.
 
 The `reduce` method is kind of an outlier in that its return type is often not limited to compound values, so it returns 
 a value. If you know for a fact that your reduce method *is* returning a compound, call `.reduceC'`, 
-which callls reduce and puts its output into a new collecction in a single call. 
+which calls reduce and puts its output into a new collection in a single call. 
 
-Any method that does not return a needed value (eg, get, )
+Any method that does not return a needed value (eg, get, ) returns undefined.
 
 ### Reflection
 
 **reflection** properties express the keys/items in discrete collections or identify the type or form
-of the store. They are all informational - none of these methods alter the store or its content at all. 
-
-Inclusion tests uses `===` to compare candidates to members in hasKey/hasItem. 
+of the store. They are all informational - none of these methods alter the store or its content at all.
 
 * **store**: the actual physical artifact in which the keys and items are stored. 
 * **form**: an identifier for the fundamental structural form of the store. (see 'form and type' below)
 * **type**: a more specific version of form, including more categories for scalar vales. 
 * **size**: (number) a count of the stores' items
+
+**reflection (item/key)**
+
 * **hasItem(item)**: (boolean) indicates whether an item is present in the collection
 * **hasKey**: (boolean) indicates the presence of a key in the store. 
+* **hasItem**: (boolean) indicates the presence of an item in the store
 * **keys**: any[] A list of the keys in the collection
-* **items**: any[] a list of the items in the colleciton
-* **keyOf(item)**: (key | undefined) the key under which an item is stored; returs undefined if the colleciton doesn't have the item
+* **items**: any[] a list of the items in the collection
+* **keyOf(item)**: (key | undefined) the key under which an item is stored; undefined if the collectioon doesn't have the item
 * **get(key)**: (item | undefined) retrieves the item stored at the provided key. 
 
 ### Changes 
@@ -107,40 +222,44 @@ Inclusion tests uses `===` to compare candidates to members in hasKey/hasItem.
 these methods _do_ modify the store, adding, deleting, or changing one or more key/value pairs. 
 
 * **set(key, item)**: (self) upserts a key/value pair into the store. 
-* **delete**(key: any | any[], endKey?)**: (self) removes an item from the collection. \
-  Multiple values can be deleted at the same time; in ordered collections you can return endKeys to delete a range of items. \
-  You can also pass in an array of keys to delete several specifiic keys at once. 
+* **deleteKey(key: any | any[])**: (self) removes an item from the collection. \
+  You can also pass in an array of keys to delete several keys at once. 
 * **deleteItem(item: any | any[])**: (self) removes one or more items from the collection. \
   If the item is present under more than one key, it removes all references. 
 * **clear()**: (self) removes ALL items from the collection;
-* **sort(orderingFn)**: (self) reorders elements; patterend after `array.sort()`.
+* **sort(orderingFn)**: (self) reorders elements.
 * **reverse()**: (self) A specialized sort that reverses the order of the items in the collection.
 
-### Iteration
+### Iteration and Stoppers
 
 Iteration "walks over" the items in the array. Unlike `forEach` methods, iteration methods can stop at any point. 
-The final argument in the looping function is an iter object; you can call iter.stop() or iter.final() to
+The final argument in the looping function is an Stopper instance; you can call `stopper.stop()` or `stopper.final()` to
 interrupt the looping at any point. 
 
-the difference between stop() and final() calls is inmportant in `reduce(...)`. If you call stop, 
-the _current return value of the looper is not used._ Ifon the other hand you call `final()`, the current
-return value of the looper function **is used** -- but no other additional loops will occur.
+the difference between stop() and final() calls is important: If you call `stop()`, 
+the _current return value of the looper is not used._ If you call `final()`, the current
+return value of the looper function **is used** -- but **no other additional loops will occur**.
 
-In several vases the store itself is an argument to the looper. It is provided _for informational purposes only._
+In several cases the store itself is an argument to the looper. It is provided _for informational purposes only._
 Do not modify the store from the inside of the looping function.
 
-* **forEach((item, key, store, iter) => {... custom content} => void)**: (self) allows you to walk across \
-  all the keys and values of the store. It is intend for extraction of data - its not a good idea to modify \
+* **forEach((item, key, store, stopper) => {... custom content} => void)**: (self) allows you to walk across \
+  all the keys and values of the store. `forEach` is for extraction of data - it's not a good idea to modify \
   the store or collection inside a forEach pass. The return value of the looping function is ignored. 
-* **clone()** (new collection) returns a new Collection instance with a cloned copy of the store in the target collection, 
-* **map((item, key, store, iter) => newItem)**: (new Collection) with the same keys and store type as the target collecgtion \
-  but a different set of items. the return value of the looping function is used in place of the target collections' value. \
-  The resulting collection will have the same keys as the target -- UNLESS you call iter.stop() or iter.final() \
-  in which case the response is a subset of the target collections' keys. 
-* **filter((item, key, store, iter) => boolean)**: (new Collection) a new collection whose keys are <= the keys of the original store.\
-  Each item in the copied collection are exactly equal to those in the target collection. 
-* **reduce((memo, item, key, store, iter) => any, initialValue?: any)**: (any) returns a raw object; can be any sort of ting \
-  the output of the redue function is the _last output return value_ of the looper.
+* **clone()** (new collection) returns a new Collection instance with a **cloned copy of the store** in the target collection, 
+* **map((looper: item, key, store, stopper) => newItem)**: (self) modifies the keys in the store to have new values. the keys stay the same(1) \
+  but you will have whatever items the looper returns assigned to those keys.
+* **filter(tester: (item, key, store, stopper) => boolean)**: (self) removes all keys and values for which the tester function returns falsy. \
+  also removes all key/values after the stopper is stopped. 
+* **reduce(reducer: (memo, item, key, store, stopper) => any, initialValue?: any)**: (any) returns a raw object; can be any sort of ting \
+  the output of the reduce function is the _last output return value_ of the looper.
+* **reduceC(reducer: (memo, item, key, store, stopper) => any, initialValue?: any)** :(Collection) returns a new collection with the  result of reduce as a store. \
+There is no guarantee that the result of reduce will be a compound type, which is why there is a seperate reduceC function; \
+use that function only if you know for sure that the reducer produces an iterable item -- or, if you want to use the type/form properties
+for introspection. 
+
+------
+(1) If you call stopper, any keys after that loop will be removed. 
 
 ### (@TODO) Boolean functions
 
@@ -158,3 +277,9 @@ present in Form.
 
 type and form identifications are **not** identical to `typeof` identifiers; it's much more specific about 'object' for istance - 
 it qualifies object types into 'array', 'set', 'map', 'object' and 'null'. 
+
+## Comparators
+
+Every time elements are compared, for say getKey, hasKey, set, etc., the comparators of the store , `compKeys` and `compItems`,
+are used to determine if a candidate matches a target. As the earlier example shows, you can write your own comparators and 
+improve (or at least, change) the comparison technique. 

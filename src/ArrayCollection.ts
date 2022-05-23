@@ -1,6 +1,7 @@
 import { IntIndexedCollection } from './IntIndexedCollection';
 import { collectionObj } from './types';
 import { Stopper } from './utils/Stopper';
+import { Match } from './utils/Match';
 
 export default class ArrayCollection extends IntIndexedCollection
   implements collectionObj<any[], number, any> {
@@ -19,7 +20,7 @@ export default class ArrayCollection extends IntIndexedCollection
   set(key: number, item) {
     const next = [...this.store];
     next[key] = item;
-    this.store = next;
+    this._store = next;
     return this;
   }
 
@@ -36,16 +37,16 @@ export default class ArrayCollection extends IntIndexedCollection
   }
 
   clear() {
-    this.store = [];
+    this._store = [];
     return this;
   }
 
-  delete(key) {
-    if (Array.isArray(key)) {
-      this.store = this.filter((_item, index) => key.includes(index)).store;
-    }
-    this.store.slice(key, 1);
-    return this;
+  deleteKey(key: number | number[]) {
+    return this.filter((_item, oKey) => !Match.sameKey(oKey, key, this));
+  }
+
+  deleteItem(item: any | any[]) {
+    return this.store.filter(sItem => !Match.sameItem(sItem, item, this));
   }
 
   hasKey(key: number) {
@@ -53,7 +54,7 @@ export default class ArrayCollection extends IntIndexedCollection
   }
 
   sort(sortFn) {
-    this.store = this.store.sort(sortFn);
+    this._store = this.store.sort(sortFn);
     return this;
   }
 
@@ -61,20 +62,22 @@ export default class ArrayCollection extends IntIndexedCollection
     return new ArrayCollection([...this.store]);
   }
 
-  map(action) {
+  map(looper) {
     const stopper = new Stopper();
     const newStore: any[] = [];
+    const originalStore = [...this.store];
     for (let i = 0; i < this.size; ++i) {
-      const item = action(this.get(i), i, this.store, stopper);
+      const item = looper(this.get(i), i, originalStore, stopper);
       if (stopper.isStopped) {
         break;
       }
       newStore[i] = item;
-      if (!item.isActive) {
+      if (stopper.isComplete) {
         break;
       }
     }
-    return new ArrayCollection(newStore);
+    this._store = newStore;
+    return this;
   }
 
   filter(filterTest) {
@@ -87,10 +90,11 @@ export default class ArrayCollection extends IntIndexedCollection
         break;
       }
       if (use) newStore.push(item);
-      if (!stopper.isActive) {
+      if (stopper.isLast) {
         break;
       }
     }
-    return new ArrayCollection(newStore);
+    this._store = newStore;
+    return this;
   }
 }

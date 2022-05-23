@@ -1,6 +1,10 @@
 import create from '../src';
+import { Debug } from '../src/utils/debug';
 
 describe('inspections', () => {
+  beforeEach(() => {
+    Debug.init();
+  });
   describe('scalars', () => {
     it('fails on most inspections', () => {
       const c = create(2);
@@ -65,6 +69,21 @@ describe('inspections', () => {
       expect(ac.hasItem(4)).toBeFalsy();
 
       expect(ac.keys).toEqual([0, 1, 2, 3, 4, 5]);
+    });
+  });
+
+  describe('Object', () => {
+    it('has the expected inspection behavior', () => {
+      const p = { name: 'home', x: 100, y: 200, z: 300 };
+
+      const objCollection = create(p);
+
+      expect(objCollection.size).toBe(4);
+      expect(objCollection.hasItem('home')).toBeTruthy();
+      expect(objCollection.hasItem(300)).toBeTruthy();
+      expect(objCollection.hasItem(400)).toBeFalsy();
+
+      expect(objCollection.keys).toEqual(['name', 'x', 'y', 'z']);
     });
   });
 });
