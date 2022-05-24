@@ -1,7 +1,6 @@
 import CompoundCollection from './CompoundCollection';
 import { collectionObj, comparatorObj } from './types';
 import { Match } from './utils/Match';
-import { Iter } from './Iter';
 
 type obj = { [key: string]: any };
 export default class ObjectCollection extends CompoundCollection
@@ -79,26 +78,20 @@ export default class ObjectCollection extends CompoundCollection
     return this;
   }
 
+  clone() {
+    return new ObjectCollection({ ...this._store }, this);
+  }
   // iterators
 
-  keyIter(fromIter?: boolean): IterableIterator<any> | undefined {
-    if (fromIter) {
-      return Object.keys(this.store)[Symbol.iterator]();
-    }
-    return Iter.keyIter(this);
+  keyIter(): IterableIterator<any> | undefined {
+    return Object.keys(this.store)[Symbol.iterator]();
   }
 
-  itemIter(fromIter?: boolean): IterableIterator<any> | undefined {
-    if (fromIter) {
-      return Object.values(this.store)[Symbol.iterator]();
-    }
-    return Iter.itemIter(this);
+  itemIter(): IterableIterator<any> | undefined {
+    return Object.values(this.store)[Symbol.iterator]();
   }
 
-  storeIter(fromIter?: boolean): IterableIterator<any> | undefined {
-    if (fromIter) {
-      return undefined;
-    }
-    return Iter.storeIter(this);
+  storeIter(): IterableIterator<any> | undefined {
+    return Object.entries(this.store)[Symbol.iterator]();
   }
 }

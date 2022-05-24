@@ -2,6 +2,7 @@ import { booleanMode, collectionObj, comparatorObj } from './types';
 import { IntIndexedCollection } from './IntIndexedCollection';
 import { Match } from './utils/Match';
 import { filterAction, typesMethods, orderingFn } from './types.methods';
+import { Iter } from './Iter';
 
 export default class StringCollection extends IntIndexedCollection
   implements collectionObj<string, number, string> {
@@ -99,13 +100,11 @@ export default class StringCollection extends IntIndexedCollection
   }
 
   reverse(): collectionObj<string, number, string> {
-    const chars = this.store.split('');
-    return new StringCollection(chars.reverse().join(''));
+    return new StringCollection(this.items.reverse().join(''));
   }
 
   sort(sorter?: orderingFn): collectionObj<string, number, string> {
-    const chars = this.store.split('');
-    return new StringCollection(chars.sort(sorter).join(''));
+    return new StringCollection(this.items.sort(sorter).join(''));
   }
 
   // endregion
@@ -188,12 +187,18 @@ export default class StringCollection extends IntIndexedCollection
       return this.intersection(other.split(''));
     }
     if (Array.isArray(other)) {
-      const chars = [...this.store.split('')];
-      const unique: string[] = chars.filter(char => other.includes(char));
+      const unique: string[] = this.items.filter(char => other.includes(char));
       return new StringCollection(unique.join(''));
     }
     return this.intersection(other.items);
   }
 
   // endregion
+
+  storeIter(fromIter?: boolean): IterableIterator<any> | undefined {
+    if (fromIter) {
+      return this.items.entries()[Symbol.iterator]();
+    }
+    return Iter.storeIter(this);
+  }
 }

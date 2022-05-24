@@ -122,20 +122,22 @@ be added on the fly, inherited, or even (with proxies) dynamic.
 ```javascript
 /*
 
-Store Type  Ordered    Keyed         Item inclusion Test    Key inclusion test       
-
-Set          no           no          yes                    (N/A)                    "its a pocket of things"
-Map          yes(1)       any         no                     yes                      "its a free association of stuff with stuff"
-Array        yes          posints     yes                    no(2)                    "its a rolodex of cards"
-Object       no           strings     no                     yes                      "its a dictionry of words (and words my dad knows)"
-String       yes          yes         yes                    no(3)                     "its a list of letters"
+Store        Ordered      Keyed       Item            Key
+Type                                  inclusion Test  inclusion test 
+------------------------------------------------------------------------------------------------------------
+_Set         no           no          yes            (N/A)             "its a pocket of things"
+Array        yes          posints     yes            no(2)             "its a rolodex of cards"
+String       yes          yes         yes_           no(3)              "its a list of letters"
+Object       no           strings     no             yes               "its a dictionry of words (and words my dad knows)"
+Map          yes(1)       any(3)      no             yes               "its a free association of stuff with stuff"
 
  */
 ```
-1. items' keys in a map are ordered in the same order they came in, but its really not a design feature of a map \
-   nor a quality of a set theory map
+1. items' keys in a map are ordered in the same order they came in, but this is really not a design feature of a map \
+   nor a quality of a set theory map.
 2. you can _indirectly_ test for keys with length knowing all arrays start with zero.
-   But you aren't guaranteed that there is a thing in a given index til you get it
+   But you aren't guaranteed that there is a thing in a given index til you get it.
+3. The Javascript Map can hold anything; Collection Maps cannot have **arrays** as keys. 
 
 it's also worth noting - collections are _one-dimensional_ - you have a single index, even if the index of a map can be compound. 
 By contrast a database can create compound indexes, made of two or more items. 
@@ -179,10 +181,11 @@ The Collection API is a collection of several groups of methods or properties. T
 
 **key**
 
-Depending on your store, your key choices may be limited to strings or numbers; arrays require numeric
-keys, where objects require string keys. Maps can take virtually anything as a key: symbols, objects, etc. 
-however in this module **DO NOT USE ARRAYS AS KEYS**. This can confuse methods like delete which will break apart
-arrays passed in the keys field and treat the array contents as individual keys. 
+Depending on your store, your keys may be limited to being strings or numbers; arrays require numeric
+keys, where objects require string keys. 
+Maps can take virtually anything as a key: symbols, objects, etc. 
+However in collections **DO NOT USE ARRAYS AS KEYS**. This can confuse methods like delete which will break apart arrays 
+passed in the keys field and treat the array contents as individual keys. 
 
 ### Targeting/store reference, return value
 
@@ -228,6 +231,9 @@ it qualifies object types into 'array', 'set', 'map', 'object' and 'null'.
 * **keyOf(item)**: (key | undefined) the key under which an item is stored; undefined if the collectioon doesn't have the item
 * **get(key)**: (item | undefined) retrieves the item stored at the provided key. 
 
+note that keys and items are _arrays_ of values, that you can mess with in any way you want, sort, map, whatever. 
+If you want to traverse the values, see Iterators below. 
+
 ### Cloning
 
 cloning produces a new collection - identical to this one; it clones not only the Collection instance, but the store.
@@ -262,6 +268,8 @@ the difference between `stop()` and `final()` calls is important:
 * If you call `stopAfterThis()`, the current return value of the looper function **is used** -- but **no other additional loops will occur**.\
   A synonym for `stopAfterThis()` is `final()`.
 
+Think of iteration like a "bookmark" where `.keys` is like photocopying the page number of each page of a book and putting it in a stack. 
+
 In several cases the store itself is an argument to the looper. It is provided _for informational purposes only._
 Do not modify the store from the inside of the looping function.
 
@@ -284,7 +292,15 @@ for introspection.
 
 #### Iterator hooks
 
-This is another shim; not all store types have iterators... so we force them to here.
+This is another shim; not all store types have
+[iterators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators)... 
+so we force them to here.
+
+The point of iterators is that unlike the `.keys` and `.values` properties which collect ALL the keys/values, 
+iterators are just reference pointers that crawl along, getting another value one at a time until the end. 
+
+This takes less memory, as you don't have to have array(s) of values manufactured each time you execute a routine. 
+And if you interrupt the process mid way through, you don't waste time collecting values you don't need.
 
 * **keyIter()**: (Iterator) an iterator over the keys. 
 * **itemIter()**: (Iterator) an iterator over the items.

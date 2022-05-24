@@ -1,8 +1,9 @@
 import Collection from './Collection';
-import { clone, makeEmpty } from './utils/change';
+import { makeEmpty } from './utils/change';
 import { Stopper, stopperEnum } from './utils/Stopper';
 import { Match } from './utils/Match';
 import { filterAction, typesMethods, reduceAction } from './types.methods';
+import { collectionObj } from './types';
 
 /**
  * This is a baseline
@@ -110,14 +111,7 @@ export default abstract class CompoundCollection extends Collection {
     return this;
   }
 
-  clone() {
-    const obj = {};
-    // @ts-ignore
-    obj.__proto__ = this.prototype;
-    // @ts-ignore
-    const result = this.call(obj, clone(this.store));
-    return typeof result !== 'undefined' ? result : obj;
-  }
+  abstract clone(): collectionObj<any, any, any>;
 
   map(loop: typesMethods) {
     const stopper = new Stopper();

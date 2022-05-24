@@ -109,4 +109,16 @@ export default class ArrayCollection extends IntIndexedCollection
     this._store = newStore;
     return this;
   }
+
+  storeIter() {
+    return this._store.entries()[Symbol.iterator]();
+  }
+
+  keyIter() {
+    return this._store.keys();
+  }
+
+  itemIter() {
+    return this._store.values();
+  }
 }

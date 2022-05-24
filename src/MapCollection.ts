@@ -2,7 +2,6 @@ import CompoundCollection from './CompoundCollection';
 import { collectionObj, comparatorObj } from './types';
 import { Stopper } from './utils/Stopper';
 import { Match } from './utils/Match';
-import { Iter } from './Iter';
 import { orderingFn, reduceAction } from './types.methods';
 
 export default class MapCollection extends CompoundCollection
@@ -26,6 +25,10 @@ export default class MapCollection extends CompoundCollection
 
   get items() {
     return Array.from(this.store.values());
+  }
+
+  clone() {
+    return new MapCollection(new Map(...this._store), this);
   }
 
   keyOf(item: any): any {
@@ -90,24 +93,15 @@ export default class MapCollection extends CompoundCollection
   }
   // iterators
 
-  keyIter(fromIter?: boolean): IterableIterator<any> | undefined {
-    if (fromIter) {
-      return this._store.keys();
-    }
-    return Iter.keyIter(this);
+  keyIter(): IterableIterator<any> | undefined {
+    return this._store.keys();
   }
 
-  itemIter(fromIter?: boolean): IterableIterator<any> | undefined {
-    if (fromIter) {
-      return this._store.values();
-    }
-    return Iter.itemIter(this);
+  itemIter(): IterableIterator<any> | undefined {
+    return this._store.values();
   }
 
-  storeIter(fromIter?: boolean): IterableIterator<any> | undefined {
-    if (fromIter) {
-      return this._store[Symbol.iterator]();
-    }
-    return this.store;
+  storeIter(): IterableIterator<any> | undefined {
+    return this._store.entries();
   }
 }
