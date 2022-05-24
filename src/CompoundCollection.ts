@@ -1,7 +1,7 @@
 import Collection from './Collection';
 import { clone, makeEmpty } from './utils/change';
 import { filterAction, loopAction, reduceAction } from './types';
-import { Stopper, stopperEnum } from './utils/Stopper';
+import { Stopper } from './utils/Stopper';
 import { Match } from './utils/Match';
 
 /**
@@ -113,18 +113,24 @@ export default abstract class CompoundCollection extends Collection {
 
   map(loop: loopAction) {
     const stopper = new Stopper();
-    const outCollection = this.clone().clear();
-    for (const key in this.keys) {
-      const keyValue = this.get(key);
-      const item = loop(keyValue, key, this.store, stopper);
-      if (stopper.state !== stopperEnum.stop) {
+    this._store = (() => {
+      const outCollection = this.c.clear();
+      for (const key of this.keys) {
+        const keyItem = this.get(key);
+        const item = loop(keyItem, key, this.store, stopper);
+        if (stopper.isStopped) {
+          break;
+        }
+
         outCollection.set(key, item);
+        if (stopper.isComplete) {
+          break;
+        }
       }
-      if (stopper.isComplete) {
-        return outCollection;
-      }
-    }
-    return outCollection;
+
+      return outCollection.store;
+    })();
+    return this;
   }
 
   reduce(looper: reduceAction, initial?: any) {

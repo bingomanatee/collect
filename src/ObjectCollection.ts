@@ -21,7 +21,7 @@ export default class ObjectCollection extends CompoundCollection
     return this.store[key];
   }
 
-  set(key, item) {
+  set(key: string, item) {
     this._store[key] = item;
     return this;
   }
@@ -52,6 +52,18 @@ export default class ObjectCollection extends CompoundCollection
       }
     }
     return false;
+  }
+
+  clone() {
+    return new ObjectCollection(
+      { ...this.store },
+      { compKeys: this.compKeys, compItems: this.compItems }
+    );
+  }
+
+  clear() {
+    this._store = {};
+    return this;
   }
 
   // this is a little dicey but...

@@ -73,7 +73,6 @@ describe('walkers', () => {
           .set('y', -50)
           .set('z', 100);
 
-        console.log('mc store:', mc.store);
         const milDistance = mc.reduce((distance, size) => {
           return distance + Math.abs(size);
         }, 0);
@@ -193,6 +192,74 @@ describe('walkers', () => {
           }, 0);
 
           expect(sum).toBe(210);
+        });
+      });
+    });
+  });
+
+  describe('map', () => {
+    describe('array', () => {
+      it('should double values', () => {
+        const ac = create([2, 4, 6, 8, 10, 12, 14, 16, 18, 20]);
+
+        ac.map(v => v * 2);
+
+        expect(ac.store).toEqual([4, 8, 12, 16, 20, 24, 28, 32, 36, 40]);
+      });
+
+      it('should stop on command', () => {
+        const ac = create([2, 4, 6, 8, 10, 12, 14, 16, 18, 20]);
+
+        ac.map((v, index, _list, stopper) => {
+          if (index > 6) stopper.stop();
+          return v * 2;
+        });
+
+        expect(ac.store).toEqual([4, 8, 12, 16, 20, 24, 28]);
+      });
+
+      it('should stop later on stopAfterThis', () => {
+        const ac = create([2, 4, 6, 8, 10, 12, 14, 16, 18, 20]);
+
+        ac.map((v, index, _list, stopper) => {
+          if (index > 6) stopper.stopAfterThis();
+          return v * 2;
+        });
+
+        expect(ac.store).toEqual([4, 8, 12, 16, 20, 24, 28, 32]);
+      });
+    });
+
+    describe('object', () => {
+      it('should mutate the properties', () => {
+        const oc = create({});
+        'abcde'.split('').forEach((letter, index) => {
+          oc.set(letter, (index + 1) * 10);
+        });
+
+        oc.map((value, key) => `${key}=${value}`);
+        expect(oc.store).toEqual({
+          a: `a=10`,
+          b: 'b=20',
+          c: 'c=30',
+          d: 'd=40',
+          e: 'e=50',
+        });
+      });
+      it('should stop on command', () => {
+        const oc = create({});
+        'abcde'.split('').forEach((letter, index) => {
+          oc.set(letter, (index + 1) * 10);
+        });
+
+        oc.map((value, key, _obj, stopper) => {
+          if (value > 30) stopper.stop();
+          return `${key}=${value}`;
+        });
+        expect(oc.store).toEqual({
+          a: `a=10`,
+          b: 'b=20',
+          c: 'c=30',
         });
       });
     });
