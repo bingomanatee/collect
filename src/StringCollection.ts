@@ -1,15 +1,21 @@
-import {
-  booleanMode,
-  collectionObj,
-  filterAction,
-  loopAction,
-  orderingFn,
-} from './types';
+import { booleanMode, collectionObj, comparatorObj } from './types';
 import { IntIndexedCollection } from './IntIndexedCollection';
 import { Match } from './utils/Match';
+import { filterAction, typesMethods, orderingFn } from './types.methods';
 
 export default class StringCollection extends IntIndexedCollection
   implements collectionObj<string, number, string> {
+  constructor(store: string, comps?: comparatorObj) {
+    super();
+    this._store = store;
+    if (comps?.compKeys) {
+      this._compKeys = comps?.compKeys;
+    }
+    if (comps?.compItems) {
+      this._compItems = comps?.compItems;
+    }
+  }
+
   // region inspection
   get size() {
     return this.store.length;
@@ -165,7 +171,7 @@ export default class StringCollection extends IntIndexedCollection
     return this.union(other.store);
   }
 
-  map(action: loopAction): collectionObj<string, number, string> {
+  map(action: typesMethods): collectionObj<string, number, string> {
     const out = this.items;
     this._store = out.reduce((memo, char, index, _value, stopper) => {
       if (stopper.isComplete) return memo;

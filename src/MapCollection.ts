@@ -1,10 +1,25 @@
 import CompoundCollection from './CompoundCollection';
-import { collectionObj, orderingFn, reduceAction } from './types';
+import { collectionObj, comparatorObj } from './types';
 import { Stopper } from './utils/Stopper';
 import { Match } from './utils/Match';
+import { Iter } from './Iter';
+import { orderingFn, reduceAction } from './types.methods';
 
 export default class MapCollection extends CompoundCollection
   implements collectionObj<Map<any, any>, any, any> {
+  protected _store: Map<any, any>;
+
+  constructor(store: Map<any, any>, comps?: comparatorObj) {
+    super();
+    this._store = store;
+    if (comps?.compKeys) {
+      this._compKeys = comps?.compKeys;
+    }
+    if (comps?.compItems) {
+      this._compItems = comps?.compItems;
+    }
+  }
+
   get keys() {
     return Array.from(this.store.keys());
   }
@@ -61,12 +76,9 @@ export default class MapCollection extends CompoundCollection
     const iter = new Stopper();
 
     let out = initial;
-
-    const store = this.store;
-
-    const iterator = store[Symbol.iterator]();
+    const iterator = this.store[Symbol.iterator]();
     for (const [key, item] of iterator) {
-      const next = looper(out, item, key, store, iter);
+      const next = looper(out, item, key, this.store, iter);
       if (iter.isStopped) {
         return out;
       }
@@ -75,5 +87,27 @@ export default class MapCollection extends CompoundCollection
       }
       out = next;
     }
+  }
+  // iterators
+
+  keyIter(fromIter?: boolean): IterableIterator<any> | undefined {
+    if (fromIter) {
+      return this._store.keys();
+    }
+    return Iter.keyIter(this);
+  }
+
+  itemIter(fromIter?: boolean): IterableIterator<any> | undefined {
+    if (fromIter) {
+      return this._store.values();
+    }
+    return Iter.itemIter(this);
+  }
+
+  storeIter(fromIter?: boolean): IterableIterator<any> | undefined {
+    if (fromIter) {
+      return this._store[Symbol.iterator]();
+    }
+    return this.store;
   }
 }

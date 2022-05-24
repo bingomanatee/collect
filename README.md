@@ -199,7 +199,8 @@ Any method that does not return a needed value (eg, get, ) returns undefined.
 
 ### Reflection
 
-**reflection** properties express the keys/items in discrete collections or identify the type or form
+### (type)
+These Properties express the keys/items in discrete collections or identify the type or form
 of the store. They are all informational - none of these methods alter the store or its content at all.
 
 * **store**: the actual physical artifact in which the keys and items are stored. 
@@ -207,7 +208,17 @@ of the store. They are all informational - none of these methods alter the store
 * **type**: a more specific version of form, including more categories for scalar vales. 
 * **size**: (number) a count of the stores' items
 
-**reflection (item/key)**
+**Form** is a more constrained identifier for the basic class of the store; it includes 'map', 'store', etc.,
+but does _not discriminate between different classes of scalar values; i.e., numbers, strings, Dates, and
+Symbols are all considered 'scalar'.
+
+**Type** on the other hand includes a detailed subset of different scalar types -- as well as all the identifiers
+present in Form.
+
+type and form identifications are **not** identical to `typeof` identifiers; it's much more specific about 'object' for instance -
+it qualifies object types into 'array', 'set', 'map', 'object' and 'null'.
+
+#### reflection (item/key)
 
 * **hasItem(item)**: (boolean) indicates whether an item is present in the collection
 * **hasKey**: (boolean) indicates the presence of a key in the store. 
@@ -216,6 +227,16 @@ of the store. They are all informational - none of these methods alter the store
 * **items**: any[] a list of the items in the collection
 * **keyOf(item)**: (key | undefined) the key under which an item is stored; undefined if the collectioon doesn't have the item
 * **get(key)**: (item | undefined) retrieves the item stored at the provided key. 
+
+### Cloning
+
+cloning produces a new collection - identical to this one; it clones not only the Collection instance, but the store.
+The store is _shallow cloned_ -- meaning for instance, if you have an object in the target collection, the cloned collection
+will have a _different_ array that contains the _exact same_ object - by reference. If you want to break object references,
+use `myArrayCollection.c.map((item) => ({...itemn})` which will deconstruct and break references to each object in the collection. 
+
+* **clone()**: (new collection) returns a new Collection instance with a **cloned copy of the store** in the target collection,
+* **c**: a property identical to clone(); but terser in chains. 
 
 ### Changes 
 
@@ -236,17 +257,20 @@ Iteration "walks over" the items in the array. Unlike `forEach` methods, iterati
 The final argument in the looping function is an Stopper instance; you can call `stopper.stop()` or `stopper.final()` to
 interrupt the looping at any point. 
 
-the difference between stop() and final() calls is important: If you call `stop()`, 
-the _current return value of the looper is not used._ If you call `final()`, the current
-return value of the looper function **is used** -- but **no other additional loops will occur**.
+the difference between `stop()` and `final()` calls is important: 
+* If you call `stop()`, the _current return value of the looper is not used._ 
+* If you call `stopAfterThis()`, the current return value of the looper function **is used** -- but **no other additional loops will occur**.\
+  A synonym for `stopAfterThis()` is `final()`.
 
 In several cases the store itself is an argument to the looper. It is provided _for informational purposes only._
 Do not modify the store from the inside of the looping function.
 
+#### Looper methods
+All these methods have the (almost) same interface and behavior -- they go over each key?item pair until you stop the flow, or reach the end. 
+
 * **forEach((item, key, store, stopper) => {... custom content} => void)**: (self) allows you to walk across \
   all the keys and values of the store. `forEach` is for extraction of data - it's not a good idea to modify \
   the store or collection inside a forEach pass. The return value of the looping function is ignored. 
-* **clone()** (new collection) returns a new Collection instance with a **cloned copy of the store** in the target collection, 
 * **map((looper: item, key, store, stopper) => newItem)**: (self) modifies the keys in the store to have new values. the keys stay the same(1) \
   but you will have whatever items the looper returns assigned to those keys.
 * **filter(tester: (item, key, store, stopper) => boolean)**: (self) removes all keys and values for which the tester function returns falsy. \
@@ -258,25 +282,20 @@ There is no guarantee that the result of reduce will be a compound type, which i
 use that function only if you know for sure that the reducer produces an iterable item -- or, if you want to use the type/form properties
 for introspection. 
 
+#### Iterator hooks
+
+This is another shim; not all store types have iterators... so we force them to here.
+
+* **keyIter()**: (Iterator) an iterator over the keys. 
+* **itemIter()**: (Iterator) an iterator over the items.
+* **storeIter()**: (Iterator) an iterator over the store. 
 ------
 (1) If you call stopper, any keys after that loop will be removed. 
 
 ### (@TODO) Boolean functions
 
 These methods will blend two collections and produce a third collection, using classical set theory/boolean
-methods. 
-
-## Store types: form and type
-
-**Form** is a more constrained identifier for the basic class of the store; it includes 'map', 'store', etc., 
-but does _not discriminate between different classes of scalar values; i.e., numbers, strings, Dates, and
-Symbols are all considered 'scalar'. 
-
-**Type** on the other hand includes a detailed subset of different scalar types -- as well as all the identifiers 
-present in Form. 
-
-type and form identifications are **not** identical to `typeof` identifiers; it's much more specific about 'object' for istance - 
-it qualifies object types into 'array', 'set', 'map', 'object' and 'null'. 
+methods.
 
 ## Comparators
 

@@ -1,10 +1,22 @@
 import { IntIndexedCollection } from './IntIndexedCollection';
-import { collectionObj } from './types';
+import { collectionObj, comparatorObj } from './types';
 import { Stopper } from './utils/Stopper';
 import { Match } from './utils/Match';
 
 export default class ArrayCollection extends IntIndexedCollection
   implements collectionObj<any[], number, any> {
+  protected _store: any[];
+  constructor(store: any[], comps?: comparatorObj) {
+    super();
+    this._store = store;
+    if (comps?.compKeys) {
+      this._compKeys = comps?.compKeys;
+    }
+    if (comps?.compItems) {
+      this._compItems = comps?.compItems;
+    }
+  }
+
   get size() {
     return this.store.length;
   }

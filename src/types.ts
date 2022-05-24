@@ -1,4 +1,10 @@
-import { Stopper } from './utils/Stopper';
+import {
+  comparatorFn,
+  filterAction,
+  typesMethods,
+  orderingFn,
+  reduceAction,
+} from './types.methods';
 
 export enum TypeEnum {
   string = 'string',
@@ -25,36 +31,10 @@ export type DefEnum = TypeEnum | FormEnum;
 export const ABSENT = Symbol('ABSENT');
 
 export type keyType = any;
-export type someKeys = Array<keyType>;
-export type oneOrMoreKeys = keyType | someKeys;
-
-export type loopAction = (
-  item: any,
-  key: keyType,
-  store: any,
-  flow: Stopper
-) => any;
-
-export type reduceAction = (
-  memo: any,
-  item: any,
-  key: keyType,
-  store: any,
-  iter: Stopper
-) => any;
-
-export type filterAction = (
-  item: string,
-  key: number,
-  value: string,
-  iter: Stopper
-) => boolean;
 
 export type someValues = Array<any>;
 export type valueType = any;
 export type oneOrMoreValues = valueType | someValues;
-
-export type combinerFn = any; // a generator function
 
 export enum booleanMode {
   byValue = 'value',
@@ -62,30 +42,43 @@ export enum booleanMode {
   byBoth = 'both',
 }
 
-export type valueOrCollectionObj = valueType | collectionObj<any, any, any>;
-
-export type orderingFn = (item1: any, item2: any) => number;
-
-export type comparatorFn = (k1, k2) => boolean;
 export type comparatorObj = {
   compKeys?: comparatorFn;
   compItems?: comparatorFn;
 };
 
-export type collectionObj<StoreType, KeyType, ItemType> = {
-  // reflection
+export type collectionBaseObj<StoreType, KeyType, ItemType> = {
   readonly store: StoreType;
+  keys: KeyType[];
+  items: ItemType[];
+
+  // reflection
   form: FormEnum;
   type: DefEnum;
   size: number;
+};
+export type collectionIterProvider<StoreType, KeyType, ItemType> = {
+  storeIter: (fromIter?: boolean) => IterableIterator<any> | undefined;
+  itemIter: (fromIter?: boolean) => IterableIterator<ItemType> | undefined;
+  keyIter: (fromIter?: boolean) => IterableIterator<KeyType> | undefined;
+  clone: () => collectionObj<StoreType, KeyType, ItemType>; // new collection with cloned item
+};
+
+export type collectionBaseIterProvider<
+  StoreType,
+  KeyType,
+  ItemType
+> = collectionIterProvider<StoreType, KeyType, ItemType> &
+  collectionBaseObj<StoreType, KeyType, ItemType> &
+  comparatorObj;
+
+export type collectionObj<StoreType, KeyType, ItemType> = {
+  // Reflection
   hasItem: (item: ItemType) => boolean;
   hasKey: (key: KeyType) => boolean;
-  keys: any[];
-  items: any[];
   keyOf: (item: ItemType) => KeyType | undefined; // the _first_ key of a given item
   // an item may be associated with more than one key -- this is the first one.
   get: (key: KeyType) => any;
-
   // comparison
   withComp: (action: () => any, config: comparatorObj) => any; // performs operations with the given comparators operating, then returns current ones.
 
@@ -102,20 +95,21 @@ export type collectionObj<StoreType, KeyType, ItemType> = {
   ) => collectionObj<ItemType, KeyType, ItemType>; // self
   clear: () => collectionObj<StoreType, KeyType, ItemType>; // self
   sort: (sorter?: orderingFn) => collectionObj<StoreType, KeyType, ItemType>; // self
-  // reverse: () => collectionObj<ValueType, KeyType, ItemType>; // self;
+  c: collectionObj<StoreType, KeyType, ItemType>; // a property identical to clone; for convenience.brevity
 
   // iteration
-
-  forEach: (action: loopAction) => collectionObj<StoreType, KeyType, ItemType>; // self
-  clone: () => collectionObj<StoreType, KeyType, ItemType>; // new collection with cloned item
-  map: (action: loopAction) => collectionObj<StoreType, KeyType, ItemType>; // mutates properties
+  forEach: (
+    action: typesMethods
+  ) => collectionObj<StoreType, KeyType, ItemType>; // self
+  map: (action: typesMethods) => collectionObj<StoreType, KeyType, ItemType>; // mutates properties
   filter: (action: filterAction) => collectionObj<StoreType, KeyType, ItemType>; // a new collection wth some of the values;
-  reduce: (action: reduceAction, initial: any) => any; // an arbitrary value, computed by lkooping over the store
+  reduce: (action: reduceAction, initial: any) => any; // an arbitrary value, computed by looping over the store
   reduceC: (action: reduceAction, initial: any) => collectionObj<any, any, any>; // a new collection for the output of reduce
   // note : the new collection may not be the same type as the start collection
+} & collectionBaseIterProvider<StoreType, KeyType, ItemType>;
 
-  // boolean
-  /*
+/*
+type _unusedBooleanOperator<ItemType, ValueType> = {
   union: (
     other: ValueType | collectionObj<any, any, any>,
     mode?: booleanMode
@@ -128,5 +122,4 @@ export type collectionObj<StoreType, KeyType, ItemType> = {
     other: ValueType | collectionObj<any, any, any>,
     mode?: booleanMode
   ) => collectionObj<ValueType, KeyType, ItemType>;
-  */
-} & comparatorObj;
+}*/

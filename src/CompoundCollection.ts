@@ -1,8 +1,8 @@
 import Collection from './Collection';
 import { clone, makeEmpty } from './utils/change';
-import { filterAction, loopAction, reduceAction } from './types';
 import { Stopper, stopperEnum } from './utils/Stopper';
 import { Match } from './utils/Match';
+import { filterAction, typesMethods, reduceAction } from './types.methods';
 
 /**
  * This is a baseline
@@ -57,6 +57,14 @@ export default abstract class CompoundCollection extends Collection {
     }, undefined);
   }
 
+  keyOf(item): any | undefined {
+    const index = this.items.indexOf(item);
+    if (index === -1) {
+      return undefined;
+    }
+    return index;
+  }
+
   deleteKey(key) {
     this.store.deleteKey(key);
     return this;
@@ -91,7 +99,7 @@ export default abstract class CompoundCollection extends Collection {
     return this;
   }
 
-  forEach(loop: loopAction) {
+  forEach(loop: typesMethods) {
     const stopper = new Stopper();
     for (const key in this.keys) {
       loop(this.get(key), key, this.store, stopper);
@@ -111,7 +119,7 @@ export default abstract class CompoundCollection extends Collection {
     return typeof result !== 'undefined' ? result : obj;
   }
 
-  map(loop: loopAction) {
+  map(loop: typesMethods) {
     const stopper = new Stopper();
     const outCollection = this.clone().clear();
     for (const key in this.keys) {
@@ -128,9 +136,9 @@ export default abstract class CompoundCollection extends Collection {
   }
 
   reduce(looper: reduceAction, initial?: any) {
-    let out = initial;
     const iter = new Stopper();
 
+    let out = initial;
     for (const key in this.keys) {
       const next = looper(out, this.get(key), key, this.store, iter);
       if (iter.isStopped) {
@@ -149,4 +157,12 @@ export default abstract class CompoundCollection extends Collection {
     const value = this.reduce(action, start);
     return Collection.create(value);
   }
+
+  // iterators
+
+  abstract keyIter(fromIter?: boolean): IterableIterator<any> | undefined;
+
+  abstract itemIter(fromIter?: boolean): IterableIterator<any> | undefined;
+
+  abstract storeIter(fromIter?: boolean): IterableIterator<any> | undefined;
 }

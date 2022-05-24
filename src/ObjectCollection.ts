@@ -1,10 +1,24 @@
 import CompoundCollection from './CompoundCollection';
-import { collectionObj } from './types';
+import { collectionObj, comparatorObj } from './types';
 import { Match } from './utils/Match';
+import { Iter } from './Iter';
 
 type obj = { [key: string]: any };
 export default class ObjectCollection extends CompoundCollection
   implements collectionObj<obj, string, any> {
+  protected _store: object;
+
+  constructor(store: object, comps?: comparatorObj) {
+    super();
+    this._store = store;
+    if (comps?.compKeys) {
+      this._compKeys = comps?.compKeys;
+    }
+    if (comps?.compItems) {
+      this._compItems = comps?.compItems;
+    }
+  }
+
   get size() {
     return Array.from(this.keys).length;
   }
@@ -26,7 +40,7 @@ export default class ObjectCollection extends CompoundCollection
     return this;
   }
 
-  keyOf(item) {
+  keyOf(item): string | undefined {
     for (const oKey of Object.keys(this.store)) {
       const oItem = this.get(oKey);
       if (Match.sameItem(oItem, item, this)) {
@@ -63,5 +77,28 @@ export default class ObjectCollection extends CompoundCollection
     }
     this._store = newStore;
     return this;
+  }
+
+  // iterators
+
+  keyIter(fromIter?: boolean): IterableIterator<any> | undefined {
+    if (fromIter) {
+      return Object.keys(this.store)[Symbol.iterator]();
+    }
+    return Iter.keyIter(this);
+  }
+
+  itemIter(fromIter?: boolean): IterableIterator<any> | undefined {
+    if (fromIter) {
+      return Object.values(this.store)[Symbol.iterator]();
+    }
+    return Iter.itemIter(this);
+  }
+
+  storeIter(fromIter?: boolean): IterableIterator<any> | undefined {
+    if (fromIter) {
+      return undefined;
+    }
+    return Iter.storeIter(this);
   }
 }

@@ -1,6 +1,8 @@
 import Collection from './Collection';
-import { collectionObj, loopAction, reduceAction } from './types';
+import { collectionObj } from './types';
 import { Stopper } from './utils/Stopper';
+import { Iter } from './Iter';
+import { typesMethods, reduceAction } from './types.methods';
 
 /**
  * this is the base class for items in which the keys are not named strings but are
@@ -15,7 +17,7 @@ export abstract class IntIndexedCollection extends Collection {
     return out;
   }
 
-  forEach(action: loopAction) {
+  forEach(action: typesMethods) {
     const stopper = new Stopper();
 
     const originalValue = this.store;
@@ -56,5 +58,35 @@ export abstract class IntIndexedCollection extends Collection {
   reduceC(looper, start) {
     const out = this.reduce(looper, start);
     return Collection.create(out);
+  }
+
+  clone() {
+    throw new Error(
+      'IntIndexedCollection.clone is being called directly; child class must override'
+    );
+    // @ts-ignore
+    return new IntIndexedCollection(clone(this.store));
+  }
+  // iterators
+
+  keyIter(fromIter?: boolean): IterableIterator<any> | undefined {
+    if (fromIter) {
+      return undefined;
+    }
+    return Iter.keyIter(this);
+  }
+
+  itemIter(fromIter?: boolean): IterableIterator<any> | undefined {
+    if (fromIter) {
+      return undefined;
+    }
+    return Iter.itemIter(this);
+  }
+
+  storeIter(fromIter?: boolean) {
+    if (fromIter) {
+      return undefined;
+    }
+    return Iter.storeIter(this);
   }
 }

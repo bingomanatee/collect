@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { comparatorFn, comparatorObj, DefEnum, FormEnum } from './types';
+import { comparatorObj, DefEnum, FormEnum } from './types';
 import { detectForm, detectType, e, isFn } from './utils/tests';
 import { clone } from './utils/change';
 import { StandinCollection } from './utils/StandinCollection';
+import { comparatorFn } from './types.methods';
 // import create from './create';
 
 // note - Collection is NOT compatible with the full collectionObj signature
@@ -17,17 +18,7 @@ export default abstract class Collection {
   abstract get keys(): number[];
   abstract get items(): any[];
 
-  constructor(store, comps?: comparatorObj) {
-    this._store = store;
-    if (comps?.compKeys) {
-      this._compKeys = comps?.compKeys;
-    }
-    if (comps?.compItems) {
-      this._compItems = comps?.compItems;
-    }
-  }
-
-  private _compKeys: comparatorFn = (a, b) => a === b;
+  protected _compKeys: comparatorFn = (a, b) => a === b;
 
   get compKeys(): comparatorFn {
     return this._compKeys;
@@ -40,7 +31,7 @@ export default abstract class Collection {
     this._compKeys = value;
   }
 
-  private _compItems: comparatorFn = (a, b) => a === b;
+  protected _compItems: comparatorFn = (a, b) => a === b;
 
   get compItems(): comparatorFn {
     return this._compItems;
