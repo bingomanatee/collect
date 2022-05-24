@@ -1,6 +1,6 @@
 import Collection from './Collection';
 import { makeEmpty } from './utils/change';
-import { Stopper, stopperEnum } from './utils/Stopper';
+import { Stopper } from './utils/Stopper';
 import { Match } from './utils/Match';
 import { filterAction, typesMethods, reduceAction } from './types.methods';
 import { collectionObj } from './types';
@@ -102,12 +102,16 @@ export default abstract class CompoundCollection extends Collection {
 
   forEach(loop: typesMethods) {
     const stopper = new Stopper();
-    for (const key in this.keys) {
-      loop(this.get(key), key, this.store, stopper);
-      if (stopper.isComplete) {
-        break;
+    const iter = this.storeIter();
+    if (iter) {
+      for (const [key, item] of iter) {
+        loop(item, key, this.store, stopper);
+        if (stopper.isComplete) {
+          break;
+        }
       }
     }
+
     return this;
   }
 
@@ -115,35 +119,40 @@ export default abstract class CompoundCollection extends Collection {
 
   map(loop: typesMethods) {
     const stopper = new Stopper();
-    const outCollection = this.clone().clear();
-    for (const key in this.keys) {
-      const keyValue = this.get(key);
-      const item = loop(keyValue, key, this.store, stopper);
-      if (stopper.state !== stopperEnum.stop) {
-        outCollection.set(key, item);
+    const iter = this.storeIter();
+    if (iter) {
+      const nextMap = new Map();
+      for (const [key, keyItem] of iter) {
+        const newItem = loop(keyItem, key, this.store, stopper);
+        if (stopper.isComplete) {
+          break;
+        }
+        nextMap.set(key, newItem);
+        if (stopper.isComplete) {
+          break;
+        }
       }
-      if (stopper.isComplete) {
-        return outCollection;
-      }
+      this._store = nextMap;
     }
-    return outCollection;
+    return this;
   }
 
   reduce(looper: reduceAction, initial?: any) {
-    const iter = new Stopper();
+    const stopper = new Stopper();
 
     let out = initial;
-    for (const key in this.keys) {
-      const next = looper(out, this.get(key), key, this.store, iter);
-      if (iter.isStopped) {
-        return out;
+    const iter = this.storeIter();
+    if (iter)
+      for (const [key, item] of iter) {
+        const next = looper(out, item, key, this.store, stopper);
+        if (stopper.isStopped) {
+          return out;
+        }
+        out = next;
+        if (stopper.isComplete) {
+          return next;
+        }
       }
-      out = next;
-      if (!iter.isActive) {
-        break;
-      }
-    }
-
     return out;
   }
 

@@ -1,8 +1,8 @@
 import { booleanMode, collectionObj, comparatorObj } from './types';
 import { IntIndexedCollection } from './IntIndexedCollection';
 import { Match } from './utils/Match';
-import { filterAction, typesMethods, orderingFn } from './types.methods';
-import { Iter } from './Iter';
+import { filterAction, orderingFn } from './types.methods';
+import { Stopper } from './utils/Stopper';
 
 export default class StringCollection extends IntIndexedCollection
   implements collectionObj<string, number, string> {
@@ -22,6 +22,10 @@ export default class StringCollection extends IntIndexedCollection
     return this.store.length;
   }
 
+  get items() {
+    return this.store.split('');
+  }
+
   hasItem(str) {
     if (str instanceof RegExp) {
       return str.test(this.store);
@@ -30,12 +34,10 @@ export default class StringCollection extends IntIndexedCollection
   }
 
   hasKey(i: number) {
-    if (i % 1) return false;
+    if (i % 1) {
+      return false;
+    }
     return i >= 0 && i < this.size;
-  }
-
-  get items() {
-    return this.store.split('');
   }
 
   keyOf(item: string) {
@@ -63,15 +65,16 @@ export default class StringCollection extends IntIndexedCollection
   }
 
   get(key: number) {
-    if (key < 0 || key > this.size) return undefined;
+    if (key < 0 || key > this.size) {
+      return undefined;
+    }
     return this.store.substring(key, key + 1);
   }
 
   deleteKey(key: number | Array<number>) {
     if (Array.isArray(key)) {
       return this.filter((_item, itemKey) => {
-        const use = !Match.sameKey(itemKey, key, this);
-        return use;
+        return !Match.sameKey(itemKey, key, this);
       });
     }
     return this.set(key, '');
@@ -170,13 +173,24 @@ export default class StringCollection extends IntIndexedCollection
     return this.union(other.store);
   }
 
-  map(action: typesMethods): collectionObj<string, number, string> {
-    const out = this.items;
-    this._store = out.reduce((memo, char, index, _value, stopper) => {
-      if (stopper.isComplete) return memo;
-      const suffix = action(char, index, this.store, stopper);
-      return stopper.isStopped ? memo : memo + suffix;
-    });
+  map(looper) {
+    const stopper = new Stopper();
+    const newStore: any[] = [];
+    const iter = this.storeIter();
+    if (iter) {
+      for (const [key, keyItem] of iter) {
+        const item = looper(keyItem, key, this._store, stopper);
+        if (stopper.isStopped) {
+          break;
+        }
+        newStore[key] = item;
+        if (stopper.isComplete) {
+          break;
+        }
+      }
+    }
+
+    this._store = newStore.join('');
     return this;
   }
 
@@ -195,10 +209,15 @@ export default class StringCollection extends IntIndexedCollection
 
   // endregion
 
-  storeIter(fromIter?: boolean): IterableIterator<any> | undefined {
-    if (fromIter) {
-      return this.items.entries()[Symbol.iterator]();
-    }
-    return Iter.storeIter(this);
+  storeIter() {
+    return this.items.entries();
+  }
+
+  keyIter() {
+    return this.keys[Symbol.iterator]();
+  }
+
+  itemIter() {
+    return this.items[Symbol.iterator]();
   }
 }

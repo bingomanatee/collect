@@ -41,7 +41,7 @@ export default class ArrayCollection extends IntIndexedCollection
     if (index === -1) {
       index = undefined;
     }
-    return item;
+    return index;
   }
 
   hasItem(item) {
@@ -74,24 +74,6 @@ export default class ArrayCollection extends IntIndexedCollection
     return new ArrayCollection([...this.store]);
   }
 
-  map(looper) {
-    const stopper = new Stopper();
-    const newStore: any[] = [];
-    const originalStore = [...this.store];
-    for (let i = 0; i < this.size; ++i) {
-      const item = looper(this.get(i), i, originalStore, stopper);
-      if (stopper.isStopped) {
-        break;
-      }
-      newStore[i] = item;
-      if (stopper.isComplete) {
-        break;
-      }
-    }
-    this._store = newStore;
-    return this;
-  }
-
   filter(filterTest) {
     const stopper = new Stopper();
     const newStore: any[] = [];
@@ -108,17 +90,5 @@ export default class ArrayCollection extends IntIndexedCollection
     }
     this._store = newStore;
     return this;
-  }
-
-  storeIter() {
-    return this._store.entries()[Symbol.iterator]();
-  }
-
-  keyIter() {
-    return this._store.keys();
-  }
-
-  itemIter() {
-    return this._store.values();
   }
 }

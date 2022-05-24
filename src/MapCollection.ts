@@ -1,8 +1,7 @@
 import CompoundCollection from './CompoundCollection';
 import { collectionObj, comparatorObj } from './types';
-import { Stopper } from './utils/Stopper';
 import { Match } from './utils/Match';
-import { orderingFn, reduceAction } from './types.methods';
+import { orderingFn } from './types.methods';
 
 export default class MapCollection extends CompoundCollection
   implements collectionObj<Map<any, any>, any, any> {
@@ -75,22 +74,6 @@ export default class MapCollection extends CompoundCollection
     return this;
   }
 
-  reduce(looper: reduceAction, initial?: any) {
-    const iter = new Stopper();
-
-    let out = initial;
-    const iterator = this.store[Symbol.iterator]();
-    for (const [key, item] of iterator) {
-      const next = looper(out, item, key, this.store, iter);
-      if (iter.isStopped) {
-        return out;
-      }
-      if (!iter.isActive) {
-        return next;
-      }
-      out = next;
-    }
-  }
   // iterators
 
   keyIter(): IterableIterator<any> | undefined {

@@ -1,7 +1,5 @@
 import Collection from './Collection';
-import { collectionObj } from './types';
 import { Stopper } from './utils/Stopper';
-import { Iter } from './Iter';
 import { typesMethods, reduceAction } from './types.methods';
 
 /**
@@ -32,27 +30,45 @@ export abstract class IntIndexedCollection extends Collection {
     return this;
   }
 
-  reduce(
-    action: reduceAction,
-    initial: any = ''
-  ): collectionObj<any, any, any> {
+  map(looper) {
     const stopper = new Stopper();
-
-    const originalValue = this.store;
-    const items = this.items;
-    let out = initial;
-    for (let i = 0; i < items.length; ++i) {
-      const nextOut = action(out, items[i], i, originalValue, stopper);
-      if (stopper.isStopped) {
-        break;
-      }
-      out = nextOut;
-      if (!stopper.isActive) {
-        break;
+    const newStore: any[] = [];
+    const iter = this.storeIter();
+    if (iter) {
+      for (const [key, keyItem] of iter) {
+        const item = looper(keyItem, key, this._store, stopper);
+        if (stopper.isStopped) {
+          break;
+        }
+        newStore[key] = item;
+        if (stopper.isComplete) {
+          break;
+        }
       }
     }
 
-    return out;
+    this._store = newStore;
+    return this;
+  }
+
+  reduce(looper: reduceAction, initial: any = ''): any {
+    const stopper = new Stopper();
+    const iter = this.storeIter();
+    if (iter) {
+      let out = initial;
+      for (const [key, keyItem] of iter) {
+        const next = looper(out, keyItem, key, this._store, stopper);
+        if (stopper.isStopped) {
+          break;
+        }
+        out = next;
+        if (stopper.isComplete) {
+          break;
+        }
+      }
+      return out;
+    }
+    return null;
   }
 
   reduceC(looper, start) {
@@ -60,33 +76,19 @@ export abstract class IntIndexedCollection extends Collection {
     return Collection.create(out);
   }
 
-  clone() {
-    throw new Error(
-      'IntIndexedCollection.clone is being called directly; child class must override'
-    );
-    // @ts-ignore
-    return new IntIndexedCollection(clone(this.store));
-  }
+  abstract clone();
+
   // iterators
 
-  keyIter(fromIter?: boolean): IterableIterator<any> | undefined {
-    if (fromIter) {
-      return undefined;
-    }
-    return Iter.keyIter(this);
+  storeIter() {
+    return this._store.entries();
   }
 
-  itemIter(fromIter?: boolean): IterableIterator<any> | undefined {
-    if (fromIter) {
-      return undefined;
-    }
-    return Iter.itemIter(this);
+  keyIter() {
+    return this._store.keys();
   }
 
-  storeIter(fromIter?: boolean) {
-    if (fromIter) {
-      return undefined;
-    }
-    return Iter.storeIter(this);
+  itemIter() {
+    return this._store.values();
   }
 }
