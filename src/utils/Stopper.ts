@@ -23,7 +23,7 @@ export class Stopper {
     return this.state === stopperEnum.last;
   }
 
-  final() {
+  stopAfterThis() {
     this.state = stopperEnum.last;
   }
 

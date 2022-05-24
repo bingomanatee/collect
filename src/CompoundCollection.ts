@@ -50,7 +50,7 @@ export default abstract class CompoundCollection extends Collection {
   get(key) {
     return this.reduce((found, item, itemKey, _store, stopper) => {
       if (Match.sameKey(itemKey, key, this)) {
-        stopper.final();
+        stopper.stopAfterThis();
         return item;
       }
       return found;
@@ -131,7 +131,7 @@ export default abstract class CompoundCollection extends Collection {
     let out = initial;
     const iter = new Stopper();
 
-    for (const key in this.keys) {
+    for (const key of this.keys) {
       const next = looper(out, this.get(key), key, this.store, iter);
       if (iter.isStopped) {
         return out;

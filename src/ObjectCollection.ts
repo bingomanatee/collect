@@ -18,11 +18,11 @@ export default class ObjectCollection extends CompoundCollection
   }
 
   get(key) {
-    return this[key];
+    return this.store[key];
   }
 
   set(key, item) {
-    this.store[key] = item;
+    this._store[key] = item;
     return this;
   }
 

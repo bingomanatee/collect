@@ -45,7 +45,7 @@ export abstract class IntIndexedCollection extends Collection {
         break;
       }
       out = nextOut;
-      if (!stopper.isActive) {
+      if (stopper.isComplete) {
         break;
       }
     }

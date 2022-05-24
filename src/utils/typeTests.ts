@@ -27,7 +27,6 @@ export const TESTS = [
   { name: FormEnum.scalar, test: () => true, isForm: true },
 ];
 
-console.log('TESTS:', TESTS);
 /**
  * allow custom form/type definitions by application developer;
  * @param name

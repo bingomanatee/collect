@@ -18,7 +18,7 @@ export default class MapCollection extends CompoundCollection
 
     return this.reduce((foundKey, mItem, mKey, _store, iter) => {
       if (Match.sameItem(mItem, item, this)) {
-        iter.final();
+        iter.stopAfterThis();
         return mKey;
       }
       return foundKey;
@@ -39,7 +39,7 @@ export default class MapCollection extends CompoundCollection
   hasItem(item) {
     return this.reduce((matches, mItem, _key, _store, iter) => {
       if (Match.sameItem(mItem, item, this)) {
-        iter.final();
+        iter.stopAfterThis();
         return true;
       }
       return matches;
@@ -75,5 +75,6 @@ export default class MapCollection extends CompoundCollection
       }
       out = next;
     }
+    return out;
   }
 }
