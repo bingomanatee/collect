@@ -5,7 +5,11 @@ describe('walkers', () => {
     describe('scalars', () => {
       it('should throw', () => {
         const sc = create(1);
-        expect(() => sc.reduce(() => {}, 3)).toThrow();
+        expect(() =>
+          sc.reduce((sum, value) => {
+            return sum + value;
+          }, 3)
+        ).toThrow();
       });
     });
 
