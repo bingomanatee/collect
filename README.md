@@ -9,20 +9,17 @@ Collect aims to make accessing collections easier by enforcing APIs to multiple 
 This is similar to the lodash _() object; however Lodash doesn't include Set and Map as collection bases, 
 and doesn't include introspection methods identifying the base collection type. 
 
-## Why did you do this?
+## Why does this exist?
 
-I was tired of using a bunch of "bridge" functions and detached systems to introspect, change and modify
-elements depending on the type of store I used. (I created a function called mapReduce 
-to apply "reduce" to a Map class -- not helping)
-
-I wanted to be able to interrupt forEach, reduce, map when I'd done what I wanted to. 
-
-I found "typeof" not granular enough
-
-I wanted to be able to tune checks like "has" to allow similar objects to be true, or to use an compound key in Map
-and have a similar array also match the key: 
-
-You can't do boolean operations on Sets! You'd think that was a fundamental thing. (boolean code to come)
+* There's a bunch of "bridge" functions and detached systems to introspect, change and modify\
+  elements depending on the type of store I used. (I created a function called mapReduce  \
+  to apply "reduce" to a Map class -- not helping). Most do not incorporate newer structures like Set and Map.
+* provide an interruptable version of forEach, reduce, map.
+* "typeof" not granular enough
+* checks like "has" are inconsistent and key-centric; Colletions have hasKey and hasItem for more specific coverage
+* Iterators are not complete or consistent across all store types
+* can't do boolean operations on Sets! You'd think that was a fundamental thing. (boolean code to come)
+* comparators for many of these operations are locked in compiler code resulting in some unsatisfactory results:
 
 ```javascript
 const twoDStore = new Map();

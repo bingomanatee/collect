@@ -31,8 +31,8 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "@wonderlandlabs/Collect",
-  "author": "davidedelhart",
+  "name": "@wonderlandlabs/collect",
+  "author": "David Edelhart",
   "module": "dist/collections.esm.js",
   "size-limit": [
     {
