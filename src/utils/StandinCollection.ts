@@ -1,13 +1,12 @@
+import { collectionObj, comparatorObj, DefEnum, FormEnum } from '../types';
+import { clone } from './change';
+import { Iter } from '../Iter';
 import {
-  collectionObj,
-  DefEnum,
   filterAction,
-  FormEnum,
-  loopAction,
+  typesMethods,
   orderingFn,
   reduceAction,
-} from '../types';
-import { clone } from './change';
+} from '../types.methods';
 
 export class StandinCollection implements collectionObj<any, any, any> {
   compItems = (a, b) => a === b;
@@ -15,8 +14,14 @@ export class StandinCollection implements collectionObj<any, any, any> {
   withComp(fn, {}) {
     return fn();
   }
-  constructor(store) {
+  constructor(store, comps?: comparatorObj) {
     this.store = store;
+    if (comps?.compKeys) {
+      this.compKeys = comps?.compKeys;
+    }
+    if (comps?.compItems) {
+      this.compItems = comps?.compItems;
+    }
   }
 
   clear(): collectionObj<any, any, any> {
@@ -25,6 +30,10 @@ export class StandinCollection implements collectionObj<any, any, any> {
 
   clone(): collectionObj<any, any, any> {
     return new StandinCollection(clone(this.store));
+  }
+
+  get c() {
+    return this.clone();
   }
 
   deleteKey(_key: any): collectionObj<any, any, any> {
@@ -39,7 +48,7 @@ export class StandinCollection implements collectionObj<any, any, any> {
     return this;
   }
 
-  forEach(_action: loopAction): collectionObj<any, any, any> {
+  forEach(_action: typesMethods): collectionObj<any, any, any> {
     return this;
   }
 
@@ -65,7 +74,7 @@ export class StandinCollection implements collectionObj<any, any, any> {
 
   keys: any[] = [];
 
-  map(_action: loopAction): collectionObj<any, any, any> {
+  map(_action: typesMethods): collectionObj<any, any, any> {
     return this;
   }
 
@@ -89,4 +98,27 @@ export class StandinCollection implements collectionObj<any, any, any> {
 
   store: any;
   type: DefEnum = FormEnum.object;
+
+  // iterators
+
+  keyIter(fromIter?: boolean): IterableIterator<any> | undefined {
+    if (fromIter) {
+      return this.keys[Symbol.iterator]();
+    }
+    return Iter.keyIter(this);
+  }
+
+  itemIter(fromIter?: boolean): IterableIterator<any> | undefined {
+    if (fromIter) {
+      return this.items[Symbol.iterator]();
+    }
+    return Iter.itemIter(this);
+  }
+
+  storeIter(fromIter?: boolean) {
+    if (fromIter) {
+      return this.store[Symbol.iterator]();
+    }
+    return Iter.storeIter(this);
+  }
 }

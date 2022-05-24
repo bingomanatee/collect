@@ -23,12 +23,18 @@ export class Stopper {
     return this.state === stopperEnum.last;
   }
 
-  stopAfterThis() {
+  // change methods
+
+  final() {
     this.state = stopperEnum.last;
   }
 
   stop() {
     // stop and DO NOT USE the last returned value
     this.state = stopperEnum.stop;
+  }
+
+  stopAfterThis() {
+    this.final();
   }
 }

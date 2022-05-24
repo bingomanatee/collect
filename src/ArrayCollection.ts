@@ -1,10 +1,22 @@
 import { IntIndexedCollection } from './IntIndexedCollection';
-import { collectionObj } from './types';
+import { collectionObj, comparatorObj } from './types';
 import { Stopper } from './utils/Stopper';
 import { Match } from './utils/Match';
 
 export default class ArrayCollection extends IntIndexedCollection
   implements collectionObj<any[], number, any> {
+  protected _store: any[];
+  constructor(store: any[], comps?: comparatorObj) {
+    super();
+    this._store = store;
+    if (comps?.compKeys) {
+      this._compKeys = comps?.compKeys;
+    }
+    if (comps?.compItems) {
+      this._compItems = comps?.compItems;
+    }
+  }
+
   get size() {
     return this.store.length;
   }
@@ -29,7 +41,7 @@ export default class ArrayCollection extends IntIndexedCollection
     if (index === -1) {
       index = undefined;
     }
-    return item;
+    return index;
   }
 
   hasItem(item) {
@@ -60,24 +72,6 @@ export default class ArrayCollection extends IntIndexedCollection
 
   clone() {
     return new ArrayCollection([...this.store]);
-  }
-
-  map(looper) {
-    const stopper = new Stopper();
-    const newStore: any[] = [];
-    const originalStore = [...this.store];
-    for (let i = 0; i < this.size; ++i) {
-      const item = looper(this.get(i), i, originalStore, stopper);
-      if (stopper.isStopped) {
-        break;
-      }
-      newStore[i] = item;
-      if (stopper.isComplete) {
-        break;
-      }
-    }
-    this._store = newStore;
-    return this;
   }
 
   filter(filterTest) {

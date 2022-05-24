@@ -1,8 +1,9 @@
 import Collection from './Collection';
-import { clone, makeEmpty } from './utils/change';
-import { filterAction, loopAction, reduceAction } from './types';
+import { makeEmpty } from './utils/change';
 import { Stopper } from './utils/Stopper';
 import { Match } from './utils/Match';
+import { filterAction, typesMethods, reduceAction } from './types.methods';
+import { collectionObj } from './types';
 
 /**
  * This is a baseline
@@ -50,11 +51,19 @@ export default abstract class CompoundCollection extends Collection {
   get(key) {
     return this.reduce((found, item, itemKey, _store, stopper) => {
       if (Match.sameKey(itemKey, key, this)) {
-        stopper.stopAfterThis();
+        stopper.final();
         return item;
       }
       return found;
     }, undefined);
+  }
+
+  keyOf(item): any | undefined {
+    const index = this.items.indexOf(item);
+    if (index === -1) {
+      return undefined;
+    }
+    return index;
   }
 
   deleteKey(key) {
@@ -91,63 +100,59 @@ export default abstract class CompoundCollection extends Collection {
     return this;
   }
 
-  forEach(loop: loopAction) {
+  forEach(loop: typesMethods) {
     const stopper = new Stopper();
-    for (const key in this.keys) {
-      loop(this.get(key), key, this.store, stopper);
-      if (stopper.isComplete) {
-        break;
-      }
-    }
-    return this;
-  }
-
-  clone() {
-    const obj = {};
-    // @ts-ignore
-    obj.__proto__ = this.prototype;
-    // @ts-ignore
-    const result = this.call(obj, clone(this.store));
-    return typeof result !== 'undefined' ? result : obj;
-  }
-
-  map(loop: loopAction) {
-    const stopper = new Stopper();
-    this._store = (() => {
-      const outCollection = this.c.clear();
-      for (const key of this.keys) {
-        const keyItem = this.get(key);
-        const item = loop(keyItem, key, this.store, stopper);
-        if (stopper.isStopped) {
-          break;
-        }
-
-        outCollection.set(key, item);
+    const iter = this.storeIter();
+    if (iter) {
+      for (const [key, item] of iter) {
+        loop(item, key, this.store, stopper);
         if (stopper.isComplete) {
           break;
         }
       }
+    }
 
-      return outCollection.store;
-    })();
+    return this;
+  }
+
+  abstract clone(): collectionObj<any, any, any>;
+
+  map(loop: typesMethods) {
+    const stopper = new Stopper();
+    const iter = this.storeIter();
+    if (iter) {
+      const nextMap = new Map();
+      for (const [key, keyItem] of iter) {
+        const newItem = loop(keyItem, key, this.store, stopper);
+        if (stopper.isComplete) {
+          break;
+        }
+        nextMap.set(key, newItem);
+        if (stopper.isComplete) {
+          break;
+        }
+      }
+      this._store = nextMap;
+    }
     return this;
   }
 
   reduce(looper: reduceAction, initial?: any) {
+    const stopper = new Stopper();
+
     let out = initial;
-    const iter = new Stopper();
-
-    for (const key of this.keys) {
-      const next = looper(out, this.get(key), key, this.store, iter);
-      if (iter.isStopped) {
-        return out;
+    const iter = this.storeIter();
+    if (iter)
+      for (const [key, item] of iter) {
+        const next = looper(out, item, key, this.store, stopper);
+        if (stopper.isStopped) {
+          return out;
+        }
+        out = next;
+        if (stopper.isComplete) {
+          return next;
+        }
       }
-      out = next;
-      if (!iter.isActive) {
-        break;
-      }
-    }
-
     return out;
   }
 
@@ -155,4 +160,12 @@ export default abstract class CompoundCollection extends Collection {
     const value = this.reduce(action, start);
     return Collection.create(value);
   }
+
+  // iterators
+
+  abstract keyIter(fromIter?: boolean): IterableIterator<any> | undefined;
+
+  abstract itemIter(fromIter?: boolean): IterableIterator<any> | undefined;
+
+  abstract storeIter(fromIter?: boolean): IterableIterator<any> | undefined;
 }

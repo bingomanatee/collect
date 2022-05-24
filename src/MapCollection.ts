@@ -1,10 +1,23 @@
 import CompoundCollection from './CompoundCollection';
-import { collectionObj, orderingFn, reduceAction } from './types';
-import { Stopper } from './utils/Stopper';
+import { collectionObj, comparatorObj } from './types';
 import { Match } from './utils/Match';
+import { orderingFn } from './types.methods';
 
 export default class MapCollection extends CompoundCollection
   implements collectionObj<Map<any, any>, any, any> {
+  protected _store: Map<any, any>;
+
+  constructor(store: Map<any, any>, comps?: comparatorObj) {
+    super();
+    this._store = store;
+    if (comps?.compKeys) {
+      this._compKeys = comps?.compKeys;
+    }
+    if (comps?.compItems) {
+      this._compItems = comps?.compItems;
+    }
+  }
+
   get keys() {
     return Array.from(this.store.keys());
   }
@@ -13,12 +26,16 @@ export default class MapCollection extends CompoundCollection
     return Array.from(this.store.values());
   }
 
+  clone() {
+    return new MapCollection(new Map(...this._store), this);
+  }
+
   keyOf(item: any): any {
     const key = undefined;
 
     return this.reduce((foundKey, mItem, mKey, _store, iter) => {
       if (Match.sameItem(mItem, item, this)) {
-        iter.stopAfterThis();
+        iter.final();
         return mKey;
       }
       return foundKey;
@@ -39,7 +56,7 @@ export default class MapCollection extends CompoundCollection
   hasItem(item) {
     return this.reduce((matches, mItem, _key, _store, iter) => {
       if (Match.sameItem(mItem, item, this)) {
-        iter.stopAfterThis();
+        iter.final();
         return true;
       }
       return matches;
@@ -57,24 +74,17 @@ export default class MapCollection extends CompoundCollection
     return this;
   }
 
-  reduce(looper: reduceAction, initial?: any) {
-    const iter = new Stopper();
+  // iterators
 
-    let out = initial;
+  keyIter(): IterableIterator<any> | undefined {
+    return this._store.keys();
+  }
 
-    const store = this.store;
+  itemIter(): IterableIterator<any> | undefined {
+    return this._store.values();
+  }
 
-    const iterator = store[Symbol.iterator]();
-    for (const [key, item] of iterator) {
-      const next = looper(out, item, key, store, iter);
-      if (iter.isStopped) {
-        return out;
-      }
-      if (!iter.isActive) {
-        return next;
-      }
-      out = next;
-    }
-    return out;
+  storeIter(): IterableIterator<any> | undefined {
+    return this._store.entries();
   }
 }

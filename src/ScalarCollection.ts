@@ -1,6 +1,19 @@
 import Collection from './Collection';
+import { comparatorObj } from './types';
 
 export default class ScalarCollection extends Collection {
+  protected _store: any;
+  constructor(store: any, comps?: comparatorObj) {
+    super();
+    this._store = store;
+    if (comps?.compKeys) {
+      this._compKeys = comps?.compKeys;
+    }
+    if (comps?.compItems) {
+      this._compItems = comps?.compItems;
+    }
+  }
+
   get size() {
     return 0;
   }

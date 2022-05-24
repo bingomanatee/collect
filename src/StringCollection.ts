@@ -1,18 +1,29 @@
-import {
-  booleanMode,
-  collectionObj,
-  filterAction,
-  loopAction,
-  orderingFn,
-} from './types';
+import { booleanMode, collectionObj, comparatorObj } from './types';
 import { IntIndexedCollection } from './IntIndexedCollection';
 import { Match } from './utils/Match';
+import { filterAction, orderingFn } from './types.methods';
+import { Stopper } from './utils/Stopper';
 
 export default class StringCollection extends IntIndexedCollection
   implements collectionObj<string, number, string> {
+  constructor(store: string, comps?: comparatorObj) {
+    super();
+    this._store = store;
+    if (comps?.compKeys) {
+      this._compKeys = comps?.compKeys;
+    }
+    if (comps?.compItems) {
+      this._compItems = comps?.compItems;
+    }
+  }
+
   // region inspection
   get size() {
     return this.store.length;
+  }
+
+  get items() {
+    return this.store.split('');
   }
 
   hasItem(str) {
@@ -23,12 +34,10 @@ export default class StringCollection extends IntIndexedCollection
   }
 
   hasKey(i: number) {
-    if (i % 1) return false;
+    if (i % 1) {
+      return false;
+    }
     return i >= 0 && i < this.size;
-  }
-
-  get items() {
-    return this.store.split('');
   }
 
   keyOf(item: string) {
@@ -56,15 +65,16 @@ export default class StringCollection extends IntIndexedCollection
   }
 
   get(key: number) {
-    if (key < 0 || key > this.size) return undefined;
+    if (key < 0 || key > this.size) {
+      return undefined;
+    }
     return this.store.substring(key, key + 1);
   }
 
   deleteKey(key: number | Array<number>) {
     if (Array.isArray(key)) {
       return this.filter((_item, itemKey) => {
-        const use = !Match.sameKey(itemKey, key, this);
-        return use;
+        return !Match.sameKey(itemKey, key, this);
       });
     }
     return this.set(key, '');
@@ -93,13 +103,11 @@ export default class StringCollection extends IntIndexedCollection
   }
 
   reverse(): collectionObj<string, number, string> {
-    const chars = this.store.split('');
-    return new StringCollection(chars.reverse().join(''));
+    return new StringCollection(this.items.reverse().join(''));
   }
 
   sort(sorter?: orderingFn): collectionObj<string, number, string> {
-    const chars = this.store.split('');
-    return new StringCollection(chars.sort(sorter).join(''));
+    return new StringCollection(this.items.sort(sorter).join(''));
   }
 
   // endregion
@@ -165,13 +173,24 @@ export default class StringCollection extends IntIndexedCollection
     return this.union(other.store);
   }
 
-  map(action: loopAction): collectionObj<string, number, string> {
-    const out = this.items;
-    this._store = out.reduce((memo, char, index, _value, stopper) => {
-      if (stopper.isComplete) return memo;
-      const suffix = action(char, index, this.store, stopper);
-      return stopper.isStopped ? memo : memo + suffix;
-    });
+  map(looper) {
+    const stopper = new Stopper();
+    const newStore: any[] = [];
+    const iter = this.storeIter();
+    if (iter) {
+      for (const [key, keyItem] of iter) {
+        const item = looper(keyItem, key, this._store, stopper);
+        if (stopper.isStopped) {
+          break;
+        }
+        newStore[key] = item;
+        if (stopper.isComplete) {
+          break;
+        }
+      }
+    }
+
+    this._store = newStore.join('');
     return this;
   }
 
@@ -182,12 +201,23 @@ export default class StringCollection extends IntIndexedCollection
       return this.intersection(other.split(''));
     }
     if (Array.isArray(other)) {
-      const chars = [...this.store.split('')];
-      const unique: string[] = chars.filter(char => other.includes(char));
+      const unique: string[] = this.items.filter(char => other.includes(char));
       return new StringCollection(unique.join(''));
     }
     return this.intersection(other.items);
   }
 
   // endregion
+
+  storeIter() {
+    return this.items.entries();
+  }
+
+  keyIter() {
+    return this.keys[Symbol.iterator]();
+  }
+
+  itemIter() {
+    return this.items[Symbol.iterator]();
+  }
 }

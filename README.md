@@ -9,20 +9,17 @@ Collect aims to make accessing collections easier by enforcing APIs to multiple 
 This is similar to the lodash _() object; however Lodash doesn't include Set and Map as collection bases, 
 and doesn't include introspection methods identifying the base collection type. 
 
-## Why did you do this?
+## Why does this exist?
 
-I was tired of using a bunch of "bridge" functions and detached systems to introspect, change and modify
-elements depending on the type of store I used. (I created a function called mapReduce 
-to apply "reduce" to a Map class -- not helping)
-
-I wanted to be able to interrupt forEach, reduce, map when I'd done what I wanted to. 
-
-I found "typeof" not granular enough
-
-I wanted to be able to tune checks like "has" to allow similar objects to be true, or to use an compound key in Map
-and have a similar array also match the key: 
-
-You can't do boolean operations on Sets! You'd think that was a fundamental thing. (boolean code to come)
+* There's a bunch of "bridge" functions and detached systems to introspect, change and modify\
+  elements depending on the type of store I used. (I created a function called mapReduce  \
+  to apply "reduce" to a Map class -- not helping). Most do not incorporate newer structures like Set and Map.
+* provide an interruptable version of forEach, reduce, map.
+* "typeof" not granular enough
+* checks like "has" are inconsistent and key-centric; Colletions have hasKey and hasItem for more specific coverage
+* Iterators are not complete or consistent across all store types
+* can't do boolean operations on Sets! You'd think that was a fundamental thing. (boolean code to come)
+* comparators for many of these operations are locked in compiler code resulting in some unsatisfactory results:
 
 ```javascript
 const twoDStore = new Map();
@@ -122,20 +119,22 @@ be added on the fly, inherited, or even (with proxies) dynamic.
 ```javascript
 /*
 
-Store Type  Ordered    Keyed         Item inclusion Test    Key inclusion test       
-
-Set          no           no          yes                    (N/A)                    "its a pocket of things"
-Map          yes(1)       any         no                     yes                      "its a free association of stuff with stuff"
-Array        yes          posints     yes                    no(2)                    "its a rolodex of cards"
-Object       no           strings     no                     yes                      "its a dictionry of words (and words my dad knows)"
-String       yes          yes         yes                    no(3)                     "its a list of letters"
+Store        Ordered      Keyed       Item            Key
+Type                                  inclusion Test  inclusion test 
+------------------------------------------------------------------------------------------------------------
+_Set         no           no          yes            (N/A)             "its a pocket of things"
+Array        yes          posints     yes            no(2)             "its a rolodex of cards"
+String       yes          yes         yes_           no(3)              "its a list of letters"
+Object       no           strings     no             yes               "its a dictionry of words (and words my dad knows)"
+Map          yes(1)       any(3)      no             yes               "its a free association of stuff with stuff"
 
  */
 ```
-1. items' keys in a map are ordered in the same order they came in, but its really not a design feature of a map \
-   nor a quality of a set theory map
+1. items' keys in a map are ordered in the same order they came in, but this is really not a design feature of a map \
+   nor a quality of a set theory map.
 2. you can _indirectly_ test for keys with length knowing all arrays start with zero.
-   But you aren't guaranteed that there is a thing in a given index til you get it
+   But you aren't guaranteed that there is a thing in a given index til you get it.
+3. The Javascript Map can hold anything; Collection Maps cannot have **arrays** as keys. 
 
 it's also worth noting - collections are _one-dimensional_ - you have a single index, even if the index of a map can be compound. 
 By contrast a database can create compound indexes, made of two or more items. 
@@ -179,10 +178,11 @@ The Collection API is a collection of several groups of methods or properties. T
 
 **key**
 
-Depending on your store, your key choices may be limited to strings or numbers; arrays require numeric
-keys, where objects require string keys. Maps can take virtually anything as a key: symbols, objects, etc. 
-however in this module **DO NOT USE ARRAYS AS KEYS**. This can confuse methods like delete which will break apart
-arrays passed in the keys field and treat the array contents as individual keys. 
+Depending on your store, your keys may be limited to being strings or numbers; arrays require numeric
+keys, where objects require string keys. 
+Maps can take virtually anything as a key: symbols, objects, etc. 
+However in collections **DO NOT USE ARRAYS AS KEYS**. This can confuse methods like delete which will break apart arrays 
+passed in the keys field and treat the array contents as individual keys. 
 
 ### Targeting/store reference, return value
 
@@ -199,7 +199,8 @@ Any method that does not return a needed value (eg, get, ) returns undefined.
 
 ### Reflection
 
-**reflection** properties express the keys/items in discrete collections or identify the type or form
+### (type)
+These Properties express the keys/items in discrete collections or identify the type or form
 of the store. They are all informational - none of these methods alter the store or its content at all.
 
 * **store**: the actual physical artifact in which the keys and items are stored. 
@@ -207,7 +208,17 @@ of the store. They are all informational - none of these methods alter the store
 * **type**: a more specific version of form, including more categories for scalar vales. 
 * **size**: (number) a count of the stores' items
 
-**reflection (item/key)**
+**Form** is a more constrained identifier for the basic class of the store; it includes 'map', 'store', etc.,
+but does _not discriminate between different classes of scalar values; i.e., numbers, strings, Dates, and
+Symbols are all considered 'scalar'.
+
+**Type** on the other hand includes a detailed subset of different scalar types -- as well as all the identifiers
+present in Form.
+
+type and form identifications are **not** identical to `typeof` identifiers; it's much more specific about 'object' for instance -
+it qualifies object types into 'array', 'set', 'map', 'object' and 'null'.
+
+#### reflection (item/key)
 
 * **hasItem(item)**: (boolean) indicates whether an item is present in the collection
 * **hasKey**: (boolean) indicates the presence of a key in the store. 
@@ -216,6 +227,19 @@ of the store. They are all informational - none of these methods alter the store
 * **items**: any[] a list of the items in the collection
 * **keyOf(item)**: (key | undefined) the key under which an item is stored; undefined if the collectioon doesn't have the item
 * **get(key)**: (item | undefined) retrieves the item stored at the provided key. 
+
+note that keys and items are _arrays_ of values, that you can mess with in any way you want, sort, map, whatever. 
+If you want to traverse the values, see Iterators below. 
+
+### Cloning
+
+cloning produces a new collection - identical to this one; it clones not only the Collection instance, but the store.
+The store is _shallow cloned_ -- meaning for instance, if you have an object in the target collection, the cloned collection
+will have a _different_ array that contains the _exact same_ object - by reference. If you want to break object references,
+use `myArrayCollection.c.map((item) => ({...itemn})` which will deconstruct and break references to each object in the collection. 
+
+* **clone()**: (new collection) returns a new Collection instance with a **cloned copy of the store** in the target collection,
+* **c**: a property identical to clone(); but terser in chains. 
 
 ### Changes 
 
@@ -236,17 +260,22 @@ Iteration "walks over" the items in the array. Unlike `forEach` methods, iterati
 The final argument in the looping function is an Stopper instance; you can call `stopper.stop()` or `stopper.final()` to
 interrupt the looping at any point. 
 
-the difference between stop() and final() calls is important: If you call `stop()`, 
-the _current return value of the looper is not used._ If you call `final()`, the current
-return value of the looper function **is used** -- but **no other additional loops will occur**.
+the difference between `stop()` and `final()` calls is important: 
+* If you call `stop()`, the _current return value of the looper is not used._ 
+* If you call `stopAfterThis()`, the current return value of the looper function **is used** -- but **no other additional loops will occur**.\
+  A synonym for `stopAfterThis()` is `final()`.
+
+Think of iteration like a "bookmark" where `.keys` is like photocopying the page number of each page of a book and putting it in a stack. 
 
 In several cases the store itself is an argument to the looper. It is provided _for informational purposes only._
 Do not modify the store from the inside of the looping function.
 
+#### Looper methods
+All these methods have the (almost) same interface and behavior -- they go over each key?item pair until you stop the flow, or reach the end. 
+
 * **forEach((item, key, store, stopper) => {... custom content} => void)**: (self) allows you to walk across \
   all the keys and values of the store. `forEach` is for extraction of data - it's not a good idea to modify \
   the store or collection inside a forEach pass. The return value of the looping function is ignored. 
-* **clone()** (new collection) returns a new Collection instance with a **cloned copy of the store** in the target collection, 
 * **map((looper: item, key, store, stopper) => newItem)**: (self) modifies the keys in the store to have new values. the keys stay the same(1) \
   but you will have whatever items the looper returns assigned to those keys.
 * **filter(tester: (item, key, store, stopper) => boolean)**: (self) removes all keys and values for which the tester function returns falsy. \
@@ -258,25 +287,28 @@ There is no guarantee that the result of reduce will be a compound type, which i
 use that function only if you know for sure that the reducer produces an iterable item -- or, if you want to use the type/form properties
 for introspection. 
 
+#### Iterator hooks
+
+This is another shim; not all store types have
+[iterators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators)... 
+so we force them to here.
+
+The point of iterators is that unlike the `.keys` and `.values` properties which collect ALL the keys/values, 
+iterators are just reference pointers that crawl along, getting another value one at a time until the end. 
+
+This takes less memory, as you don't have to have array(s) of values manufactured each time you execute a routine. 
+And if you interrupt the process mid way through, you don't waste time collecting values you don't need.
+
+* **keyIter()**: (Iterator) an iterator over the keys. 
+* **itemIter()**: (Iterator) an iterator over the items.
+* **storeIter()**: (Iterator) an iterator over the store. 
 ------
 (1) If you call stopper, any keys after that loop will be removed. 
 
 ### (@TODO) Boolean functions
 
 These methods will blend two collections and produce a third collection, using classical set theory/boolean
-methods. 
-
-## Store types: form and type
-
-**Form** is a more constrained identifier for the basic class of the store; it includes 'map', 'store', etc., 
-but does _not discriminate between different classes of scalar values; i.e., numbers, strings, Dates, and
-Symbols are all considered 'scalar'. 
-
-**Type** on the other hand includes a detailed subset of different scalar types -- as well as all the identifiers 
-present in Form. 
-
-type and form identifications are **not** identical to `typeof` identifiers; it's much more specific about 'object' for istance - 
-it qualifies object types into 'array', 'set', 'map', 'object' and 'null'. 
+methods.
 
 ## Comparators
 
