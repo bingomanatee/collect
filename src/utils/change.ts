@@ -1,30 +1,8 @@
 import { ABSENT, DefEnum, FormEnum, TypeEnum } from '../types';
 import { detectForm, detectType, isThere } from './tests';
+import cloneDeep from 'lodash/clonedeep';
 
-export function clone(value, type?: DefEnum) {
-  if (!isThere(type)) {
-    type = detectType(value);
-  }
-  let out = value;
-  switch (type) {
-    case FormEnum.map:
-      out = new Map(value);
-      break;
-
-    case FormEnum.object:
-      out = { ...value };
-      break;
-
-    case FormEnum.array:
-      out = [...value];
-      break;
-
-    case TypeEnum.date:
-      out = new Date(value);
-      break;
-  }
-  return out;
-}
+export const clone = cloneDeep;
 
 export function makeEmpty(likeThis, type?: DefEnum) {
   if (!isThere(type)) {

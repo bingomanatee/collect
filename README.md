@@ -191,6 +191,9 @@ If yuu want to retain a reference to the old version, call `.clone()` on the col
 of the collection(based on clone of the store) before calling your operation. For convenience, there is a '.c' 
 property that is an alias to clone. 
 
+Cloning the _collection_ also clones the _collection store_ using [`lodash.cloneDeep()`](https://lodash.com/docs/4.17.15#cloneDeep). 
+This breaks all references in the store and its contents recursively. 
+
 The `reduce` method is kind of an outlier in that its return type is often not limited to compound values, so it returns 
 a value. If you know for a fact that your reduce method *is* returning a compound, call `.reduceC'`, 
 which calls reduce and puts its output into a new collection in a single call. 

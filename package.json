@@ -45,15 +45,17 @@
       "limit": "10 KB"
     }
   ],
+  "dependencies": {
+    "@types/lodash-es": "^4.17.6",
+    "lodash-es": "^4.17.21"
+  },
   "devDependencies": {
     "@size-limit/preset-small-lib": "^7.0.8",
     "husky": "7.0.1",
     "size-limit": "^7.0.8",
     "tsdx": "^0.14.1",
     "tslib": "^2.4.0",
-    "typescript": "^4.6.4",
-    "@types/lodash-es": "^4.17.6",
-    "lodash-es": "^4.17.21"
+    "typescript": "^4.6.4"
   },
   "homepage": "https://collect-docs.vercel.app",
   "repository": "github:bingomanatee/colect"
