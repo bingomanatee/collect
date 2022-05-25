@@ -129,7 +129,7 @@ export default abstract class CompoundCollection extends Collection {
     const stopper = new Stopper();
     const iter = this.storeIter();
     if (iter) {
-      const nextMapCollection = this.c.clear();
+      const nextMapCollection = this.clone({ quiet: true }).clear();
 
       for (const [key, keyItem] of iter) {
         const newItem = loop(keyItem, key, this.store, stopper);
@@ -141,7 +141,7 @@ export default abstract class CompoundCollection extends Collection {
           break;
         }
       }
-      this._store = nextMapCollection.store;
+      this.update(nextMapCollection.store, 'map', loop);
     }
     return this;
   }

@@ -1,5 +1,5 @@
 import { Stopper } from './utils/Stopper';
-import { keyType } from './types';
+import { collectionObj, keyType } from './types';
 
 export type typesMethods = (
   item: any,
@@ -21,5 +21,9 @@ export type filterAction = (
   iter: Stopper
 ) => boolean;
 export type combinerFn = any; // a generator function
-export type orderingFn = (item1: any, item2: any) => number;
+export type orderingFn = (
+  item1: any,
+  item2: any,
+  coll?: collectionObj<any, any, any>
+) => number;
 export type comparatorFn = (k1, k2) => boolean;

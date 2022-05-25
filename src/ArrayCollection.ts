@@ -27,7 +27,7 @@ export default class ArrayCollection extends IntIndexedCollection
   set(key: number, item) {
     const next = [...this.store];
     next[key] = item;
-    this._store = next;
+    this.update(next, 'set', key, item);
     return this;
   }
 

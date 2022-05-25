@@ -10,6 +10,7 @@ export default class MapCollection extends CompoundCollection
 
   constructor(store: Map<any, any>, options?: optionsObj) {
     super(store, options);
+    this.update(store, 'constructor', options);
     this._store = store;
   }
 
@@ -46,12 +47,13 @@ export default class MapCollection extends CompoundCollection
 
   sort(sorter?: orderingFn): collectionObj<Map<any, any>, any, any> {
     const map = new Map();
-    const sortedKeys = Array.from(this.keys).sort(sorter);
+    const compare = sorter ? (a, b) => sorter(a, b, this) : undefined;
+    const sortedKeys = Array.from(this.keys).sort(compare);
     for (let i = 0; i < sortedKeys.length; i++) {
       const key = sortedKeys[i];
       map.set(key, this.store.get(key));
     }
-    this._store = map;
+    this.update(map, 'sort', sorter);
     return this;
   }
 
@@ -72,7 +74,7 @@ export default class MapCollection extends CompoundCollection
         map.delete(storeKey);
       }
     }
-    this._store = map;
+    this.update(map, 'delete', key);
     return this;
   }
 

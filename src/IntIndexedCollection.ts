@@ -47,7 +47,7 @@ export abstract class IntIndexedCollection extends Collection {
       }
     }
 
-    this._store = newStore;
+    this.update(newStore, 'map', looper);
     return this;
   }
 
