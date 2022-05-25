@@ -8,7 +8,8 @@ export default class ArrayCollection extends IntIndexedCollection
   protected _store: any[];
   constructor(store: any[], options?: optionsObj) {
     super(store, options);
-    this._store = store;
+    this.update(store, 'constructor');
+    this._store = store; // because typescript is a weak chump
   }
 
   get size() {
@@ -43,7 +44,7 @@ export default class ArrayCollection extends IntIndexedCollection
   }
 
   clear() {
-    this._store = [];
+    this.update([], 'clear');
     return this;
   }
 
@@ -60,7 +61,7 @@ export default class ArrayCollection extends IntIndexedCollection
   }
 
   sort(sortFn) {
-    this._store = this.store.sort(sortFn);
+    this.update(this.store.sort(sortFn), 'sort', sortFn);
     return this;
   }
 
@@ -82,7 +83,7 @@ export default class ArrayCollection extends IntIndexedCollection
         break;
       }
     }
-    this._store = newStore;
+    this.update(newStore, 'filter', filterTest);
     return this;
   }
 }

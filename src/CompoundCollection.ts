@@ -1,5 +1,4 @@
 import Collection from './Collection';
-import { makeEmpty } from './utils/change';
 import { Stopper } from './utils/Stopper';
 import { Match } from './utils/Match';
 import { filterAction, typesMethods, reduceAction } from './types.methods';
@@ -86,22 +85,26 @@ export default abstract class CompoundCollection extends Collection {
   }
 
   filter(test: filterAction) {
-    const tempC = Collection.create(makeEmpty(this.store, this.type));
+    const tempC = this.clone({ quiet: true }).clear();
+
     const stopper = new Stopper();
-    for (const key of this.keys) {
-      const item = this.get(key);
-      const use = test(item, key, this.store, stopper);
-      if (stopper.isStopped) {
-        break;
-      }
-      if (use) {
-        tempC.set(key, item);
-      }
-      if (stopper.isLast) {
-        break;
+
+    const iter = this.storeIter();
+    if (iter) {
+      for (const [key, item] of iter) {
+        const use = test(item, key, this.store, stopper);
+        if (stopper.isStopped) {
+          break;
+        }
+        if (use) {
+          tempC.set(key, item);
+        }
+        if (stopper.isLast) {
+          break;
+        }
       }
     }
-    this._store = tempC.store;
+    this.update(tempC.store, 'filter', test);
     return this;
   }
 

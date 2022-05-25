@@ -19,6 +19,19 @@ export default abstract class Collection {
     this.quiet = !!options?.quiet;
   }
 
+  public onChange?: (newStore: any, source: string, input?: any[]) => any;
+
+  protected update(newStore, source?: string, ...input) {
+    try {
+      if (!this.quiet && this.onChange && source) {
+        this.onChange(newStore, source, input);
+      }
+    } catch (err) {
+      console.warn('update: onChange error', err);
+    }
+    this._store = newStore;
+  }
+
   get store(): any {
     return this._store;
   }
