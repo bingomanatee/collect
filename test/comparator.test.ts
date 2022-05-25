@@ -1,5 +1,5 @@
 import create from '../src';
-import toString from 'lodash/tostring';
+import _ from 'lodash';
 
 describe('comparator', () => {
   xit('compares by reference by default', () => {
@@ -49,12 +49,12 @@ describe('comparator', () => {
         try {
           item1 = JSON.stringify(item1);
         } catch (_e) {
-          item1 = toString(item1);
+          item1 = _.toString(item1);
         }
         try {
           item2 = JSON.stringify(item2);
         } catch (_e2) {
-          item2 = toString(item2);
+          item2 = _.toString(item2);
         }
         console.log('comparing', item1, 'and', item2);
         return item1 === item2;
