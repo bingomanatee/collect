@@ -73,6 +73,12 @@ export type collectionBaseIterProvider<
   collectionBaseObj<StoreType, KeyType, ItemType> &
   optionsObj;
 
+export type changeObserver = (
+  pendingStore: any,
+  action: string,
+  opts?: any
+) => any;
+
 export type collectionObj<StoreType, KeyType, ItemType> = {
   // Reflection
   hasItem: (item: ItemType) => boolean;
@@ -107,6 +113,9 @@ export type collectionObj<StoreType, KeyType, ItemType> = {
   reduce: (action: reduceAction, initial: any) => any; // an arbitrary value, computed by looping over the store
   reduceC: (action: reduceAction, initial: any) => collectionObj<any, any, any>; // a new collection for the output of reduce
   // note : the new collection may not be the same type as the start collection
+
+  // observation
+  onChange?: changeObserver;
 } & collectionBaseIterProvider<StoreType, KeyType, ItemType>;
 
 /*
