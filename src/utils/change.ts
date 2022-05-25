@@ -1,6 +1,6 @@
 import { ABSENT, DefEnum, FormEnum, TypeEnum } from '../types';
 import { detectForm, detectType, isThere } from './tests';
-import cloneDeep from 'lodash/clonedeep';
+import cloneDeep from 'lodash.clonedeep';
 
 export const clone = cloneDeep;
 

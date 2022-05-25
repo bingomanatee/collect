@@ -46,12 +46,10 @@
     }
   ],
   "dependencies": {
-    "@types/lodash-es": "^4.17.6",
-    "lodash-es": "^4.17.21"
+    "lodash.clonedeep": "^4.5.0"
   },
   "devDependencies": {
     "@size-limit/preset-small-lib": "^7.0.8",
-    "@types/lodash-es": "^4.17.6",
     "husky": "7.0.1",
     "lodash-es": "^4.17.21",
     "size-limit": "^7.0.8",
