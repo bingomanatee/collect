@@ -28,10 +28,15 @@ export default abstract class CompoundCollection extends Collection {
   }
 
   hasKey(key: any) {
-    if (this.store.has(key)) return true;
-    for (const storeKey of this.keys) {
-      if (Match.sameKey(storeKey, key, this)) {
-        return true;
+    if (this.store.has(key)) {
+      return true;
+    }
+    const iter = this.keyIter();
+    if (iter) {
+      for (const storeKey of iter) {
+        if (Match.sameKey(storeKey, key, this)) {
+          return true;
+        }
       }
     }
     return false;
@@ -143,7 +148,7 @@ export default abstract class CompoundCollection extends Collection {
 
     let out = initial;
     const iter = this.storeIter();
-    if (iter)
+    if (iter) {
       for (const [key, item] of iter) {
         const next = looper(out, item, key, this.store, stopper);
         if (stopper.isStopped) {
@@ -154,6 +159,7 @@ export default abstract class CompoundCollection extends Collection {
           return next;
         }
       }
+    }
     return out;
   }
 

@@ -18,6 +18,13 @@ export default class MapCollection extends CompoundCollection
     }
   }
 
+  get(key) {
+    if (this._store.has(key)) {
+      return this._store.get(key);
+    }
+    return super.get(key);
+  }
+
   get keys() {
     return Array.from(this.store.keys());
   }
