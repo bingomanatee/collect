@@ -1,5 +1,5 @@
 import { detectType } from './utils/tests';
-import { comparatorObj, FormEnum, TypeEnum } from './types';
+import { optionsObj, FormEnum, TypeEnum } from './types';
 import MapCollection from './MapCollection';
 import ScalarCollection from './ScalarCollection';
 import StringCollection from './StringCollection';
@@ -7,7 +7,7 @@ import ArrayCollection from './ArrayCollection';
 import ObjectCollection from './ObjectCollection';
 import { Debug } from './utils/debug';
 
-export default (store, comp: comparatorObj = {}) => {
+export default (store, comp: optionsObj = {}) => {
   if (Debug.create) console.log('-- creating store for ', store);
   let out;
   switch (detectType(store)) {

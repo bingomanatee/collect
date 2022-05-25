@@ -64,13 +64,14 @@ export type collectionIterProvider<StoreType, KeyType, ItemType> = {
   clone: () => collectionObj<StoreType, KeyType, ItemType>; // new collection with cloned item
 };
 
+export type optionsObj = { quiet?: boolean } & comparatorObj;
 export type collectionBaseIterProvider<
   StoreType,
   KeyType,
   ItemType
 > = collectionIterProvider<StoreType, KeyType, ItemType> &
   collectionBaseObj<StoreType, KeyType, ItemType> &
-  comparatorObj;
+  optionsObj;
 
 export type collectionObj<StoreType, KeyType, ItemType> = {
   // Reflection
@@ -80,7 +81,7 @@ export type collectionObj<StoreType, KeyType, ItemType> = {
   // an item may be associated with more than one key -- this is the first one.
   get: (key: KeyType) => any;
   // comparison
-  withComp: (action: () => any, config: comparatorObj) => any; // performs operations with the given comparators operating, then returns current ones.
+  withComp: (action: () => any, config: optionsObj) => any; // performs operations with the given comparators operating, then returns current ones.
 
   // changes
   set: (

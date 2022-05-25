@@ -1,4 +1,4 @@
-import { booleanMode, collectionObj, comparatorObj } from './types';
+import { booleanMode, collectionObj, optionsObj } from './types';
 import { IntIndexedCollection } from './IntIndexedCollection';
 import { Match } from './utils/Match';
 import { filterAction, orderingFn } from './types.methods';
@@ -6,15 +6,9 @@ import { Stopper } from './utils/Stopper';
 
 export default class StringCollection extends IntIndexedCollection
   implements collectionObj<string, number, string> {
-  constructor(store: string, comps?: comparatorObj) {
-    super();
+  constructor(store: string, options?: optionsObj) {
+    super(store, options);
     this._store = store;
-    if (comps?.compKeys) {
-      this._compKeys = comps?.compKeys;
-    }
-    if (comps?.compItems) {
-      this._compItems = comps?.compItems;
-    }
   }
 
   // region inspection

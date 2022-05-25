@@ -1,10 +1,10 @@
-import { comparatorObj } from '../types';
+import { optionsObj } from '../types';
 
 export abstract class Match {
   static sameKey(
     key: any,
     k2: any,
-    context: comparatorObj,
+    context: optionsObj,
     many = true, // individually compare keys if arrays
     debug = false
   ) {
@@ -45,7 +45,7 @@ export abstract class Match {
     return context.compKeys(key, k2);
   }
 
-  static sameItem(item: any, i2: any, context: comparatorObj, many = true) {
+  static sameItem(item: any, i2: any, context: optionsObj, many = true) {
     if (!context?.compItems) {
       return item === i2;
     }

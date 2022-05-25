@@ -1,4 +1,4 @@
-import { collectionObj, comparatorObj, DefEnum, FormEnum } from '../types';
+import { collectionObj, optionsObj, DefEnum, FormEnum } from '../types';
 import { clone } from './change';
 import { Iter } from '../Iter';
 import {
@@ -14,13 +14,13 @@ export class StandinCollection implements collectionObj<any, any, any> {
   withComp(fn, {}) {
     return fn();
   }
-  constructor(store, comps?: comparatorObj) {
+  constructor(store, options?: optionsObj) {
     this.store = store;
-    if (comps?.compKeys) {
-      this.compKeys = comps?.compKeys;
+    if (options?.compKeys) {
+      this.compKeys = options?.compKeys;
     }
-    if (comps?.compItems) {
-      this.compItems = comps?.compItems;
+    if (options?.compItems) {
+      this.compItems = options?.compItems;
     }
   }
 

@@ -1,5 +1,5 @@
 import CompoundCollection from './CompoundCollection';
-import { collectionObj, comparatorObj } from './types';
+import { collectionObj, optionsObj } from './types';
 import { Match } from './utils/Match';
 import { orderingFn } from './types.methods';
 
@@ -7,15 +7,9 @@ export default class MapCollection extends CompoundCollection
   implements collectionObj<Map<any, any>, any, any> {
   protected _store: Map<any, any>;
 
-  constructor(store: Map<any, any>, comps?: comparatorObj) {
-    super();
+  constructor(store: Map<any, any>, options?: optionsObj) {
+    super(store, options);
     this._store = store;
-    if (comps?.compKeys) {
-      this._compKeys = comps?.compKeys;
-    }
-    if (comps?.compItems) {
-      this._compItems = comps?.compItems;
-    }
   }
 
   get(key) {

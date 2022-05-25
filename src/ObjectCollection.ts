@@ -1,5 +1,5 @@
 import CompoundCollection from './CompoundCollection';
-import { collectionObj, comparatorObj } from './types';
+import { collectionObj, optionsObj } from './types';
 import { Match } from './utils/Match';
 
 type obj = { [key: string]: any };
@@ -7,15 +7,9 @@ export default class ObjectCollection extends CompoundCollection
   implements collectionObj<obj, string, any> {
   protected _store: object;
 
-  constructor(store: object, comps?: comparatorObj) {
-    super();
+  constructor(store: object, options?: optionsObj) {
+    super(store, options);
     this._store = store;
-    if (comps?.compKeys) {
-      this._compKeys = comps?.compKeys;
-    }
-    if (comps?.compItems) {
-      this._compItems = comps?.compItems;
-    }
   }
 
   get size() {

@@ -1,13 +1,26 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { comparatorObj, DefEnum, FormEnum } from './types';
+import { optionsObj, DefEnum, FormEnum } from './types';
 import { detectForm, detectType, e, isFn } from './utils/tests';
 import { clone } from './utils/change';
 import { StandinCollection } from './utils/StandinCollection';
 import { comparatorFn } from './types.methods';
-// import create from './create';
+const simpleComparator = (a, b) => a === b;
 
 // note - Collection is NOT compatible with the full collectionObj signature
 export default abstract class Collection {
+  public quiet = false;
+
+  constructor(_store, options) {
+    // note - does NOT set store, as that should be done at the implementor level, for type reasons
+    if (options?.compKeys) {
+      this.compKeys = options?.compKeys || simpleComparator;
+    }
+    if (options?.compItems) {
+      this.compItems = options?.compItems || simpleComparator;
+    }
+    this.quiet = !!options?.quiet;
+  }
+
   get store(): any {
     return this._store;
   }
@@ -18,10 +31,10 @@ export default abstract class Collection {
   abstract get keys(): number[];
   abstract get items(): any[];
 
-  protected _compKeys: comparatorFn = (a, b) => a === b;
+  protected _compKeys: comparatorFn = simpleComparator;
 
   get compKeys(): comparatorFn {
-    return this._compKeys;
+    return this._compKeys || simpleComparator;
   }
 
   set compKeys(value: comparatorFn) {
@@ -31,10 +44,10 @@ export default abstract class Collection {
     this._compKeys = value;
   }
 
-  protected _compItems: comparatorFn = (a, b) => a === b;
+  protected _compItems: comparatorFn = simpleComparator;
 
   get compItems(): comparatorFn {
-    return this._compItems;
+    return this._compItems || simpleComparator;
   }
 
   set compItems(value: comparatorFn) {
@@ -56,7 +69,7 @@ export default abstract class Collection {
     return Collection.create(clone(this._store));
   }
 
-  withComp(action, comp: comparatorObj) {
+  withComp(action, comp: optionsObj) {
     let out = null;
 
     const { compKeys, compItems } = this;
