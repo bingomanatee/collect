@@ -3,7 +3,7 @@ import { optionsObj, DefEnum, FormEnum } from './types';
 import { detectForm, detectType, e, isFn } from './utils/tests';
 import { clone } from './utils/change';
 import { StandinCollection } from './utils/StandinCollection';
-import { comparatorFn } from './types.methods';
+import { comparatorFn, orderingFn } from './types.methods';
 const simpleComparator = (a, b) => a === b;
 
 // note - Collection is NOT compatible with the full collectionObj signature
@@ -30,6 +30,10 @@ export default abstract class Collection {
       console.warn('update: onChange error', err);
     }
     this._store = newStore;
+  }
+
+  protected sorter(sortFn?: orderingFn) {
+    return sortFn ? (a, b) => sortFn(a, b, this) : undefined;
   }
 
   get store(): any {
@@ -118,7 +122,7 @@ export default abstract class Collection {
   }
 
   // must be overridden before any collections are created with a working create method
-  static create = store => {
-    return new StandinCollection(store);
+  static create = (store, options?: optionsObj) => {
+    return new StandinCollection(store, options);
   };
 }

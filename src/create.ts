@@ -5,30 +5,28 @@ import ScalarCollection from './ScalarCollection';
 import StringCollection from './StringCollection';
 import ArrayCollection from './ArrayCollection';
 import ObjectCollection from './ObjectCollection';
-import { Debug } from './utils/debug';
 
-export default (store, comp: optionsObj = {}) => {
-  if (Debug.create) console.log('-- creating store for ', store);
+export default (store, options?: optionsObj) => {
   let out;
   switch (detectType(store)) {
     case FormEnum.map:
-      out = new MapCollection(store, comp);
+      out = new MapCollection(store, options);
       break;
 
     case TypeEnum.string:
-      out = new StringCollection(store, comp);
+      out = new StringCollection(store, options);
       break;
 
     case FormEnum.array:
-      out = new ArrayCollection(store, comp);
+      out = new ArrayCollection(store, options);
       break;
 
     case FormEnum.object:
-      out = new ObjectCollection(store, comp);
+      out = new ObjectCollection(store, options);
       break;
 
     default:
-      out = new ScalarCollection(store, comp);
+      out = new ScalarCollection(store, options);
   }
 
   return out;

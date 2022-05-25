@@ -2,6 +2,7 @@ import CompoundCollection from './CompoundCollection';
 import { collectionObj, optionsObj } from './types';
 import { Match } from './utils/Match';
 import { clone } from './utils/change';
+import { orderingFn } from './types.methods';
 
 type obj = { [key: string]: any };
 export default class ObjectCollection extends CompoundCollection
@@ -10,6 +11,7 @@ export default class ObjectCollection extends CompoundCollection
 
   constructor(store: object, options?: optionsObj) {
     super(store, options);
+    this.update(store, 'constructor', options);
     this._store = store;
   }
 
@@ -63,18 +65,18 @@ export default class ObjectCollection extends CompoundCollection
   }
 
   clear() {
-    this._store = {};
+    this.update({}, 'clear');
     return this;
   }
 
   // this is a little dicey but...
-  sort(sortFn) {
-    const keyArray = Array.from(this.keys).sort(sortFn);
+  sort(sortFn?: orderingFn) {
+    const keyArray = Array.from(this.keys).sort(this.sorter(sortFn));
     const newStore = {};
-    for (const key in keyArray) {
+    for (const key of keyArray) {
       newStore[key] = this.get(key);
     }
-    this._store = newStore;
+    this.update(newStore, 'sort', sortFn);
     return this;
   }
 

@@ -51,7 +51,7 @@ export abstract class IntIndexedCollection extends Collection {
     return this;
   }
 
-  reduce(looper: reduceAction, initial: any = ''): any {
+  reduce(looper: reduceAction, initial?: any): any {
     const stopper = new Stopper();
     const iter = this.storeIter();
     if (iter) {

@@ -14,6 +14,7 @@ export class StandinCollection implements collectionObj<any, any, any> {
   withComp(fn, {}) {
     return fn();
   }
+  public quiet = false;
   constructor(store, options?: optionsObj) {
     this.store = store;
     if (options?.compKeys) {
@@ -22,6 +23,7 @@ export class StandinCollection implements collectionObj<any, any, any> {
     if (options?.compItems) {
       this.compItems = options?.compItems;
     }
+    this.quiet = !!options?.quiet;
   }
 
   clear(): collectionObj<any, any, any> {

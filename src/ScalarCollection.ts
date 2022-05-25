@@ -56,7 +56,7 @@ export default class ScalarCollection extends Collection {
   }
 
   clear() {
-    this._store = undefined;
+    this.update(undefined, 'clear');
   }
 
   forEach() {

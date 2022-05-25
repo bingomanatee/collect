@@ -3,6 +3,7 @@ import { IntIndexedCollection } from './IntIndexedCollection';
 import { Match } from './utils/Match';
 import { filterAction, orderingFn } from './types.methods';
 import { Stopper } from './utils/Stopper';
+import Collection from './Collection';
 
 export default class StringCollection extends IntIndexedCollection
   implements collectionObj<string, number, string> {
@@ -53,8 +54,8 @@ export default class StringCollection extends IntIndexedCollection
    */
   set(key: number, item: string) {
     const prefix = this.store.substring(0, key) || '';
-    const suffix = this.store.substring(key + 1) || '';
-    this._store = prefix + item + suffix;
+    const suffix = this.store.substring(key + Math.max(item.length, 1)) || '';
+    this.update(prefix + item + suffix, 'set', key, item);
     return this;
   }
 
@@ -78,21 +79,23 @@ export default class StringCollection extends IntIndexedCollection
     item: Array<string> | string
   ): collectionObj<string, number, string> {
     if (Array.isArray(item)) {
-      return this.filter(otherItem => !Match.sameItem(otherItem, item, this));
+      const cloned = this.clone({ quiet: true });
+      cloned.filter(otherItem => !Match.sameItem(otherItem, item, this));
+      this.update(cloned.store, 'deleteItem', item);
     }
     let newStore: string = this.store;
     let length = newStore.length;
     do {
       length = newStore.length;
-      newStore = newStore.replace(item, '');
+      newStore = newStore.replace(item as string, '');
     } while (newStore && newStore.length < length);
 
-    this._store = newStore;
+    this.update(newStore, 'deleteItem', item);
     return this;
   }
 
   clear() {
-    this._store = '';
+    this.update('', 'clear');
     return this;
   }
 
@@ -100,8 +103,14 @@ export default class StringCollection extends IntIndexedCollection
     return new StringCollection(this.items.reverse().join(''));
   }
 
-  sort(sorter?: orderingFn): collectionObj<string, number, string> {
-    return new StringCollection(this.items.sort(sorter).join(''));
+  sort(sort?: orderingFn): collectionObj<string, number, string> {
+    const letters = Collection.create(
+      this.store.split(''),
+      this.mergeOptions({ quiet: true })
+    );
+    letters.sort(this.sorter(sort));
+    this.update(letters.store.join(''), 'sort', sort);
+    return this;
   }
 
   // endregion
@@ -112,22 +121,20 @@ export default class StringCollection extends IntIndexedCollection
 
   // region duplication
 
-  clone() {
-    return new StringCollection(this.store);
+  clone(options?: optionsObj) {
+    return new StringCollection(this.store, this.mergeOptions(options));
   }
 
   filter(test: filterAction) {
-    const originalValue = this.store;
-    this._store = this.reduce(
-      (memo, item: string, key: number, _phrase, stopper) => {
-        const use = test(item, key, originalValue, stopper);
-        if (use && stopper.isActive) {
-          return `${memo}${item}`;
-        }
-        return memo;
-      },
-      ''
-    );
+    const newStore = this.reduce((memo, letter, key, _original, stopper) => {
+      const use = test(letter, key, this.store, stopper);
+      if (use && stopper.isActive) {
+        return `${memo}${letter}`;
+      }
+      return memo;
+    }, '');
+
+    this.update(newStore, 'filter', test);
     return this;
   }
 
@@ -169,7 +176,7 @@ export default class StringCollection extends IntIndexedCollection
 
   map(looper) {
     const stopper = new Stopper();
-    const newStore: any[] = [];
+    const newStore: string[] = [];
     const iter = this.storeIter();
     if (iter) {
       for (const [key, keyItem] of iter) {
@@ -177,14 +184,14 @@ export default class StringCollection extends IntIndexedCollection
         if (stopper.isStopped) {
           break;
         }
-        newStore[key] = item;
+        newStore.push(item);
         if (stopper.isComplete) {
           break;
         }
       }
     }
 
-    this._store = newStore.join('');
+    this.update(newStore.join(''), 'map', looper);
     return this;
   }
 

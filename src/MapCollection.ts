@@ -47,8 +47,7 @@ export default class MapCollection extends CompoundCollection
 
   sort(sorter?: orderingFn): collectionObj<Map<any, any>, any, any> {
     const map = new Map();
-    const compare = sorter ? (a, b) => sorter(a, b, this) : undefined;
-    const sortedKeys = Array.from(this.keys).sort(compare);
+    const sortedKeys = Array.from(this.keys).sort(this.sorter(sorter));
     for (let i = 0; i < sortedKeys.length; i++) {
       const key = sortedKeys[i];
       map.set(key, this.store.get(key));
