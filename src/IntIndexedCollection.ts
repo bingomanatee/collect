@@ -76,8 +76,6 @@ export abstract class IntIndexedCollection extends Collection {
     return Collection.create(out);
   }
 
-  abstract clone();
-
   // iterators
 
   storeIter() {

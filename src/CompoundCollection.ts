@@ -3,7 +3,7 @@ import { makeEmpty } from './utils/change';
 import { Stopper } from './utils/Stopper';
 import { Match } from './utils/Match';
 import { filterAction, typesMethods, reduceAction } from './types.methods';
-import { collectionObj } from './types';
+import { collectionObj, optionsObj } from './types';
 
 /**
  * This is a baseline
@@ -120,7 +120,7 @@ export default abstract class CompoundCollection extends Collection {
     return this;
   }
 
-  abstract clone(): collectionObj<any, any, any>;
+  abstract clone(opts?: optionsObj): collectionObj<any, any, any>;
 
   map(loop: typesMethods) {
     const stopper = new Stopper();

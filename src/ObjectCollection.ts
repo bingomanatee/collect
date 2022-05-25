@@ -1,6 +1,7 @@
 import CompoundCollection from './CompoundCollection';
 import { collectionObj, optionsObj } from './types';
 import { Match } from './utils/Match';
+import { clone } from './utils/change';
 
 type obj = { [key: string]: any };
 export default class ObjectCollection extends CompoundCollection
@@ -77,8 +78,11 @@ export default class ObjectCollection extends CompoundCollection
     return this;
   }
 
-  clone() {
-    return new ObjectCollection({ ...this._store }, this);
+  clone(newOptions?: optionsObj) {
+    return new ObjectCollection(
+      clone(this._store),
+      this.mergeOptions(newOptions)
+    );
   }
   // iterators
 

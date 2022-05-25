@@ -2,6 +2,7 @@ import CompoundCollection from './CompoundCollection';
 import { collectionObj, optionsObj } from './types';
 import { Match } from './utils/Match';
 import { orderingFn } from './types.methods';
+import { clone } from './utils/change';
 
 export default class MapCollection extends CompoundCollection
   implements collectionObj<Map<any, any>, any, any> {
@@ -27,8 +28,8 @@ export default class MapCollection extends CompoundCollection
     return Array.from(this.store.values());
   }
 
-  clone() {
-    return new MapCollection(new Map(...this._store), this);
+  clone(newOptions?: optionsObj) {
+    return new MapCollection(clone(this._store), this.mergeOptions(newOptions));
   }
 
   keyOf(item: any): any {

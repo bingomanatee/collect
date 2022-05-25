@@ -64,8 +64,8 @@ export default class ArrayCollection extends IntIndexedCollection
     return this;
   }
 
-  clone() {
-    return new ArrayCollection([...this.store]);
+  clone(newOptions?: optionsObj) {
+    return new ArrayCollection([...this.store], this.mergeOptions(newOptions));
   }
 
   filter(filterTest) {

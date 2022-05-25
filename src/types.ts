@@ -61,7 +61,7 @@ export type collectionIterProvider<StoreType, KeyType, ItemType> = {
   storeIter: (fromIter?: boolean) => IterableIterator<any> | undefined;
   itemIter: (fromIter?: boolean) => IterableIterator<ItemType> | undefined;
   keyIter: (fromIter?: boolean) => IterableIterator<KeyType> | undefined;
-  clone: () => collectionObj<StoreType, KeyType, ItemType>; // new collection with cloned item
+  clone: (optionsObj?) => collectionObj<StoreType, KeyType, ItemType>; // new collection with cloned item
 };
 
 export type optionsObj = { quiet?: boolean } & comparatorObj;

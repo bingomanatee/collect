@@ -28,8 +28,8 @@ export class StandinCollection implements collectionObj<any, any, any> {
     return this;
   }
 
-  clone(): collectionObj<any, any, any> {
-    return new StandinCollection(clone(this.store));
+  clone(newOptions?: optionsObj): collectionObj<any, any, any> {
+    return new StandinCollection(clone(this.store), newOptions);
   }
 
   get c() {

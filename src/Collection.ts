@@ -8,8 +8,6 @@ const simpleComparator = (a, b) => a === b;
 
 // note - Collection is NOT compatible with the full collectionObj signature
 export default abstract class Collection {
-  public quiet = false;
-
   constructor(_store, options) {
     // note - does NOT set store, as that should be done at the implementor level, for type reasons
     if (options?.compKeys) {
@@ -30,6 +28,26 @@ export default abstract class Collection {
 
   abstract get keys(): number[];
   abstract get items(): any[];
+
+  // options and comparator
+
+  mergeOptions(mergeOptions?: optionsObj) {
+    const newOptions = { ...this.options };
+    if (!mergeOptions) return newOptions;
+    for (const newKey of Object.keys(mergeOptions)) {
+      newOptions[newKey] = mergeOptions[newKey];
+    }
+    return newOptions;
+  }
+
+  get options() {
+    return {
+      quiet: this.quiet,
+      compKeys: this.compKeys,
+      compItems: this.compItems,
+    };
+  }
+  public quiet = false;
 
   protected _compKeys: comparatorFn = simpleComparator;
 
