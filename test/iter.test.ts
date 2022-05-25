@@ -229,4 +229,32 @@ describe('iter', () => {
       }
     });
   });
+
+  it('loops - example from docs', () => {
+    const collect = create;
+
+    const numbers = collect([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+
+    numbers.map(item => item * 10);
+
+    console.log('numbers is now ', numbers.store);
+    // [10, 20, 30, 40, 50 ,60, 70, 80, 90, 100]
+
+    const sumOfAll = numbers.reduce((memo, item) => memo + item, 0);
+    console.log('sum of all', sumOfAll); // 550
+
+    const sumOfFive = numbers.reduce((memo, item, key, _store, stopper) => {
+      if (key === 4) stopper.stopAfterThis();
+      return memo + item;
+    }, 0);
+
+    console.log('sum of first five', sumOfFive); // 150
+
+    const sumOfFour = numbers.reduce((memo, item, key, _store, stopper) => {
+      if (key === 4) stopper.stop();
+      return memo + item;
+    }, 0);
+
+    console.log('sum of four', sumOfFour); // 100
+  });
 });

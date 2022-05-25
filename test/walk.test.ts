@@ -152,7 +152,6 @@ describe('walkers', () => {
             .set('y', -50)
             .set('z', 100);
 
-          console.log('mc store:', mc.store);
           const milDistance = mc.reduce((distance, size) => {
             return distance + Math.abs(size);
           }, 0);

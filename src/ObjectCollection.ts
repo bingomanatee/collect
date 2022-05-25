@@ -67,13 +67,6 @@ export default class ObjectCollection extends CompoundCollection
     return false;
   }
 
-  clone() {
-    return new ObjectCollection(
-      { ...this.store },
-      { compKeys: this.compKeys, compItems: this.compItems }
-    );
-  }
-
   clear() {
     this._store = {};
     return this;

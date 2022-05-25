@@ -121,18 +121,19 @@ export default abstract class CompoundCollection extends Collection {
     const stopper = new Stopper();
     const iter = this.storeIter();
     if (iter) {
-      const nextMap = new Map();
+      const nextMapCollection = this.c.clear();
+
       for (const [key, keyItem] of iter) {
         const newItem = loop(keyItem, key, this.store, stopper);
         if (stopper.isComplete) {
           break;
         }
-        nextMap.set(key, newItem);
+        nextMapCollection.set(key, newItem);
         if (stopper.isComplete) {
           break;
         }
       }
-      this._store = nextMap;
+      this._store = nextMapCollection.store;
     }
     return this;
   }
