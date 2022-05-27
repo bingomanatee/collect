@@ -10,6 +10,12 @@ export function isThere(item) {
   return ![ABSENT, undefined].includes(item);
 }
 
+// isEmpty is NOT a simple syntactic inverse of isThere; it includes null,
+// which is not a qualifier of isThere.
+export function isEmpty(item) {
+  return [ABSENT, null, undefined].includes(item);
+}
+
 export const isNum = typeTest('number');
 
 /**

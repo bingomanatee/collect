@@ -3,6 +3,7 @@ import { collectionObj, optionsObj } from './types';
 import { Match } from './utils/Match';
 import { clone } from './utils/change';
 import { orderingFn } from './types.methods';
+import compare from './utils/compare';
 
 type obj = { [key: string]: any };
 export default class ObjectCollection extends CompoundCollection
@@ -70,7 +71,7 @@ export default class ObjectCollection extends CompoundCollection
   }
 
   // this is a little dicey but...
-  sort(sortFn?: orderingFn) {
+  sort(sortFn: orderingFn = compare) {
     const keyArray = Array.from(this.keys).sort(this.sorter(sortFn));
     const newStore = {};
     for (const key of keyArray) {

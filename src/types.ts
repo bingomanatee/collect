@@ -84,6 +84,7 @@ export type collectionObj<StoreType, KeyType, ItemType> = {
   withComp: (action: () => any, config: optionsObj) => any; // performs operations with the given comparators operating, then returns current ones.
 
   // changes
+  setStore(newValue): collectionObj<StoreType, KeyType, ItemType>; // self
   set: (
     key: KeyType,
     value: any

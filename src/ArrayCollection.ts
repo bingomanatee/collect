@@ -3,6 +3,7 @@ import { collectionObj, optionsObj } from './types';
 import { Stopper } from './utils/Stopper';
 import { Match } from './utils/Match';
 import { orderingFn } from './types.methods';
+import compare from './utils/compare';
 
 export default class ArrayCollection extends IntIndexedCollection
   implements collectionObj<any[], number, any> {
@@ -61,7 +62,7 @@ export default class ArrayCollection extends IntIndexedCollection
     return key >= 0 && key < this.size && !(key % 1);
   }
 
-  sort(sortFn?: orderingFn) {
+  sort(sortFn: orderingFn = compare) {
     this.update(this.store.sort(this.sorter(sortFn)), 'sort', sortFn);
     return this;
   }

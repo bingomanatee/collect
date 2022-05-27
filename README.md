@@ -1,4 +1,6 @@
-# Collect
+# @wonderlandlabs/Collect
+
+[web docs](https://collect-docs.vercel.app/)
 
 Javascript has several compound objects, sets, Maps, and arrays; they are all "dictionaries" that have multiple values connected 
 with keys, that can be added, deleted or iterated over. However, they don't have the same interface; because of this, 
