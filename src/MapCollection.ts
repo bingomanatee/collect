@@ -3,6 +3,7 @@ import { collectionObj, optionsObj } from './types';
 import { Match } from './utils/Match';
 import { orderingFn } from './types.methods';
 import { clone } from './utils/change';
+import compare from './utils/compare';
 
 export default class MapCollection extends CompoundCollection
   implements collectionObj<Map<any, any>, any, any> {
@@ -45,7 +46,7 @@ export default class MapCollection extends CompoundCollection
     }, key);
   }
 
-  sort(sorter?: orderingFn): collectionObj<Map<any, any>, any, any> {
+  sort(sorter: orderingFn = compare): collectionObj<Map<any, any>, any, any> {
     const map = new Map();
     const sortedKeys = Array.from(this.keys).sort(this.sorter(sorter));
     for (let i = 0; i < sortedKeys.length; i++) {

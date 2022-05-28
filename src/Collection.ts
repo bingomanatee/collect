@@ -21,6 +21,17 @@ export default abstract class Collection {
 
   public onChange?: (newStore: any, source: string, input?: any[]) => any;
 
+  setStore(newStore) {
+    const newType = detectType(newStore);
+    if (newType !== this.type) {
+      throw e('attempt to setStore different type than exists now', {
+        target: this,
+        newStore,
+        type: newType,
+      });
+    }
+    return this.update(newStore, 'setValue');
+  }
   protected update(newStore, source?: string, ...input) {
     try {
       if (!this.quiet && this.onChange && source) {
@@ -28,8 +39,10 @@ export default abstract class Collection {
       }
     } catch (err) {
       console.warn('update: onChange error', err);
+      return this;
     }
     this._store = newStore;
+    return this;
   }
 
   protected sorter(sortFn?: orderingFn) {

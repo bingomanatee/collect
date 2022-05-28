@@ -46,7 +46,8 @@
     }
   ],
   "dependencies": {
-    "lodash.clonedeep": "^4.5.0"
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.tostring": "^4.1.4"
   },
   "devDependencies": {
     "@size-limit/preset-small-lib": "^7.0.8",

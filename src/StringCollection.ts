@@ -103,6 +103,8 @@ export default class StringCollection extends IntIndexedCollection
     return new StringCollection(this.items.reverse().join(''));
   }
 
+  // note - this is the one version of sort where the item types are known to be 1-char strings
+  // so the default array sort works fine as a default
   sort(sort?: orderingFn): collectionObj<string, number, string> {
     const letters = Collection.create(
       this.store.split(''),

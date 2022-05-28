@@ -98,6 +98,10 @@ export class StandinCollection implements collectionObj<any, any, any> {
     return this;
   }
 
+  setStore(newStore) {
+    this.store = newStore;
+    return this;
+  }
   store: any;
   type: DefEnum = FormEnum.object;
 
