@@ -98,7 +98,7 @@ export class StandinCollection implements collectionObj<any, any, any> {
     return this;
   }
 
-  setStore(newStore) {
+  change(newStore) {
     this.store = newStore;
     return this;
   }

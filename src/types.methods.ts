@@ -23,3 +23,9 @@ export type filterAction = (
 export type combinerFn = any; // a generator function
 export type orderingFn = (item1: any, item2: any, coll?: any) => number;
 export type comparatorFn = (k1, k2) => boolean;
+
+export type onChangeFn = (
+  newStore: any,
+  source: string,
+  input?: any[]
+) => any | undefined;

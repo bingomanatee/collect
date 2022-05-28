@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { optionsObj, DefEnum, FormEnum } from './types';
+import { DefEnum, FormEnum, optionsObj } from './types';
 import { detectForm, detectType, e, isFn } from './utils/tests';
 import { clone } from './utils/change';
 import { StandinCollection } from './utils/StandinCollection';
-import { comparatorFn, orderingFn } from './types.methods';
+import { comparatorFn, onChangeFn, orderingFn } from './types.methods';
+
 const simpleComparator = (a, b) => a === b;
 
 // note - Collection is NOT compatible with the full collectionObj signature
@@ -19,9 +20,28 @@ export default abstract class Collection {
     this.quiet = !!options?.quiet;
   }
 
-  public onChange?: (newStore: any, source: string, input?: any[]) => any;
+  public onChange?: onChangeFn;
 
-  setStore(newStore) {
+  change(newStore) {
+    if (typeof newStore === 'function') {
+      try {
+        const cloned = clone(this.store);
+        let updated = newStore(cloned);
+        if (updated === undefined) updated = cloned;
+
+        if (updated === newStore) {
+          throw e('circular change', { newStore, target: this });
+        }
+
+        return this.change(updated);
+      } catch (err) {
+        throw e('functional newStore throws error:', {
+          err,
+          newStore,
+          target: this,
+        });
+      }
+    }
     const newType = detectType(newStore);
     if (newType !== this.type) {
       throw e('attempt to setStore different type than exists now', {
@@ -30,7 +50,7 @@ export default abstract class Collection {
         type: newType,
       });
     }
-    return this.update(newStore, 'setValue');
+    return this.update(newStore, 'change');
   }
   protected update(newStore, source?: string, ...input) {
     try {
