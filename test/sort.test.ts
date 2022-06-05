@@ -32,10 +32,42 @@ describe('sort', () => {
       expect(_.toString(oc.sort().keys)).toBe('a,x,y,z');
       expect(_.toString(oc.items)).toBe('40,30,20,10');
     });
+
+    it('sorts sets', () => {
+      const sc = create(new Set([5, 4, 3, 2, 1, 'liftoff']));
+
+      expect(sc.sort().store).toEqual(new Set([1, 2, 3, 4, 5, 'liftoff']));
+    });
   });
 
-  xit('sorts via custom sort function', () => {
-    xit('should sort arrays', () => {});
+  describe('sorts via custom sort function', () => {
+    it('should sort arrays', () => {
+      const sortFn = (a, b) => {
+        if (a.name === b.name) {
+          return 0;
+        }
+        if (a.name > b.name) {
+          return 1;
+        }
+        return -1;
+      };
+
+      const oc = create([
+        { name: 'Bob' },
+        { name: 'Alpha' },
+        { name: 'Dover' },
+        { name: 'Chris' },
+      ]);
+
+      oc.sort(sortFn);
+
+      expect(oc.store).toEqual([
+        { name: 'Alpha' },
+        { name: 'Bob' },
+        { name: 'Chris' },
+        { name: 'Dover' },
+      ]);
+    });
   });
 
   describe('compare function', () => {
