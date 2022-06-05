@@ -244,7 +244,7 @@ describe('change', () => {
         fromStore.push(40);
       });
 
-      const UPDATED = new Set([20, 40])
+      const UPDATED = new Set([20, 40]);
       expect(start.store).toEqual(UPDATED);
       expect(updates).toEqual([
         {
