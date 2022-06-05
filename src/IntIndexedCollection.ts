@@ -34,16 +34,15 @@ export abstract class IntIndexedCollection extends Collection {
     const stopper = new Stopper();
     const newStore: any[] = [];
     const iter = this.storeIter();
-    if (iter) {
-      for (const [key, keyItem] of iter) {
-        const item = looper(keyItem, key, this._store, stopper);
-        if (stopper.isStopped) {
-          break;
-        }
-        newStore[key] = item;
-        if (stopper.isComplete) {
-          break;
-        }
+
+    for (const [key, keyItem] of iter) {
+      const item = looper(keyItem, key, this._store, stopper);
+      if (stopper.isStopped) {
+        break;
+      }
+      newStore[key] = item;
+      if (stopper.isComplete) {
+        break;
       }
     }
 
@@ -54,21 +53,19 @@ export abstract class IntIndexedCollection extends Collection {
   reduce(looper: reduceAction, initial?: any): any {
     const stopper = new Stopper();
     const iter = this.storeIter();
-    if (iter) {
-      let out = initial;
-      for (const [key, keyItem] of iter) {
-        const next = looper(out, keyItem, key, this._store, stopper);
-        if (stopper.isStopped) {
-          break;
-        }
-        out = next;
-        if (stopper.isComplete) {
-          break;
-        }
+
+    let out = initial;
+    for (const [key, keyItem] of iter) {
+      const next = looper(out, keyItem, key, this._store, stopper);
+      if (stopper.isStopped) {
+        break;
       }
-      return out;
+      out = next;
+      if (stopper.isComplete) {
+        break;
+      }
     }
-    return null;
+    return out;
   }
 
   reduceC(looper, start) {

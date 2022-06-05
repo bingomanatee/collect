@@ -180,16 +180,15 @@ export default class StringCollection extends IntIndexedCollection
     const stopper = new Stopper();
     const newStore: string[] = [];
     const iter = this.storeIter();
-    if (iter) {
-      for (const [key, keyItem] of iter) {
-        const item = looper(keyItem, key, this._store, stopper);
-        if (stopper.isStopped) {
-          break;
-        }
-        newStore.push(item);
-        if (stopper.isComplete) {
-          break;
-        }
+
+    for (const [key, keyItem] of iter) {
+      const item = looper(keyItem, key, this._store, stopper);
+      if (stopper.isStopped) {
+        break;
+      }
+      newStore.push(item);
+      if (stopper.isComplete) {
+        break;
       }
     }
 

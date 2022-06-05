@@ -31,13 +31,13 @@ export default abstract class CompoundCollection extends Collection {
       return true;
     }
     const iter = this.keyIter();
-    if (iter) {
-      for (const storeKey of iter) {
-        if (Match.sameKey(storeKey, key, this)) {
-          return true;
-        }
+
+    for (const storeKey of iter) {
+      if (Match.sameKey(storeKey, key, this)) {
+        return true;
       }
     }
+
     return false;
   }
 
@@ -90,20 +90,20 @@ export default abstract class CompoundCollection extends Collection {
     const stopper = new Stopper();
 
     const iter = this.storeIter();
-    if (iter) {
-      for (const [key, item] of iter) {
-        const use = test(item, key, this.store, stopper);
-        if (stopper.isStopped) {
-          break;
-        }
-        if (use) {
-          tempC.set(key, item);
-        }
-        if (stopper.isLast) {
-          break;
-        }
+
+    for (const [key, item] of iter) {
+      const use = test(item, key, this.store, stopper);
+      if (stopper.isStopped) {
+        break;
+      }
+      if (use) {
+        tempC.set(key, item);
+      }
+      if (stopper.isLast) {
+        break;
       }
     }
+
     this.update(tempC.store, 'filter', test);
     return this;
   }
@@ -111,12 +111,11 @@ export default abstract class CompoundCollection extends Collection {
   forEach(loop: typesMethods) {
     const stopper = new Stopper();
     const iter = this.storeIter();
-    if (iter) {
-      for (const [key, item] of iter) {
-        loop(item, key, this.store, stopper);
-        if (stopper.isComplete) {
-          break;
-        }
+
+    for (const [key, item] of iter) {
+      loop(item, key, this.store, stopper);
+      if (stopper.isComplete) {
+        break;
       }
     }
 
@@ -128,21 +127,21 @@ export default abstract class CompoundCollection extends Collection {
   map(loop: typesMethods) {
     const stopper = new Stopper();
     const iter = this.storeIter();
-    if (iter) {
-      const nextMapCollection = this.clone({ quiet: true }).clear();
 
-      for (const [key, keyItem] of iter) {
-        const newItem = loop(keyItem, key, this.store, stopper);
-        if (stopper.isComplete) {
-          break;
-        }
-        nextMapCollection.set(key, newItem);
-        if (stopper.isComplete) {
-          break;
-        }
+    const nextMapCollection = this.clone({ quiet: true }).clear();
+
+    for (const [key, keyItem] of iter) {
+      const newItem = loop(keyItem, key, this.store, stopper);
+      if (stopper.isComplete) {
+        break;
       }
-      this.update(nextMapCollection.store, 'map', loop);
+      nextMapCollection.set(key, newItem);
+      if (stopper.isComplete) {
+        break;
+      }
     }
+    this.update(nextMapCollection.store, 'map', loop);
+
     return this;
   }
 
@@ -151,18 +150,18 @@ export default abstract class CompoundCollection extends Collection {
 
     let out = initial;
     const iter = this.storeIter();
-    if (iter) {
-      for (const [key, item] of iter) {
-        const next = looper(out, item, key, this.store, stopper);
-        if (stopper.isStopped) {
-          return out;
-        }
-        out = next;
-        if (stopper.isComplete) {
-          return next;
-        }
+
+    for (const [key, item] of iter) {
+      const next = looper(out, item, key, this.store, stopper);
+      if (stopper.isStopped) {
+        return out;
+      }
+      out = next;
+      if (stopper.isComplete) {
+        return next;
       }
     }
+
     return out;
   }
 

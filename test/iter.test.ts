@@ -1,5 +1,4 @@
 import create from '../src';
-import { Iter } from '../src/Iter';
 
 describe('iter', () => {
   describe('storeIter', () => {
@@ -10,7 +9,7 @@ describe('iter', () => {
         z: 3,
       });
 
-      const iter = Iter.storeIter(oc);
+      const iter = oc.storeIter();
 
       if (iter) {
         const pairs: any[] = [];
@@ -33,7 +32,7 @@ describe('iter', () => {
         .set('y', 2)
         .set('z', 3);
 
-      const iter = Iter.storeIter(oc);
+      const iter = oc.storeIter();
       const items: any[] = [];
 
       if (iter) {
@@ -54,7 +53,7 @@ describe('iter', () => {
     it('should iterate over Array items', () => {
       const ac = create(['a', 'b', 'c']);
 
-      const iter = Iter.storeIter(ac);
+      const iter = ac.storeIter();
       const items: any[] = [];
 
       if (iter) {
@@ -75,7 +74,7 @@ describe('iter', () => {
     it('should iterate over String items', () => {
       const oc = create('xyz');
 
-      const iter = Iter.storeIter(oc);
+      const iter = oc.storeIter();
       const items: any[] = [];
 
       if (iter) {
@@ -101,7 +100,7 @@ describe('iter', () => {
         z: 3,
       });
 
-      const iter = Iter.itemIter(oc);
+      const iter = oc.itemIter();
       const items: any[] = [];
 
       if (iter) {
@@ -119,7 +118,7 @@ describe('iter', () => {
         .set('y', 2)
         .set('z', 3);
 
-      const iter = Iter.itemIter(oc);
+      const iter = oc.itemIter();
       const items: any[] = [];
 
       if (iter) {
@@ -134,7 +133,7 @@ describe('iter', () => {
     it('should iterate over Array items', () => {
       const oc = create([1, 2, 3]);
 
-      const iter = Iter.itemIter(oc);
+      const iter = oc.itemIter();
       const items: any[] = [];
 
       if (iter) {
@@ -149,7 +148,7 @@ describe('iter', () => {
     it('should iterate over String items', () => {
       const oc = create('xyz');
 
-      const iter = Iter.itemIter(oc);
+      const iter = oc.itemIter();
       const items: any[] = [];
 
       if (iter) {
@@ -169,7 +168,7 @@ describe('iter', () => {
         z: 3,
       });
 
-      const iter = Iter.keyIter(oc);
+      const iter = oc.keyIter();
       const keys: any[] = [];
 
       if (iter) {
@@ -187,7 +186,7 @@ describe('iter', () => {
         .set('y', 2)
         .set('z', 3);
 
-      const iter = Iter.keyIter(oc);
+      const iter = oc.keyIter();
       const keys: any[] = [];
 
       if (iter) {
@@ -202,7 +201,7 @@ describe('iter', () => {
     it('should iterate over Array keys', () => {
       const oc = create([1, 2, 3]);
 
-      const iter = Iter.keyIter(oc);
+      const iter = oc.keyIter();
       const keys: any[] = [];
 
       if (iter) {
@@ -217,7 +216,7 @@ describe('iter', () => {
     it('should iterate over String keys', () => {
       const oc = create('xyz');
 
-      const iter = Iter.keyIter(oc);
+      const iter = oc.keyIter();
       const keys: any[] = [];
 
       if (iter) {

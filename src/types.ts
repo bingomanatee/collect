@@ -56,12 +56,13 @@ export type collectionBaseObj<StoreType, KeyType, ItemType> = {
   form: FormEnum;
   type: DefEnum;
   size: number;
+  clone: (optionsObj?) => collectionObj<StoreType, KeyType, ItemType>; // new collection with cloned item
 };
-export type collectionIterProvider<StoreType, KeyType, ItemType> = {
-  storeIter: (fromIter?: boolean) => IterableIterator<any>;
+
+export type collectionIterProvider<_StoreType, KeyType, ItemType> = {
+  storeIter: (fromIter?: boolean) => IterableIterator<[KeyType, ItemType]>;
   itemIter: (fromIter?: boolean) => IterableIterator<ItemType>;
   keyIter: (fromIter?: boolean) => IterableIterator<KeyType>;
-  clone: (optionsObj?) => collectionObj<StoreType, KeyType, ItemType>; // new collection with cloned item
 };
 
 export type optionsObj = { quiet?: boolean } & comparatorObj;
