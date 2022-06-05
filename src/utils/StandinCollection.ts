@@ -1,6 +1,5 @@
 import { collectionObj, optionsObj, DefEnum, FormEnum } from '../types';
 import { clone } from './change';
-import { Iter } from '../Iter';
 import {
   filterAction,
   typesMethods,
@@ -107,24 +106,15 @@ export class StandinCollection implements collectionObj<any, any, any> {
 
   // iterators
 
-  keyIter(fromIter?: boolean): IterableIterator<any> | undefined {
-    if (fromIter) {
-      return this.keys[Symbol.iterator]();
-    }
-    return Iter.keyIter(this);
+  keyIter(): IterableIterator<any> {
+    return this.keys[Symbol.iterator]();
   }
 
-  itemIter(fromIter?: boolean): IterableIterator<any> | undefined {
-    if (fromIter) {
-      return this.items[Symbol.iterator]();
-    }
-    return Iter.itemIter(this);
+  itemIter(): IterableIterator<any> {
+    return this.items[Symbol.iterator]();
   }
 
-  storeIter(fromIter?: boolean) {
-    if (fromIter) {
-      return this.store[Symbol.iterator]();
-    }
-    return Iter.storeIter(this);
+  storeIter() {
+    return this.store[Symbol.iterator]();
   }
 }

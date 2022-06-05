@@ -58,9 +58,9 @@ export type collectionBaseObj<StoreType, KeyType, ItemType> = {
   size: number;
 };
 export type collectionIterProvider<StoreType, KeyType, ItemType> = {
-  storeIter: (fromIter?: boolean) => IterableIterator<any> | undefined;
-  itemIter: (fromIter?: boolean) => IterableIterator<ItemType> | undefined;
-  keyIter: (fromIter?: boolean) => IterableIterator<KeyType> | undefined;
+  storeIter: (fromIter?: boolean) => IterableIterator<any>;
+  itemIter: (fromIter?: boolean) => IterableIterator<ItemType>;
+  keyIter: (fromIter?: boolean) => IterableIterator<KeyType>;
   clone: (optionsObj?) => collectionObj<StoreType, KeyType, ItemType>; // new collection with cloned item
 };
 

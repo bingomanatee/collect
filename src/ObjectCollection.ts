@@ -89,15 +89,15 @@ export default class ObjectCollection extends CompoundCollection
   }
   // iterators
 
-  keyIter(): IterableIterator<any> | undefined {
+  keyIter(): IterableIterator<any> {
     return Object.keys(this.store)[Symbol.iterator]();
   }
 
-  itemIter(): IterableIterator<any> | undefined {
+  itemIter(): IterableIterator<any> {
     return Object.values(this.store)[Symbol.iterator]();
   }
 
-  storeIter(): IterableIterator<any> | undefined {
+  storeIter(): IterableIterator<any> {
     return Object.entries(this.store)[Symbol.iterator]();
   }
 }

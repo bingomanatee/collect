@@ -80,15 +80,15 @@ export default class MapCollection extends CompoundCollection
 
   // iterators
 
-  keyIter(): IterableIterator<any> | undefined {
+  keyIter(): IterableIterator<any> {
     return this._store.keys();
   }
 
-  itemIter(): IterableIterator<any> | undefined {
+  itemIter(): IterableIterator<any> {
     return this._store.values();
   }
 
-  storeIter(): IterableIterator<any> | undefined {
+  storeIter(): IterableIterator<any> {
     return this._store.entries();
   }
 }

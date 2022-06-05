@@ -173,9 +173,9 @@ export default abstract class CompoundCollection extends Collection {
 
   // iterators
 
-  abstract keyIter(fromIter?: boolean): IterableIterator<any> | undefined;
+  abstract keyIter(fromIter?: boolean): IterableIterator<any>;
 
-  abstract itemIter(fromIter?: boolean): IterableIterator<any> | undefined;
+  abstract itemIter(fromIter?: boolean): IterableIterator<any>;
 
-  abstract storeIter(fromIter?: boolean): IterableIterator<any> | undefined;
+  abstract storeIter(fromIter?: boolean): IterableIterator<any>;
 }
