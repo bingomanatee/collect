@@ -77,19 +77,17 @@ describe('iter', () => {
       const iter = oc.storeIter();
       const items: any[] = [];
 
-      if (iter) {
-        for (const item of iter) {
-          items.push(item);
-        }
-
-        expect(new Set(items)).toEqual(
-          new Set([
-            [0, 'x'],
-            [1, 'y'],
-            [2, 'z'],
-          ])
-        );
+      for (const item of iter) {
+        items.push(item);
       }
+
+      expect(new Set(items)).toEqual(
+        new Set([
+          [0, 'x'],
+          [1, 'y'],
+          [2, 'z'],
+        ])
+      );
     });
   });
   describe('itemIter', () => {
@@ -103,13 +101,11 @@ describe('iter', () => {
       const iter = oc.itemIter();
       const items: any[] = [];
 
-      if (iter) {
-        for (const item of iter) {
-          items.push(item);
-        }
-
-        expect(new Set(items)).toEqual(new Set([1, 2, 3]));
+      for (const item of iter) {
+        items.push(item);
       }
+
+      expect(new Set(items)).toEqual(new Set([1, 2, 3]));
     });
 
     it('should iterate over Map items', () => {
@@ -121,13 +117,11 @@ describe('iter', () => {
       const iter = oc.itemIter();
       const items: any[] = [];
 
-      if (iter) {
-        for (const item of iter) {
-          items.push(item);
-        }
-
-        expect(new Set(items)).toEqual(new Set([1, 2, 3]));
+      for (const item of iter) {
+        items.push(item);
       }
+
+      expect(new Set(items)).toEqual(new Set([1, 2, 3]));
     });
 
     it('should iterate over Array items', () => {
@@ -136,13 +130,11 @@ describe('iter', () => {
       const iter = oc.itemIter();
       const items: any[] = [];
 
-      if (iter) {
-        for (const item of iter) {
-          items.push(item);
-        }
-
-        expect(new Set(items)).toEqual(new Set([1, 2, 3]));
+      for (const item of iter) {
+        items.push(item);
       }
+
+      expect(new Set(items)).toEqual(new Set([1, 2, 3]));
     });
 
     it('should iterate over String items', () => {
@@ -151,13 +143,11 @@ describe('iter', () => {
       const iter = oc.itemIter();
       const items: any[] = [];
 
-      if (iter) {
-        for (const item of iter) {
-          items.push(item);
-        }
-
-        expect(new Set(items)).toEqual(new Set(['x', 'y', 'z']));
+      for (const item of iter) {
+        items.push(item);
       }
+
+      expect(new Set(items)).toEqual(new Set(['x', 'y', 'z']));
     });
   });
   describe('keyIter', () => {
@@ -171,13 +161,11 @@ describe('iter', () => {
       const iter = oc.keyIter();
       const keys: any[] = [];
 
-      if (iter) {
-        for (const item of iter) {
-          keys.push(item);
-        }
-
-        expect(new Set(keys)).toEqual(new Set(['x', 'y', 'z']));
+      for (const item of iter) {
+        keys.push(item);
       }
+
+      expect(new Set(keys)).toEqual(new Set(['x', 'y', 'z']));
     });
 
     it('should iterate over Map keys', () => {
@@ -189,13 +177,11 @@ describe('iter', () => {
       const iter = oc.keyIter();
       const keys: any[] = [];
 
-      if (iter) {
-        for (const item of iter) {
-          keys.push(item);
-        }
-
-        expect(new Set(keys)).toEqual(new Set(['x', 'y', 'z']));
+      for (const item of iter) {
+        keys.push(item);
       }
+
+      expect(new Set(keys)).toEqual(new Set(['x', 'y', 'z']));
     });
 
     it('should iterate over Array keys', () => {
@@ -204,13 +190,11 @@ describe('iter', () => {
       const iter = oc.keyIter();
       const keys: any[] = [];
 
-      if (iter) {
-        for (const item of iter) {
-          keys.push(item);
-        }
-
-        expect(new Set(keys)).toEqual(new Set([0, 1, 2]));
+      for (const item of iter) {
+        keys.push(item);
       }
+
+      expect(new Set(keys)).toEqual(new Set([0, 1, 2]));
     });
 
     it('should iterate over String keys', () => {
@@ -219,13 +203,11 @@ describe('iter', () => {
       const iter = oc.keyIter();
       const keys: any[] = [];
 
-      if (iter) {
-        for (const item of iter) {
-          keys.push(item);
-        }
-
-        expect(new Set(keys)).toEqual(new Set([0, 1, 2]));
+      for (const item of iter) {
+        keys.push(item);
       }
+
+      expect(new Set(keys)).toEqual(new Set([0, 1, 2]));
     });
   });
 
