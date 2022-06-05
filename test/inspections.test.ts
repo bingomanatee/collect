@@ -86,4 +86,18 @@ describe('inspections', () => {
       expect(objCollection.keys).toEqual(['name', 'x', 'y', 'z']);
     });
   });
+
+  describe('Set', () => {
+    const VALUES = ['home', 100, 200, 300];
+    it('has the expected inspection behavior', () => {
+      const setCollection = create(new Set(VALUES));
+
+      expect(setCollection.size).toBe(4);
+      expect(setCollection.hasItem('home')).toBeTruthy();
+      expect(setCollection.hasItem(300)).toBeTruthy();
+      expect(setCollection.hasItem(400)).toBeFalsy();
+
+      expect(setCollection.keys).toEqual([0, 1, 2, 3]);
+    });
+  });
 });

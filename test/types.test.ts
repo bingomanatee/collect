@@ -31,4 +31,11 @@ describe('type,form detection', () => {
     expect(c.form).toBe(FormEnum.object);
     expect(c.type).toBe(FormEnum.object);
   });
+
+  it('detects Sets', () => {
+    const c = create(new Set([1, 2, 3]));
+
+    expect(c.form).toBe(FormEnum.set);
+    expect(c.type).toBe(FormEnum.set);
+  });
 });

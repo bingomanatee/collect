@@ -133,6 +133,37 @@ describe('I/O', () => {
     });
   });
 
+  describe('Set', () => {
+    const LIST = [1, 2, 3, 'cow', 1000];
+    it('should get from key, set', () => {
+      const size = LIST.length;
+      const ac = create(new Set(LIST));
+      expect(ac.get(2)).toBe(3);
+      expect(ac.get(100)).toBeUndefined();
+
+      ac.set(2, 'another cow');
+
+      expect(ac.size).toBe(size);
+      expect(ac.store).toEqual(new Set([1, 2, 'another cow', 'cow', 1000]));
+    });
+
+    it('should delete a set of keys', () => {
+      const ac = create(new Set(LIST));
+      ac.deleteKey([2, 4, 6, 8]);
+      const LIST_WITHOUT_KEYS = new Set([1, 2, 'cow']);
+      expect(ac.store).toEqual(LIST_WITHOUT_KEYS);
+      expect(ac.size).toBe(LIST_WITHOUT_KEYS.size);
+    });
+
+    it('should delete a single key', () => {
+      const ac2 = create(new Set(LIST));
+      ac2.deleteKey(3);
+      const LIST_WITHOUT_KEY = new Set([1, 2, 3, 1000]);
+      expect(ac2.store).toEqual(LIST_WITHOUT_KEY);
+      expect(ac2.size).toBe(LIST_WITHOUT_KEY.size);
+    });
+  });
+
   describe('examples', () => {
     describe('twoDStore', () => {
       it('should use the same index with a comparator', () => {

@@ -5,9 +5,11 @@ import ScalarCollection from './ScalarCollection';
 import StringCollection from './StringCollection';
 import ArrayCollection from './ArrayCollection';
 import ObjectCollection from './ObjectCollection';
+import SetCollection from './SetCollection';
 
 export default (store, options?: optionsObj) => {
   let out;
+
   switch (detectType(store)) {
     case FormEnum.map:
       out = new MapCollection(store, options);
@@ -23,6 +25,10 @@ export default (store, options?: optionsObj) => {
 
     case FormEnum.object:
       out = new ObjectCollection(store, options);
+      break;
+
+    case FormEnum.set:
+      out = new SetCollection(store, options);
       break;
 
     default:
