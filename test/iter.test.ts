@@ -11,19 +11,17 @@ describe('iter', () => {
 
       const iter = oc.storeIter();
 
-      if (iter) {
-        const pairs: any[] = [];
-        for (const item of iter) {
-          pairs.push(item);
-        }
-        expect(new Set(pairs)).toEqual(
-          new Set([
-            ['x', 1],
-            ['y', 2],
-            ['z', 3],
-          ])
-        );
+      const pairs: any[] = [];
+      for (const item of iter) {
+        pairs.push(item);
       }
+      expect(new Set(pairs)).toEqual(
+        new Set([
+          ['x', 1],
+          ['y', 2],
+          ['z', 3],
+        ])
+      );
     });
 
     it('should iterate over Map items', () => {
@@ -35,19 +33,17 @@ describe('iter', () => {
       const iter = oc.storeIter();
       const items: any[] = [];
 
-      if (iter) {
-        for (const item of iter) {
-          items.push(item);
-        }
-
-        expect(new Set(items)).toEqual(
-          new Set([
-            ['x', 1],
-            ['y', 2],
-            ['z', 3],
-          ])
-        );
+      for (const item of iter) {
+        items.push(item);
       }
+
+      expect(new Set(items)).toEqual(
+        new Set([
+          ['x', 1],
+          ['y', 2],
+          ['z', 3],
+        ])
+      );
     });
 
     it('should iterate over Array items', () => {
@@ -56,19 +52,17 @@ describe('iter', () => {
       const iter = ac.storeIter();
       const items: any[] = [];
 
-      if (iter) {
-        for (const item of iter) {
-          items.push(item);
-        }
-
-        expect(new Set(items)).toEqual(
-          new Set([
-            [0, 'a'],
-            [1, 'b'],
-            [2, 'c'],
-          ])
-        );
+      for (const item of iter) {
+        items.push(item);
       }
+
+      expect(new Set(items)).toEqual(
+        new Set([
+          [0, 'a'],
+          [1, 'b'],
+          [2, 'c'],
+        ])
+      );
     });
 
     it('should iterate over String items', () => {
