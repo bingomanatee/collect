@@ -83,7 +83,6 @@ export function isStr(s, nonEmpty = false) {
 
 export const isUndefined = typeTest('undefined');
 
-// @ts-ignore
 export const TESTS = [
   { name: TypeEnum.undefined, test: isUndefined, isForm: false },
   { name: FormEnum.map, test: isMap, isForm: true },

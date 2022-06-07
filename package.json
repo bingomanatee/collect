@@ -1,7 +1,9 @@
 {
   "version": "0.1.9",
   "license": "MIT",
+  "source": "src/index.ts",
   "main": "dist/index.js",
+  "module": "dist/collections.esm.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist",
@@ -12,11 +14,11 @@
     "node": ">=10"
   },
   "scripts": {
-    "start": "tsdx watch",
-    "build": "tsdx build",
-    "test": "tsdx test",
-    "lint": "tsdx lint",
-    "prepare": "tsdx build",
+    "start": "parcel watch",
+    "build": "parcel build",
+    "test": "jest test",
+    "lint": "jest lint",
+    "prepare": "parcel build",
     "size": "size-limit",
     "analyze": "size-limit --why"
   },
@@ -34,27 +36,16 @@
   },
   "name": "@wonderlandlabs/collect",
   "author": "David Edelhart",
-  "module": "dist/collections.esm.js",
-  "size-limit": [
-    {
-      "path": "dist/collections.cjs.production.min.js",
-      "limit": "10 KB"
-    },
-    {
-      "path": "dist/collections.esm.js",
-      "limit": "10 KB"
-    }
-  ],
   "dependencies": {
     "lodash.clonedeep": "^4.5.0",
-    "lodash.tostring": "^4.1.4"
+    "lodash.tostring": "^4.1.4",
+    "parcel": "^2.6.0"
   },
   "devDependencies": {
-    "@size-limit/preset-small-lib": "^7.0.8",
-    "husky": "7.0.1",
+    "@swc/helpers": "latest",
     "lodash-es": "^4.17.21",
     "size-limit": "^7.0.8",
-    "tsdx": "^0.14.1",
+    "tap": "^16.2.0",
     "tslib": "^2.4.0",
     "typescript": "^4.6.4"
   },
