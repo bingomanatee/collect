@@ -3,11 +3,12 @@ import Stopper from './utils/Stopper';
 import Match from './utils/Match';
 import type {
   filterAction,
-  typesMethods,
+  iteratorMethods,
   reduceAction,
   collectionObj,
   optionsObj,
 } from './types';
+import { ABSENT } from "./constants.export";
 
 export default abstract class CompoundCollection extends Collection {
   get size() {
@@ -87,7 +88,7 @@ export default abstract class CompoundCollection extends Collection {
   }
 
   deleteKey(key) {
-    this.store.deleteKey(key);
+    this.store.delete(key);
     return this;
   }
 
@@ -131,7 +132,7 @@ export default abstract class CompoundCollection extends Collection {
     return this;
   }
 
-  forEach(loop: typesMethods) {
+  forEach(loop: iteratorMethods) {
     const stopper = new Stopper();
     const iter = this.storeIter();
     let done = false;
@@ -153,7 +154,7 @@ export default abstract class CompoundCollection extends Collection {
 
   abstract clone(opts?: optionsObj): collectionObj<any, any, any>;
 
-  map(loop: typesMethods) {
+  map(loop: iteratorMethods) {
     const stopper = new Stopper();
     const iter = this.storeIter();
 
@@ -207,9 +208,50 @@ export default abstract class CompoundCollection extends Collection {
     return out;
   }
 
+  // append
+
+  // assume that adding a value by key adds to the end of the item
+  addAfter(item: any, key: any = ABSENT) {
+    if (key === ABSENT) {
+      throw new Error('you must define a key to addAfter an item for a compound collection');
+    }
+    this.set(key, item);
+    return this
+  }
+
+  addBefore(item: any, key: any = ABSENT) {
+    if (key === ABSENT) {
+      throw new Error('you must define a key to addAfter an item for a compound collection');
+    }
+    const temp = this.clone({quiet: true});
+    temp.clear();
+    temp.set(key, item);
+    this.forEach((fItem, fKey) => {
+      if (!this.compKeys(key, fKey)) {
+        temp.set(fKey, fItem);
+      }
+    });
+    this.update(temp.store, 'addBefore');
+    return this;
+  }
+
   reduceC(action, start) {
     const value = this.reduce(action, start);
     return Collection.create(value);
+  }
+
+  removeFirst() {
+    const key = this.keys.shift();
+    const item = this.get(key);
+    this.deleteKey(key);
+    return item;
+  }
+
+  removeLast() {
+    const key = this.keys.pop();
+    const item = this.get(key);
+    this.deleteKey(key);
+    return item;
   }
 
   // iterators

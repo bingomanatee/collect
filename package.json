@@ -15,7 +15,8 @@
   },
   "scripts": {
     "build": "rimraf dist && tsc && rollup -c rollup.config.js",
-    "test": "yarn build; tap test"
+    "lint": "eslint . --ext .ts",
+    "test": "tap test"
   },
   "peerDependencies": {},
   "prettier": {
@@ -36,7 +37,10 @@
     "@rollup/plugin-commonjs": "^22.0.0",
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@swc/helpers": "latest",
+    "@typescript-eslint/eslint-plugin": "^5.27.1",
+    "@typescript-eslint/parser": "^5.27.1",
     "deepmerge": "^4.2.2",
+    "eslint": "^8.17.0",
     "lodash-es": "^4.17.21",
     "rimraf": "^3.0.2",
     "rollup": "^2.75.6",

@@ -80,7 +80,9 @@ export default class ArrayCollection extends IntIndexedCollection
       if (stopper.isStopped) {
         break;
       }
-      if (use) newStore.push(item);
+      if (use) {
+        newStore.push(item);
+      }
       if (stopper.isLast) {
         break;
       }
@@ -88,4 +90,31 @@ export default class ArrayCollection extends IntIndexedCollection
     this.update(newStore, 'filter', filterTest);
     return this;
   }
+
+  // append/prepend
+
+  addAfter(item, _key?: number | undefined) {
+    this.update([...this.store, item], 'addBefore');
+    return this;
+  }
+
+  addBefore(item, _key?: number | undefined) {
+    this.update([item, ...this.store], 'addBefore');
+    return this;
+  }
+
+  removeFirst() : any {
+    const list = [...this.store];
+    const item = list.shift();
+    this.update(list, 'removeFirst');
+    return item;
+  }
+
+  removeLast() : any {
+    const list = [...this.store];
+    const item = list.pop();
+    this.update(list, 'removeFirst');
+    return item;
+  }
+
 }

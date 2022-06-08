@@ -232,4 +232,28 @@ export default class StringCollection extends IntIndexedCollection
   itemIter() {
     return this.items[Symbol.iterator]();
   }
+
+  // append/prepend
+
+  addAfter(item, _key?: number | undefined) {
+    this.update(`${this.store}${item}`, 'addBefore');
+    return this;
+  }
+
+  addBefore(item, _key?: number | undefined) {
+    this.update(`${item}${this.store}`, 'addBefore');
+    return this;
+  }
+  removeFirst() {
+    const item = this.store.substring(0, 1);
+    const rest = this.store.substring(1);
+    this.update(rest, 'removeFirst');
+    return item;
+  }
+  removeLast() {
+    const item = this.store.substring(this.size - 1);
+    const rest = this.store.substring(0, this.size - 1);
+    this.update(rest, 'removeLast');
+    return item;
+  }
 }

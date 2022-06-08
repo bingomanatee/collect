@@ -1,6 +1,6 @@
 import Collection from './Collection';
 import Stopper from './utils/Stopper';
-import type { typesMethods, reduceAction } from './types';
+import type { iteratorMethods, reduceAction } from './types';
 
 /**
  * this is the base class for items in which the keys are not named strings but are
@@ -15,7 +15,7 @@ export default abstract class IntIndexedCollection extends Collection {
     return out;
   }
 
-  forEach(action: typesMethods) {
+  forEach(action: iteratorMethods) {
     const stopper = new Stopper();
 
     const originalValue = this.store;

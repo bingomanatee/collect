@@ -8,23 +8,7 @@ export default abstract class Match {
     many = true, // individually compare keys if arrays
     debug = false
   ) {
-    if (!context?.compKeys) {
-      if (debug) {
-        console.log('Match: no comparator for keys; returning === comparison');
-      }
-      return key === k2;
-    }
     if (many && Array.isArray(k2)) {
-      if (debug) {
-        console.log(
-          'comparing individual keys:',
-          k2,
-          'to',
-          key,
-          'context.compKeys = ',
-          context?.compKeys
-        );
-      }
       return k2.some((otherSubKey) => {
         const use = context?.compKeys
           ? context.compKeys(key, otherSubKey)
@@ -41,6 +25,9 @@ export default abstract class Match {
         }
         return use;
       });
+    }
+    if (!context?.compKeys) {
+      return key === k2;
     }
     return context.compKeys(key, k2);
   }

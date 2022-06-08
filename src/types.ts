@@ -11,11 +11,11 @@ export type StopperObj = {
   stopAfterThis: () => void;
 };
 
-export type typesMethods = (
+export type iteratorMethods = (
   item: any,
   key: keyType,
   store: any,
-  flow: StopperObj
+  stopper: StopperObj
 ) => any;
 export type reduceAction = (
   memo: any,
@@ -92,6 +92,15 @@ export type collectionObj<StoreType, KeyType, ItemType> = {
   // comparison
   withComp: (action: () => any, config: optionsObj) => any; // performs operations with the given comparators operating, then returns current ones.
 
+  // push, pop
+
+  addAfter: (item: ItemType, key?: KeyType)  => collectionObj<StoreType, KeyType, ItemType>; // self
+  addBefore : (item: ItemType, key?: KeyType) => collectionObj<StoreType, KeyType, ItemType>; // self
+  // removeLast: () => ItemType | undefined;
+  // removeFirst: () => ItemType | undefined;
+ // first: (count?: number) => ItemType | ItemType[];
+ // last: (count?: number) => ItemType | ItemType[];
+
   // changes
   change(newValue): collectionObj<StoreType, KeyType, ItemType>; // self
   set: (
@@ -110,9 +119,9 @@ export type collectionObj<StoreType, KeyType, ItemType> = {
 
   // iteration
   forEach: (
-    action: typesMethods
+    action: iteratorMethods
   ) => collectionObj<StoreType, KeyType, ItemType>; // self
-  map: (action: typesMethods) => collectionObj<StoreType, KeyType, ItemType>; // mutates properties
+  map: (action: iteratorMethods) => collectionObj<StoreType, KeyType, ItemType>; // mutates properties
   filter: (action: filterAction) => collectionObj<StoreType, KeyType, ItemType>; // a new collection wth some of the values;
   reduce: (action: reduceAction, initial: any) => any; // an arbitrary value, computed by looping over the store
   reduceC: (action: reduceAction, initial: any) => collectionObj<any, any, any>; // a new collection for the output of reduce

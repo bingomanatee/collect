@@ -6,7 +6,7 @@ import compare from './utils/compare';
 
 type obj = { [key: string]: any };
 export default class ObjectCollection extends CompoundCollection
-  implements collectionObj<obj, string, any> {
+  implements collectionObj<obj, any, any> {
   protected _store: object;
 
   constructor(store: object, options?: optionsObj) {
@@ -61,6 +61,13 @@ export default class ObjectCollection extends CompoundCollection
     return this;
   }
 
+  deleteKey(key) {
+    const store = {...this.store};
+    delete store[key];
+    this.update(store, 'deleteKey', key);
+    return this;
+  }
+
   // this is a little dicey but...
   sort(sortFn: orderingFn = compare) {
     const keyArray = Array.from(this.keys).sort(this.sorter(sortFn));
@@ -79,6 +86,7 @@ export default class ObjectCollection extends CompoundCollection
       this.mergeOptions(newOptions),
     );
   }
+
   // iterators
 
   keyIter(): IterableIterator<any> {
@@ -91,5 +99,32 @@ export default class ObjectCollection extends CompoundCollection
 
   storeIter(): IterableIterator<any> {
     return Object.entries(this.store)[Symbol.iterator]();
+  }
+
+  // append/prepend
+
+  // assume that adding a value by key adds to the end of the item
+  addAfter(item: any, key?: string) {
+    if (key === undefined) {
+      throw new Error('you must define a key to addAfter an item for a compound collection');
+    }
+    this.set(String(key), item);
+    return this
+  }
+
+  addBefore(item: any, key?: string) {
+    if (key === undefined) {
+      throw new Error('you must define a key to addAfter an item for a compound collection');
+    }
+    const temp = this.clone({quiet: true});
+    temp.clear();
+    temp.set(String(key), item);
+    this.forEach((fItem, fKey) => {
+      if (!this.compKeys(key, fKey)) {
+        temp.set(fKey, fItem);
+      }
+    });
+    this.update(temp.store, 'addBefore');
+    return this;
   }
 }

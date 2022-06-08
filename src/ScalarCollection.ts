@@ -1,7 +1,8 @@
 import Collection from './Collection';
-import { optionsObj } from './types';
+import { collectionObj, optionsObj, iteratorMethods, filterAction, reduceAction, orderingFn } from './types';
+import { clone } from './utils';
 
-export default class ScalarCollection extends Collection {
+export default class ScalarCollection extends Collection implements collectionObj<any, any, any> {
   protected _store: any;
 
   constructor(store: any, options?: optionsObj) {
@@ -18,19 +19,19 @@ export default class ScalarCollection extends Collection {
     return 0;
   }
 
-  set(_key, _item) {
+  set(_key: any, _item) {
     ScalarCollection.err('set');
     return this;
   }
 
   hasKey(_item) {
     ScalarCollection.err('hasKey');
-    return null;
+    return false;
   }
 
   hasItem(_item) {
     ScalarCollection.err('hasItem');
-    return null;
+    return false;
   }
 
   keyOf(_item) {
@@ -52,25 +53,87 @@ export default class ScalarCollection extends Collection {
     return [];
   }
 
-  deleteKey() {
+  deleteKey(_key) {
     ScalarCollection.err('delete');
+    return this;
   }
 
   clear() {
     this.update(undefined, 'clear');
+    return this;
   }
 
-  forEach() {
+  forEach(_action: iteratorMethods) {
     ScalarCollection.err('forEach');
+    return this;
   }
 
-  map() {
+  map(_action: iteratorMethods) {
     ScalarCollection.err('map');
-    return [];
+    return this;
   }
 
   reduce() {
     ScalarCollection.err('reduce');
     return null;
+  }
+
+  appendBefore(_item, _key?) {
+    ScalarCollection.err('reduce');
+    return null;
+  }
+
+  appendAfter(_item, _key?) {
+    ScalarCollection.err('reduce');
+    return null;
+  }
+
+  addAfter(_item: any, _key: any): collectionObj<any, any, any> {
+    ScalarCollection.err('addAfter');
+    return this;
+  }
+
+  addBefore(_item: any, _key: any): collectionObj<any, any, any> {
+    ScalarCollection.err('addAfter');
+    return this;
+  }
+
+  clone(opts?: optionsObj): collectionObj<any, any, any> {
+    return new ScalarCollection(clone(this.store), this.mergeOptions(opts));
+  }
+
+  deleteItem(_item: any): collectionObj<any, any, any> {
+    ScalarCollection.err('deleteItem');
+    return this;
+  }
+
+  filter(_action: filterAction): collectionObj<any, any, any> {
+    ScalarCollection.err('filter');
+    return this;
+  }
+
+  itemIter(_fromIter: boolean | undefined): IterableIterator<any> {
+    ScalarCollection.err('itemIter');
+    return [].entries()
+  }
+
+  keyIter(_fromIter: boolean | undefined): IterableIterator<any> {
+    ScalarCollection.err('keyIter');
+    return [].entries()
+  }
+
+  reduceC(_action: reduceAction, _initial: any): collectionObj<any, any, any> {
+    ScalarCollection.err('reduceC');
+    return this;
+  }
+
+  sort(_sorter: orderingFn | undefined): collectionObj<any, any, any> {
+    ScalarCollection.err('sort');
+    return this;
+  }
+
+  storeIter(_fromIter: boolean | undefined): IterableIterator<[any, any]> {
+    ScalarCollection.err('keyIter');
+    return [].entries()
   }
 }

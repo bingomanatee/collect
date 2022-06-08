@@ -68,9 +68,10 @@ export default class MapCollection extends CompoundCollection
 
   deleteKey(key) {
     const map = new Map(this.store);
-    this.keys.forEach((storeKey) => {
-      if (Match.sameKey(storeKey, key, this)) {
+    this.forEach((_item, storeKey, _store, stopper) => {
+      if (Match.sameKey(storeKey, key, this, Array.isArray(key))) {
         map.delete(storeKey);
+        stopper.stop();
       }
     });
     this.update(map, 'delete', key);

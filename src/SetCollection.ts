@@ -5,7 +5,7 @@ import type {
   filterAction,
   orderingFn,
   reduceAction,
-  typesMethods
+  iteratorMethods
 } from './types';
 import Stopper from './utils/Stopper';
 
@@ -76,7 +76,7 @@ export default class SetCollection extends Collection
     return this;
   }
 
-  forEach(action: typesMethods) {
+  forEach(action: iteratorMethods) {
     const set = this.clone(this.mergeOptions({ quiet: true }));
     const stopper = new Stopper();
 
@@ -145,7 +145,7 @@ export default class SetCollection extends Collection
     }, undefined);
   }
 
-  map(action: typesMethods) {
+  map(action: iteratorMethods) {
     const newItems = new Set();
     this.forEach((item, key, _store, stopper) => {
       const newItem = action(item, key, this.store, stopper);
@@ -206,5 +206,36 @@ export default class SetCollection extends Collection
 
   get size(): number {
     return this.store.size;
+  }
+
+  // append/prepend
+
+  addAfter(item, _key?: number | undefined) {
+    const set = new Set(this.store);
+    set.add(item);
+    this.update(set, 'addBefore');
+    return this;
+  }
+
+  addBefore(item, _key?: number | undefined) {
+    const set = new Set([item, ...this.items.filter((other) => !this.compItems(other, item))]);
+    this.update(set, 'addBefore');
+    return this;
+  }
+
+  removeFirst() {
+    const set = new Set(this.store);
+    const item = this.keys.shift();
+    set.delete(item);
+    this.update(set, 'removeFirst');
+    return item;
+  }
+
+  removeLast() {
+    const set = new Set(this.store);
+    const item = this.keys.pop();
+    set.delete(item);
+    this.update(set, 'removeFirst');
+    return item;
   }
 }

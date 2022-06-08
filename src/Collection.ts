@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable jest/no-export */
+
 import type {
   optionsObj,
   comparatorFn,

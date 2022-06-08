@@ -2,14 +2,14 @@ import type {
   collectionObj,
   optionsObj,
   filterAction,
-  typesMethods,
+  iteratorMethods,
   orderingFn,
   reduceAction,
 } from '../types';
 import { clone } from './change';
 import { DefEnum, FormEnum } from "../constants";
 
-export default class StandinCollection implements collectionObj<any, any, any> {
+export default class StandInCollection implements collectionObj<any, any, any> {
   compItems = (a, b) => a === b;
 
   compKeys = (a, b) => a === b;
@@ -36,7 +36,7 @@ export default class StandinCollection implements collectionObj<any, any, any> {
   }
 
   clone(newOptions?: optionsObj): collectionObj<any, any, any> {
-    return new StandinCollection(clone(this.store), newOptions);
+    return new StandInCollection(clone(this.store), newOptions);
   }
 
   get c() {
@@ -55,7 +55,7 @@ export default class StandinCollection implements collectionObj<any, any, any> {
     return this;
   }
 
-  forEach(_action: typesMethods): collectionObj<any, any, any> {
+  forEach(_action: iteratorMethods): collectionObj<any, any, any> {
     return this;
   }
 
@@ -81,7 +81,7 @@ export default class StandinCollection implements collectionObj<any, any, any> {
 
   keys: any[] = [];
 
-  map(_action: typesMethods): collectionObj<any, any, any> {
+  map(_action: iteratorMethods): collectionObj<any, any, any> {
     return this;
   }
 
@@ -124,5 +124,14 @@ export default class StandinCollection implements collectionObj<any, any, any> {
 
   storeIter() {
     return this.store[Symbol.iterator]();
+  }
+  // prepend/append
+
+  addAfter(_item: any, _key?: number | undefined) {
+    return this;
+  }
+
+  addBefore(_item: any, _key?: number | undefined) {
+    return this;
   }
 }
