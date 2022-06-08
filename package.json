@@ -1,13 +1,13 @@
 {
-  "version": "0.1.9",
+  "version": "0.1.13",
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
-  "module": "dist/collections.esm.js",
-  "typings": "dist/index.d.ts",
+  "module": "dist/collect.esm.js",
   "files": [
     "dist",
     "src",
+    "types",
     "README.md"
   ],
   "engines": {
@@ -29,8 +29,7 @@
   "author": "David Edelhart",
   "dependencies": {
     "lodash.clonedeep": "^4.5.0",
-    "lodash.tostring": "^4.1.4",
-    "parcel": "^2.6.0"
+    "lodash.tostring": "^4.1.4"
   },
   "devDependencies": {
     "@open-wc/building-rollup": "^2.0.1",
@@ -44,7 +43,9 @@
     "lodash-es": "^4.17.21",
     "rimraf": "^3.0.2",
     "rollup": "^2.75.6",
+    "rollup-plugin-dts": "^4.2.2",
     "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.32.1",
     "size-limit": "^7.0.8",
     "tap": "^16.2.0",
