@@ -1,20 +1,23 @@
-import create from '../src';
+import tap from 'tap';
+import pkg from '../dist/index.js';
 
-describe('change', () => {
-  describe('array', () => {
-    it('injects a value', () => {
+const { create } = pkg;
+
+tap.test('change', (suite) => {
+  suite.test('array', (arrayTest) => {
+    arrayTest.test('injects a value', (gsd) => {
       const START_STORE = [1, 2, 3];
       const start = create(START_STORE);
-      expect(start.store).toBe(START_STORE);
+      gsd.same(start.store, START_STORE);
 
-      const updates: any[] = [];
-      start.onChange = (store: any, method: string, input?: any) => {
+      const updates = [];
+      start.onChange = (store, method, input) => {
         updates.push({ store, method, input });
       };
       start.change([2, 3, 4]);
 
-      expect(start.store).toEqual([2, 3, 4]);
-      expect(updates).toEqual([
+      gsd.same(start.store, [2, 3, 4]);
+      gsd.same(updates, [
         {
           input: [],
           method: 'change',
@@ -22,16 +25,17 @@ describe('change', () => {
         },
       ]);
 
-      expect(start.store === START_STORE).toBeFalsy();
+      gsd.notOk(start.store === START_STORE);
+      gsd.end();
     });
 
-    it('modifies AND RETURNS a value', () => {
+    arrayTest.test('modifies AND RETURNS a value', (gsd) => {
       const START_STORE = [1, 2, 3];
       const start = create(START_STORE);
-      expect(start.store).toBe(START_STORE);
+      gsd.same(start.store, START_STORE);
 
-      const updates: any[] = [];
-      start.onChange = (store: any, method: string, input?: any) => {
+      const updates = [];
+      start.onChange = (store, method, input) => {
         updates.push({ store, method, input });
       };
       start.change(fromStore => {
@@ -40,8 +44,8 @@ describe('change', () => {
         return fromStore;
       });
 
-      expect(start.store).toEqual([2, 3, 4]);
-      expect(updates).toEqual([
+      gsd.same(start.store, [2, 3, 4]);
+      gsd.same(updates, [
         {
           input: [],
           method: 'change',
@@ -49,17 +53,18 @@ describe('change', () => {
         },
       ]);
 
-      expect(start.store === START_STORE).toBeFalsy();
+      gsd.notOk(start.store === START_STORE);
+      gsd.end();
       // even though the mutator "modifies" the store, it operates ona clone, so
     });
 
-    it('modifies BUT DOES NOT RETURN a value', () => {
+    arrayTest.test('modifies BUT DOES NOT RETURN a value', (gsd) => {
       const START_STORE = [1, 2, 3];
       const start = create(START_STORE);
-      expect(start.store).toBe(START_STORE);
+      gsd.same(start.store, START_STORE);
 
-      const updates: any[] = [];
-      start.onChange = (store: any, method: string, input?: any) => {
+      const updates = [];
+      start.onChange = (store, method, input) => {
         updates.push({ store, method, input });
       };
       start.change(fromStore => {
@@ -67,8 +72,8 @@ describe('change', () => {
         fromStore.push(4);
       });
 
-      expect(start.store).toEqual([2, 3, 4]);
-      expect(updates).toEqual([
+      gsd.same(start.store, [2, 3, 4]);
+      gsd.same(updates, [
         {
           input: [],
           method: 'change',
@@ -76,42 +81,45 @@ describe('change', () => {
         },
       ]);
 
-      expect(start.store === START_STORE).toBeFalsy();
+      gsd.notOk(start.store === START_STORE);
+      gsd.end();
       // even though the mutator "modifies" the store, it operates ona clone, so
     });
 
-    it('throws on a wrong returned type', () => {
+    arrayTest.test('throws on a wrong returned type', (gsd) => {
       const START_STORE = [1, 2, 3];
       const start = create(START_STORE);
-      expect(start.store).toBe(START_STORE);
+      gsd.same(start.store, START_STORE);
 
-      const updates: any[] = [];
-      start.onChange = (store: any, method: string, input?: any) => {
+      const updates = [];
+      start.onChange = (store, method, input) => {
         updates.push({ store, method, input });
       };
-      expect(() =>
+      gsd.throws(() =>
         start.change(fromStore => {
           const out = {};
           fromStore.forEach((value, key) => (out[key] = value));
           return out;
         })
-      ).toThrow();
+      );
+      gsd.end();
     });
+    arrayTest.end();
   });
-  describe('object', () => {
-    it('injects a value', () => {
+  suite.test('object', (objectTest) => {
+    objectTest.test('injects a value', (gsd) => {
       const START_STORE = { x: 10, y: 20 };
       const start = create(START_STORE);
-      expect(start.store).toBe(START_STORE);
+      gsd.same(start.store, START_STORE);
 
-      const updates: any[] = [];
-      start.onChange = (store: any, method: string, input?: any) => {
+      const updates = [];
+      start.onChange = (store, method, input) => {
         updates.push({ store, method, input });
       };
       start.change({ x: 30, y: 40 });
 
-      expect(start.store).toEqual({ x: 30, y: 40 });
-      expect(updates).toEqual([
+      gsd.same(start.store, { x: 30, y: 40 });
+      gsd.same(updates, [
         {
           input: [],
           method: 'change',
@@ -119,16 +127,17 @@ describe('change', () => {
         },
       ]);
 
-      expect(start.store === START_STORE).toBeFalsy();
+      gsd.notOk(start.store === START_STORE);
+      gsd.end();
     });
 
-    it('modifies AND RETURNS a value', () => {
+    objectTest.test('modifies AND RETURNS a value', (gsd) => {
       const START_STORE = { x: 10, y: 20 };
       const start = create(START_STORE);
-      expect(start.store).toBe(START_STORE);
+      gsd.same(start.store, START_STORE);
 
-      const updates: any[] = [];
-      start.onChange = (store: any, method: string, input?: any) => {
+      const updates = [];
+      start.onChange = (store, method, input) => {
         updates.push({ store, method, input });
       };
       start.change(fromStore => {
@@ -137,8 +146,8 @@ describe('change', () => {
         return fromStore;
       });
 
-      expect(start.store).toEqual({ x: 20, y: 40 });
-      expect(updates).toEqual([
+      gsd.same(start.store, { x: 20, y: 40 });
+      gsd.same(updates, [
         {
           input: [],
           method: 'change',
@@ -146,17 +155,18 @@ describe('change', () => {
         },
       ]);
 
-      expect(start.store === START_STORE).toBeFalsy();
+      gsd.notOk(start.store === START_STORE);
+      gsd.end();
       // even though the mutator "modifies" the store, it operates ona clone, so
     });
 
-    it('modifies BUT DOES NOT RETURN a value', () => {
+    objectTest.test('modifies BUT DOES NOT RETURN a value', (gsd) => {
       const START_STORE = [1, 2, 3];
       const start = create(START_STORE);
-      expect(start.store).toBe(START_STORE);
+      gsd.same(start.store, START_STORE);
 
-      const updates: any[] = [];
-      start.onChange = (store: any, method: string, input?: any) => {
+      const updates = [];
+      start.onChange = (store, method, input) => {
         updates.push({ store, method, input });
       };
       start.change(fromStore => {
@@ -164,8 +174,8 @@ describe('change', () => {
         fromStore.push(4);
       });
 
-      expect(start.store).toEqual([2, 3, 4]);
-      expect(updates).toEqual([
+      gsd.same(start.store, [2, 3, 4]);
+      gsd.same(updates, [
         {
           input: [],
           method: 'change',
@@ -173,26 +183,28 @@ describe('change', () => {
         },
       ]);
 
-      expect(start.store === START_STORE).toBeFalsy();
+      gsd.notOk(start.store === START_STORE);
+      gsd.end();
       // even though the mutator "modifies" the store, it operates ona clone, so
     });
+    objectTest.end();
   });
 
-  describe('set', () => {
+  suite.test('set', (setTest) => {
     const START_STORE = [10, 20];
-    it('injects a value', () => {
+    setTest.test('injects a value', (gsd) => {
       const start = create(new Set(START_STORE));
-      expect(start.store).toEqual(new Set(START_STORE));
+      gsd.same(start.store, new Set(START_STORE));
 
-      const updates: any[] = [];
-      start.onChange = (store: any, method: string, input?: any) => {
+      const updates = [];
+      start.onChange = (store, method, input) => {
         updates.push({ store, method, input });
       };
       const UPDATE = new Set([3, 4]);
       start.change(UPDATE);
 
-      expect(start.store).toEqual(UPDATE);
-      expect(updates).toEqual([
+      gsd.same(start.store, UPDATE);
+      gsd.same(updates, [
         {
           input: [],
           method: 'change',
@@ -200,26 +212,27 @@ describe('change', () => {
         },
       ]);
 
-      expect(start.store === START_STORE).toBeFalsy();
+      gsd.notOk(start.store === START_STORE);
+      gsd.end();
     });
 
-    xit('modifies AND RETURNS a value', () => {
+    setTest.test('modifies AND RETURNS a value', (gsd) => {
       const start = create(new Set(START_STORE));
-      expect(start.store).toEqual(new Set(START_STORE));
+      gsd.same(start.store, new Set(START_STORE));
 
-      const updates: any[] = [];
-      start.onChange = (store: any, method: string, input?: any) => {
+      const updates = [];
+      start.onChange = (store, method, input) => {
         updates.push({ store, method, input });
       };
       start.change(fromStore => {
-        const data: Array<any> = [];
+        const data = [];
         fromStore.forEach(([item]) => data.push(item * 2));
         return new Set(data);
       });
 
       const UPDATED = new Set([20, 40]);
-      expect(start.store).toEqual(UPDATED);
-      expect(updates).toEqual([
+      gsd.same(start.store, UPDATED);
+      gsd.same(updates, [
         {
           input: [],
           method: 'change',
@@ -227,16 +240,17 @@ describe('change', () => {
         },
       ]);
 
-      expect(start.store === START_STORE).toBeFalsy();
+      gsd.notOk(start.store === START_STORE);
+      gsd.end();
       // even though the mutator "modifies" the store, it operates ona clone, so
-    });
+    }, { skip: true });
 
-    xit('modifies BUT DOES NOT RETURN a value', () => {
+    setTest.test('modifies BUT DOES NOT RETURN a value', (gsd) => {
       const start = create(new Set(START_STORE));
-      expect(start.store).toEqual(new Set(START_STORE));
+      gsd.same(start.store, new Set(START_STORE));
 
-      const updates: any[] = [];
-      start.onChange = (store: any, method: string, input?: any) => {
+      const updates = [];
+      start.onChange = (store, method, input) => {
         updates.push({ store, method, input });
       };
       start.change(fromStore => {
@@ -245,8 +259,8 @@ describe('change', () => {
       });
 
       const UPDATED = new Set([20, 40]);
-      expect(start.store).toEqual(UPDATED);
-      expect(updates).toEqual([
+      gsd.same(start.store, UPDATED);
+      gsd.same(updates, [
         {
           input: [],
           method: 'change',
@@ -254,8 +268,11 @@ describe('change', () => {
         },
       ]);
 
-      expect(start.store === START_STORE).toBeFalsy();
+      gsd.notOk(start.store === START_STORE);
+      gsd.end();
       // even though the mutator "modifies" the store, it operates ona clone, so
-    });
+    }, { skip: true });
+    setTest.end();
   });
+  suite.end();
 });

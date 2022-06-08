@@ -1,5 +1,8 @@
-import { FormEnum, TypeEnum } from '../src/types';
-import create from '../src/create';
+import _ from 'lodash';
+import tap from 'tap';
+import pkg from '../dist/index.js';
+
+const { utils: { compare }, create } = pkg;
 
 describe('type,form detection', () => {
   it('detects strings', () => {
@@ -27,7 +30,7 @@ describe('type,form detection', () => {
   });
 
   it('detects objects', () => {
-    const c = create({ foo: 'bar' });
+    const c = create({foo: 'bar'});
     expect(c.form).toBe(FormEnum.object);
     expect(c.type).toBe(FormEnum.object);
   });

@@ -1,8 +1,11 @@
-import create from '../src';
+import tap from 'tap';
+import pkg from '../dist/index.js';
 
-describe('iter', () => {
-  describe('storeIter', () => {
-    it('should iterate over Object', () => {
+const { create } = pkg;
+
+tap.test('iter', (suite) => {
+  suite.test('storeIter', (storeTest) => {
+    storeTest.test('should iterate over Object', (objectTest) => {
       const oc = create({
         x: 1,
         y: 2,
@@ -11,81 +14,87 @@ describe('iter', () => {
 
       const iter = oc.storeIter();
 
-      const pairs: any[] = [];
+      const pairs = [];
       for (const item of iter) {
         pairs.push(item);
       }
-      expect(new Set(pairs)).toEqual(
+      objectTest.same(new Set(pairs),
         new Set([
           ['x', 1],
           ['y', 2],
           ['z', 3],
         ])
       );
+      objectTest.end();
     });
 
-    it('should iterate over Map items', () => {
+    storeTest.test('should iterate over Map items', (mapTest) => {
       const oc = create(new Map());
       oc.set('x', 1)
         .set('y', 2)
         .set('z', 3);
 
       const iter = oc.storeIter();
-      const items: any[] = [];
+      const items = [];
 
       for (const item of iter) {
         items.push(item);
       }
 
-      expect(new Set(items)).toEqual(
+      mapTest.same(new Set(items),
         new Set([
           ['x', 1],
           ['y', 2],
           ['z', 3],
         ])
       );
+      mapTest.end();
     });
 
-    it('should iterate over Array items', () => {
+    storeTest.test('should iterate over Array items', (arrayTest) => {
       const ac = create(['a', 'b', 'c']);
 
       const iter = ac.storeIter();
-      const items: any[] = [];
+      const items = [];
 
       for (const item of iter) {
         items.push(item);
       }
 
-      expect(new Set(items)).toEqual(
-        new Set([
+      arrayTest.same(items,
+        [
           [0, 'a'],
           [1, 'b'],
           [2, 'c'],
-        ])
+        ]
       );
+
+      arrayTest.end();
     });
 
-    it('should iterate over String items', () => {
+    storeTest.test('should iterate over String items', (stringTest) => {
       const oc = create('xyz');
 
       const iter = oc.storeIter();
-      const items: any[] = [];
+      const items = [];
 
       for (const item of iter) {
         items.push(item);
       }
 
-      expect(new Set(items)).toEqual(
-        new Set([
+      stringTest.same(items,
+        [
           [0, 'x'],
           [1, 'y'],
           [2, 'z'],
-        ])
+        ]
       );
+      stringTest.end();
     });
+    storeTest.end();
   });
-  describe('itemIter', () => {
-    it('should iterate over Object items', () => {
+  suite.test('itemIter', (itemIterTest) => {
+    itemIterTest.test('should iterate over Object items', (objectTest) => {
       const oc = create({
         x: 1,
         y: 2,
@@ -93,59 +102,64 @@ describe('iter', () => {
       });
 
       const iter = oc.itemIter();
-      const items: any[] = [];
+      const items = [];
 
       for (const item of iter) {
         items.push(item);
       }
 
-      expect(new Set(items)).toEqual(new Set([1, 2, 3]));
+      objectTest.same(new Set(items), new Set([1, 2, 3]));
+      objectTest.end();
     });
 
-    it('should iterate over Map items', () => {
+    itemIterTest.test('should iterate over Map items', (mapTest) => {
       const oc = create(new Map());
       oc.set('x', 1)
         .set('y', 2)
         .set('z', 3);
 
       const iter = oc.itemIter();
-      const items: any[] = [];
+      const items = [];
 
       for (const item of iter) {
         items.push(item);
       }
 
-      expect(new Set(items)).toEqual(new Set([1, 2, 3]));
+      mapTest.test(new Set(items), new Set([1, 2, 3]));
+      mapTest.end();
     });
 
-    it('should iterate over Array items', () => {
+    itemIterTest.test('should iterate over Array items', (arrayTest) => {
       const oc = create([1, 2, 3]);
 
       const iter = oc.itemIter();
-      const items: any[] = [];
+      const items = [];
 
       for (const item of iter) {
         items.push(item);
       }
 
-      expect(new Set(items)).toEqual(new Set([1, 2, 3]));
+      arrayTest.same(new Set(items), new Set([1, 2, 3]));
+      arrayTest.end();
     });
 
-    it('should iterate over String items', () => {
+    itemIterTest.test('should iterate over String items', (stringTest) => {
       const oc = create('xyz');
 
       const iter = oc.itemIter();
-      const items: any[] = [];
+      const items = [];
 
       for (const item of iter) {
         items.push(item);
       }
 
-      expect(new Set(items)).toEqual(new Set(['x', 'y', 'z']));
+      stringTest.same(new Set(items), new Set(['x', 'y', 'z']));
+      stringTest.end();
     });
+    itemIterTest.end();
   });
-  describe('keyIter', () => {
-    it('should iterate over Object keys', () => {
+  suite.test('keyIter', (keyIterTest) => {
+    keyIterTest.test('should iterate over Object keys', (objectTest) => {
       const oc = create({
         x: 1,
         y: 2,
@@ -153,59 +167,64 @@ describe('iter', () => {
       });
 
       const iter = oc.keyIter();
-      const keys: any[] = [];
+      const keys = [];
 
       for (const item of iter) {
         keys.push(item);
       }
 
-      expect(new Set(keys)).toEqual(new Set(['x', 'y', 'z']));
+      objectTest.same(new Set(keys), new Set(['x', 'y', 'z']));
+      objectTest.end();
     });
 
-    it('should iterate over Map keys', () => {
+    keyIterTest.test('should iterate over Map keys', (mapTest) => {
       const oc = create(new Map());
       oc.set('x', 1)
         .set('y', 2)
         .set('z', 3);
 
       const iter = oc.keyIter();
-      const keys: any[] = [];
+      const keys = [];
 
       for (const item of iter) {
         keys.push(item);
       }
 
-      expect(new Set(keys)).toEqual(new Set(['x', 'y', 'z']));
+      mapTest.same(new Set(keys), new Set(['x', 'y', 'z']));
+      mapTest.end();
     });
 
-    it('should iterate over Array keys', () => {
+    keyIterTest.test('should iterate over Array keys', (arrayTest) => {
       const oc = create([1, 2, 3]);
 
       const iter = oc.keyIter();
-      const keys: any[] = [];
+      const keys = [];
 
       for (const item of iter) {
         keys.push(item);
       }
 
-      expect(new Set(keys)).toEqual(new Set([0, 1, 2]));
+      arrayTest.same(new Set(keys), new Set([0, 1, 2]));
+      arrayTest.end();
     });
 
-    it('should iterate over String keys', () => {
+    keyIterTest.test('should iterate over String keys', (stringTest) => {
       const oc = create('xyz');
 
       const iter = oc.keyIter();
-      const keys: any[] = [];
+      const keys = [];
 
       for (const item of iter) {
         keys.push(item);
       }
 
-      expect(new Set(keys)).toEqual(new Set([0, 1, 2]));
+      stringTest.same(new Set(keys), new Set([0, 1, 2]));
+      stringTest.end();
     });
+    keyIterTest.end();
   });
 
-  xit('loops - example from docs', () => {
+  suite.test('loops - example from docs', (loops) => {
     const collect = create;
 
     const numbers = collect([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
@@ -219,17 +238,23 @@ describe('iter', () => {
     console.log('sum of all', sumOfAll); // 550
 
     const sumOfFive = numbers.reduce((memo, item, key, _store, stopper) => {
-      if (key === 4) stopper.stopAfterThis();
+      if (key === 4) {
+        stopper.stopAfterThis();
+      }
       return memo + item;
     }, 0);
 
     console.log('sum of first five', sumOfFive); // 150
 
     const sumOfFour = numbers.reduce((memo, item, key, _store, stopper) => {
-      if (key === 4) stopper.stop();
+      if (key === 4) {
+        stopper.stop();
+      }
       return memo + item;
     }, 0);
 
     console.log('sum of four', sumOfFour); // 100
-  });
+    loops.end();
+  }, { skip: true });
+  suite.end();
 });

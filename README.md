@@ -52,6 +52,7 @@ Why are all the points stored differently? Because the key identity test is usin
 But because comparators are part of the collection api you can do this:
 
 ```javascript
+import { create } from '@#wonderlandlabs.collect';
 
 const mapStore = create(new Map(), {
   compKeys(key1, key2) {

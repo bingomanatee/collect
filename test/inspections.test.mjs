@@ -1,103 +1,100 @@
-import create from '../src';
-import { Debug } from '../src/utils/debug';
+import tap from 'tap';
+import pkg from '../dist/index.js';
 
-describe('inspections', () => {
-  beforeEach(() => {
-    Debug.init();
-  });
-  describe('scalars', () => {
-    it('fails on most inspections', () => {
-      const c = create(2);
-      expect(c.size).toBe(0);
-      expect(() => c.hasKey(1)).toThrow(
-        'hasKey not available for scalar collection'
-      );
-      expect(() => c.hasItem(1)).toThrow(
-        'hasItem not available for scalar collection'
-      );
-      expect(() => c.keys).toThrow('keys not available for scalar collection');
-      expect(() => c.items).toThrow(
-        'items not available for scalar collection'
-      );
-      expect(() => c.keyOf(1)).toThrow(
-        'keyOf not available for scalar collection'
-      );
-    });
+const { create } = pkg;
+
+tap.test('inspections', (suite) => {
+  suite.test('scalars', (scalarsTest) => {
+    const c = create(2);
+    scalarsTest.same(c.size, 0);
+    scalarsTest.throws(() => c.hasKey(1),
+      'hasKey not available for scalar collection'
+    );
+    scalarsTest.throws(() => c.hasItem(1),
+      'hasItem not available for scalar collection'
+    );
+    scalarsTest.throws(() => c.keys, 'keys not available for scalar collection');
+    scalarsTest.throws(() => c.items,
+      'items not available for scalar collection'
+    );
+    scalarsTest.throws(() => c.keyOf(1),
+      'keyOf not available for scalar collection'
+    );
+    scalarsTest.end();
   });
 
-  describe('strings', () => {
+  suite.test('strings', (stringTest) => {
     const STRING = 'a long winter';
     const sc = create(STRING);
 
-    expect(sc.size).toBe(STRING.length);
-    expect(sc.hasItem('w')).toBeTruthy();
-    expect(sc.hasItem('z')).toBeFalsy();
-    expect(sc.keys).toEqual(STRING.split('').map((_c, i) => i));
-    expect(sc.items).toEqual(STRING.split(''));
-    expect(sc.keyOf('w')).toBe(STRING.indexOf('w'));
-    expect(sc.keyOf('z')).toBeUndefined();
+    stringTest.same(sc.size, STRING.length);
+    stringTest.ok(sc.hasItem('w'))
+    stringTest.notOk(sc.hasItem('z'));
+    stringTest.same(sc.keys, STRING.split('').map((_c, i) => i));
+    stringTest.same(sc.items, STRING.split(''));
+    stringTest.same(sc.keyOf('w'), STRING.indexOf('w'));
+    stringTest.notOk(sc.keyOf('z'));
+    stringTest.end();
   });
 
-  describe('Map', () => {
-    it('has the expected inspection behavior', () => {
-      const m = new Map<any, any>([
-        ['x', 100],
-        ['y', 200],
-      ]);
+  suite.test('Map', (mapTest) => {
 
-      const mc = create(m);
+    const m = new Map([
+      ['x', 100],
+      ['y', 200],
+    ]);
 
-      expect(mc.size).toBe(2);
-      expect(mc.hasItem(200)).toBeTruthy();
-      expect(mc.hasItem(500)).toBeFalsy();
-      expect(mc.keys).toEqual(['x', 'y']);
-      expect(mc.items).toEqual([100, 200]);
-      expect(mc.keyOf(200)).toBe('y');
-      expect(mc.keyOf(400)).toBeUndefined();
-    });
+    const mc = create(m);
+
+    mapTest.same(mc.size, 2);
+    mapTest.ok(mc.hasItem(200));
+    mapTest.notOk(mc.hasItem(500));
+    mapTest.same(mc.keys, ['x', 'y']);
+    mapTest.same(mc.items, [100, 200]);
+    mapTest.same(mc.keyOf(200), 'y');
+    mapTest.notOk(mc.keyOf(400));
+    mapTest.end();
   });
 
-  describe('Array', () => {
-    it('has the expected inspection behavior', () => {
-      const list = ['a', 1, 'b', 2, 'c', 3];
+  suite.test('Array', (arrayTest) => {
+    const list = ['a', 1, 'b', 2, 'c', 3];
 
-      const ac = create(list);
+    const ac = create(list);
 
-      expect(ac.size).toBe(6);
-      expect(ac.hasItem('a')).toBeTruthy();
-      expect(ac.hasItem(3)).toBeTruthy();
-      expect(ac.hasItem(4)).toBeFalsy();
+    arrayTest.same(ac.size, list.length);
+    arrayTest.ok(ac.hasItem('a'));
+    arrayTest.ok(ac.hasItem(3));
+    arrayTest.notOk(ac.hasItem(4));
 
-      expect(ac.keys).toEqual([0, 1, 2, 3, 4, 5]);
-    });
+    arrayTest.same(ac.keys, [0, 1, 2, 3, 4, 5]);
+    arrayTest.end();
   });
 
-  describe('Object', () => {
-    it('has the expected inspection behavior', () => {
-      const p = { name: 'home', x: 100, y: 200, z: 300 };
+  suite.test('Object', (objectTest) => {
+    const p = { name: 'home', x: 100, y: 200, z: 300 };
 
-      const objCollection = create(p);
+    const objCollection = create(p);
 
-      expect(objCollection.size).toBe(4);
-      expect(objCollection.hasItem('home')).toBeTruthy();
-      expect(objCollection.hasItem(300)).toBeTruthy();
-      expect(objCollection.hasItem(400)).toBeFalsy();
+    objectTest.same(objCollection.size, 4);
+    objectTest.ok(objCollection.hasItem('home'));
+    objectTest.ok(objCollection.hasItem(300));
+    objectTest.notOk(objCollection.hasItem(400));
 
-      expect(objCollection.keys).toEqual(['name', 'x', 'y', 'z']);
-    });
+    objectTest.same(objCollection.keys, ['name', 'x', 'y', 'z']);
+    objectTest.end();
   });
 
-  describe('Set', () => {
+  suite.test('Set', (setTest) => {
     const VALUES = ['home', 100, 200, 300];
-    it('has the expected inspection behavior', () => {
-      const setCollection = create(new Set(VALUES));
+    const setCollection = create(new Set(VALUES));
 
-      expect(setCollection.size).toBe(4);
-      expect(setCollection.hasItem('home')).toBeTruthy();
-      expect(setCollection.hasItem(300)).toBeTruthy();
-      expect(setCollection.hasItem(400)).toBeFalsy();
+    setTest.same(setCollection.size, 4);
+    setTest.ok(setCollection.hasItem('home'));
+    setTest.ok(setCollection.hasItem(300));
+    setTest.notOk(setCollection.hasItem(400));
 
-      expect(setCollection.keys).toEqual([0, 1, 2, 3]);
-    });
+    setTest.same(setCollection.keys, ([0, 1, 2, 3]));
+    setTest.end();
   });
+  suite.end();
 });

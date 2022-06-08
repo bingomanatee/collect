@@ -127,7 +127,9 @@ describe('walkers', () => {
         const ac = create([1, 2, 3, 5, 8, 13, 21, 34]);
 
         const sum = ac.reduce((sum, value, _k, _a, stopper) => {
-          if (sum > 30) stopper.stop();
+          if (sum > 30) {
+            stopper.stop();
+          }
           return sum + value;
         }, 0);
 
@@ -138,7 +140,9 @@ describe('walkers', () => {
         const ac = create([1, 2, 3, 5, 8, 13, 21, 34]);
 
         const sum = ac.reduce((sum, value, _k, _a, stopper) => {
-          if (sum > 30) stopper.stopAfterThis();
+          if (sum > 30) {
+            stopper.stopAfterThis();
+          }
           return sum + value;
         }, 0);
 
@@ -210,7 +214,9 @@ describe('walkers', () => {
         const ac = create([2, 4, 6, 8, 10, 12, 14, 16, 18, 20]);
 
         ac.map((v, index, _list, stopper) => {
-          if (index > 6) stopper.stop();
+          if (index > 6) {
+            stopper.stop();
+          }
           return v * 2;
         });
 
@@ -221,7 +227,9 @@ describe('walkers', () => {
         const ac = create([2, 4, 6, 8, 10, 12, 14, 16, 18, 20]);
 
         ac.map((v, index, _list, stopper) => {
-          if (index > 6) stopper.stopAfterThis();
+          if (index > 6) {
+            stopper.stopAfterThis();
+          }
           return v * 2;
         });
 
@@ -252,7 +260,9 @@ describe('walkers', () => {
         });
 
         oc.map((value, key, _obj, stopper) => {
-          if (value > 30) stopper.stop();
+          if (value > 30) {
+            stopper.stop();
+          }
           return `${key}=${value}`;
         });
         expect(oc.store).toEqual({
