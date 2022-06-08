@@ -1,8 +1,9 @@
 import create from './create';
 import Collection from './Collection';
-import { KeyValue } from './KeyValue';
-import * as types from './types';
+import * as utils from './utils';
+import * as constants from "./constants.export";
+import * as enums from './constants';
 Collection.create = create;
 export default create;
 
-export { KeyValue, types };
+export { create, utils, constants, enums };

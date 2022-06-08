@@ -1,7 +1,6 @@
 import CompoundCollection from './CompoundCollection';
-import { collectionObj, optionsObj } from './types';
-import { Match } from './utils/Match';
-import { orderingFn } from './types.methods';
+import type { collectionObj, optionsObj, orderingFn } from './types';
+import Match from './utils/Match';
 import { clone } from './utils/change';
 import compare from './utils/compare';
 
@@ -49,7 +48,7 @@ export default class MapCollection extends CompoundCollection
   sort(sorter: orderingFn = compare): collectionObj<Map<any, any>, any, any> {
     const map = new Map();
     const sortedKeys = Array.from(this.keys).sort(this.sorter(sorter));
-    for (let i = 0; i < sortedKeys.length; i++) {
+    for (let i = 0; i < sortedKeys.length; i += 1) {
       const key = sortedKeys[i];
       map.set(key, this.store.get(key));
     }
@@ -69,26 +68,27 @@ export default class MapCollection extends CompoundCollection
 
   deleteKey(key) {
     const map = new Map(this.store);
-    for (const storeKey of this.keys) {
-      if (Match.sameKey(storeKey, key, this)) {
+    this.forEach((_item, storeKey, _store, stopper) => {
+      if (Match.sameKey(storeKey, key, this, Array.isArray(key))) {
         map.delete(storeKey);
+        stopper.stop();
       }
-    }
+    });
     this.update(map, 'delete', key);
     return this;
   }
 
   // iterators
 
-  keyIter(): IterableIterator<any> | undefined {
+  keyIter(): IterableIterator<any> {
     return this._store.keys();
   }
 
-  itemIter(): IterableIterator<any> | undefined {
+  itemIter(): IterableIterator<any> {
     return this._store.values();
   }
 
-  storeIter(): IterableIterator<any> | undefined {
+  storeIter(): IterableIterator<any> {
     return this._store.entries();
   }
 }

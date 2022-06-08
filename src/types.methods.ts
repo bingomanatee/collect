@@ -1,4 +1,4 @@
-import { Stopper } from './utils/Stopper';
+import Stopper from './utils/Stopper';
 import { keyType } from './types';
 
 export type typesMethods = (

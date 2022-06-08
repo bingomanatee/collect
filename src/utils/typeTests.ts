@@ -1,4 +1,3 @@
-import { FormEnum, TypeEnum } from '../types';
 import {
   isArr,
   isDate,
@@ -11,8 +10,8 @@ import {
   isSymbol,
   isUndefined,
 } from './tests';
+import {FormEnum, TypeEnum} from "../constants";
 
-// @ts-ignore
 export const TESTS = [
   { name: TypeEnum.undefined, test: isUndefined, isForm: false },
   { name: FormEnum.map, test: isMap, isForm: true },

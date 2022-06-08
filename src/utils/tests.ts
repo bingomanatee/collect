@@ -1,9 +1,13 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { DefEnum, FormEnum, TypeEnum } from '../types';
-import { ABSENT } from '../types';
+import {
+  DefEnum,
+  FormEnum,
+  TypeEnum
+} from '../constants';
+import { ABSENT } from "../constants.export";
 
 export function typeTest(type) {
-  return value => typeof value === type;
+  return (value) => typeof value === type;
 }
 
 export function isThere(item) {
@@ -28,7 +32,7 @@ export function isArr(a, nonEmpty = false) {
   return !!(Array.isArray(a) && (!nonEmpty || a.length));
 }
 
-export const isMap = m => m && m instanceof Map;
+export const isMap = (m) => m instanceof Map;
 
 /**
  * returns true if the object is a POJO object -- that is,
@@ -44,9 +48,9 @@ export function isObj(o, isAnyObj = false) {
 
 export const isFn = typeTest('function');
 
-export const isDate = d => d instanceof Date;
+export const isDate = (d) => d instanceof Date;
 
-export const isSet = d => d instanceof Set;
+export const isSet = (d) => d instanceof Set;
 
 export const isSymbol = typeTest('symbol');
 
@@ -83,7 +87,6 @@ export function isStr(s, nonEmpty = false) {
 
 export const isUndefined = typeTest('undefined');
 
-// @ts-ignore
 export const TESTS = [
   { name: TypeEnum.undefined, test: isUndefined, isForm: false },
   { name: FormEnum.map, test: isMap, isForm: true },
@@ -95,7 +98,7 @@ export const TESTS = [
   { name: FormEnum.object, test: isObj, isForm: true },
   { name: TypeEnum.string, test: isStr, isForm: false },
   { name: TypeEnum.number, test: isNum, isForm: false },
-  { name: FormEnum.scalar, test: () => true, isForm: true },
+  { name: FormEnum.scalar, test: () => true, isForm: true }
 ];
 
 /**
@@ -103,7 +106,7 @@ export const TESTS = [
  * @param value
  */
 export function detectForm(value: any): FormEnum {
-  for (let i = 0; i < TESTS.length; ++i) {
+  for (let i = 0; i < TESTS.length; i += 1) {
     const def = TESTS[i];
     if (!def.isForm) {
       continue;
@@ -122,12 +125,12 @@ export function formIsCompound(form: FormEnum) {
     FormEnum.map,
     FormEnum.array,
     FormEnum.object,
-    FormEnum.set,
+    FormEnum.set
   ].includes(form);
 }
 
 export function detectType(value: any) {
-  for (let i = 0; i < TESTS.length; ++i) {
+  for (let i = 0; i < TESTS.length; i += 1) {
     const def = TESTS[i];
     if (def.isForm) {
       continue;

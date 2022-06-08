@@ -1,10 +1,7 @@
-export enum stopperEnum {
-  continue,
-  last, // process the return value, but stop iteration
-  stop, //do not process the return value - stop immediately
-}
+import type { StopperObj } from '../types';
+import { stopperEnum } from "../constants";
 
-export class Stopper {
+export default class Stopper implements StopperObj {
   public state = stopperEnum.continue;
 
   get isActive() {

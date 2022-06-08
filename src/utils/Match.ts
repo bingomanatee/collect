@@ -1,6 +1,6 @@
-import { optionsObj } from '../types';
+import type { optionsObj } from '../types';
 
-export abstract class Match {
+export default abstract class Match {
   static sameKey(
     key: any,
     k2: any,
@@ -8,24 +8,8 @@ export abstract class Match {
     many = true, // individually compare keys if arrays
     debug = false
   ) {
-    if (!context?.compKeys) {
-      if (debug) {
-        console.log('Match: no comparator for keys; returning === comparison');
-      }
-      return key === k2;
-    }
     if (many && Array.isArray(k2)) {
-      if (debug) {
-        console.log(
-          'comparing individual keys:',
-          k2,
-          'to',
-          key,
-          'context.compKeys = ',
-          context?.compKeys
-        );
-      }
-      return k2.some(otherSubKey => {
+      return k2.some((otherSubKey) => {
         const use = context?.compKeys
           ? context.compKeys(key, otherSubKey)
           : key === otherSubKey;
@@ -42,6 +26,9 @@ export abstract class Match {
         return use;
       });
     }
+    if (!context?.compKeys) {
+      return key === k2;
+    }
     return context.compKeys(key, k2);
   }
 
@@ -50,10 +37,14 @@ export abstract class Match {
       return item === i2;
     }
     if (many && Array.isArray(i2)) {
-      return i2.some(otherSubItem => {
-        return context?.compItems
-          ? context.compItems(item, otherSubItem)
-          : item === otherSubItem;
+      return i2.some((otherSubItem) => {
+        let out = false;
+        if (context?.compItems) {
+          out = context.compItems(item, otherSubItem);
+        } else {
+          out = item === otherSubItem;
+        }
+        return out;
       });
     }
     return context.compItems(item, i2);

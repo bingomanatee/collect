@@ -1,9 +1,14 @@
-import { booleanMode, collectionObj, optionsObj } from './types';
-import { IntIndexedCollection } from './IntIndexedCollection';
-import { Match } from './utils/Match';
-import { filterAction, orderingFn } from './types.methods';
-import { Stopper } from './utils/Stopper';
+import type {
+  collectionObj,
+  optionsObj,
+  filterAction,
+  orderingFn
+} from './types';
+import IntIndexedCollection from './IntIndexedCollection';
+import Match from './utils/Match';
+import Stopper from './utils/Stopper';
 import Collection from './Collection';
+import { booleanMode } from "./constants";
 
 export default class StringCollection extends IntIndexedCollection
   implements collectionObj<string, number, string> {
@@ -68,9 +73,7 @@ export default class StringCollection extends IntIndexedCollection
 
   deleteKey(key: number | Array<number>) {
     if (Array.isArray(key)) {
-      return this.filter((_item, itemKey) => {
-        return !Match.sameKey(itemKey, key, this);
-      });
+      return this.filter((_item, itemKey) => !Match.sameKey(itemKey, key, this));
     }
     return this.set(key, '');
   }
@@ -80,7 +83,7 @@ export default class StringCollection extends IntIndexedCollection
   ): collectionObj<string, number, string> {
     if (Array.isArray(item)) {
       const cloned = this.clone({ quiet: true });
-      cloned.filter(otherItem => !Match.sameItem(otherItem, item, this));
+      cloned.filter((otherItem) => !Match.sameItem(otherItem, item, this));
       this.update(cloned.store, 'deleteItem', item);
     }
     let newStore: string = this.store;
@@ -127,16 +130,16 @@ export default class StringCollection extends IntIndexedCollection
     return new StringCollection(this.store, this.mergeOptions(options));
   }
 
-  filter(test: filterAction) {
+  filter(filterTest: filterAction) {
     const newStore = this.reduce((memo, letter, key, _original, stopper) => {
-      const use = test(letter, key, this.store, stopper);
+      const use = filterTest(letter, key, this.store, stopper);
       if (use && stopper.isActive) {
         return `${memo}${letter}`;
       }
       return memo;
     }, '');
 
-    this.update(newStore, 'filter', test);
+    this.update(newStore, 'filter', filterTest);
     return this;
   }
 
@@ -180,18 +183,24 @@ export default class StringCollection extends IntIndexedCollection
     const stopper = new Stopper();
     const newStore: string[] = [];
     const iter = this.storeIter();
-    if (iter) {
-      for (const [key, keyItem] of iter) {
-        const item = looper(keyItem, key, this._store, stopper);
-        if (stopper.isStopped) {
-          break;
-        }
-        newStore.push(item);
-        if (stopper.isComplete) {
-          break;
-        }
+
+    let done = false;
+    do {
+      const iterValue = iter.next();
+      done = iterValue.done;
+      if (done) {
+        break;
       }
-    }
+      const [key, keyItem] = iter.value;
+      const item = looper(keyItem, key, this._store, stopper);
+      if (stopper.isStopped) {
+        break;
+      }
+      newStore.push(item);
+      if (stopper.isComplete) {
+        break;
+      }
+    } while (!done);
 
     this.update(newStore.join(''), 'map', looper);
     return this;
@@ -204,7 +213,7 @@ export default class StringCollection extends IntIndexedCollection
       return this.intersection(other.split(''));
     }
     if (Array.isArray(other)) {
-      const unique: string[] = this.items.filter(char => other.includes(char));
+      const unique: string[] = this.items.filter((char) => other.includes(char));
       return new StringCollection(unique.join(''));
     }
     return this.intersection(other.items);
@@ -222,5 +231,29 @@ export default class StringCollection extends IntIndexedCollection
 
   itemIter() {
     return this.items[Symbol.iterator]();
+  }
+
+  // append/prepend
+
+  addAfter(item, _key?: number | undefined) {
+    this.update(`${this.store}${item}`, 'addBefore');
+    return this;
+  }
+
+  addBefore(item, _key?: number | undefined) {
+    this.update(`${item}${this.store}`, 'addBefore');
+    return this;
+  }
+  removeFirst() {
+    const item = this.store.substring(0, 1);
+    const rest = this.store.substring(1);
+    this.update(rest, 'removeFirst');
+    return item;
+  }
+  removeLast() {
+    const item = this.store.substring(this.size - 1);
+    const rest = this.store.substring(0, this.size - 1);
+    this.update(rest, 'removeLast');
+    return item;
   }
 }

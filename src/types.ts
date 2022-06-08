@@ -1,46 +1,50 @@
-import {
-  comparatorFn,
-  filterAction,
-  typesMethods,
-  orderingFn,
-  reduceAction,
-} from './types.methods';
+import type { DefEnum, FormEnum } from "./constants";
+import { stopperEnum } from "./constants";
 
-export enum TypeEnum {
-  string = 'string',
-  number = 'number',
-  date = 'date',
-  null = 'null',
-  symbol = 'symbol',
-  any = 'any',
-  undefined = 'undefined',
-}
+export type StopperObj = {
+  state: stopperEnum;
+  isActive: boolean;
+  isStopped: boolean;
+  isComplete: boolean;
+  final: () => void;
+  stop: () => void;
+  stopAfterThis: () => void;
+};
 
-export enum FormEnum {
-  array = 'Array',
-  map = 'Map',
-  object = 'object',
-  set = 'set',
-  scalar = 'scalar',
-  function = 'function',
-  any = 'any',
-}
+export type iteratorMethods = (
+  item: any,
+  key: keyType,
+  store: any,
+  stopper: StopperObj
+) => any;
+export type reduceAction = (
+  memo: any,
+  item: any,
+  key: keyType,
+  store: any,
+  stopper: StopperObj
+) => any;
+export type filterAction = (
+  item: string,
+  key: number,
+  store: any,
+  stopper: StopperObj
+) => boolean;
+export type combinerFn = any; // a generator function
+export type orderingFn = (item1: any, item2: any, coll?: any) => number;
+export type comparatorFn = (k1, k2) => boolean;
 
-export type DefEnum = TypeEnum | FormEnum;
-
-export const ABSENT = Symbol('ABSENT');
+export type onChangeFn = (
+  newStore: any,
+  source: string,
+  input?: any[]
+) => any | undefined;
 
 export type keyType = any;
 
 export type someValues = Array<any>;
 export type valueType = any;
 export type oneOrMoreValues = valueType | someValues;
-
-export enum booleanMode {
-  byValue = 'value',
-  byKey = 'key',
-  byBoth = 'both',
-}
 
 export type comparatorObj = {
   compKeys?: comparatorFn;
@@ -56,20 +60,19 @@ export type collectionBaseObj<StoreType, KeyType, ItemType> = {
   form: FormEnum;
   type: DefEnum;
   size: number;
-};
-export type collectionIterProvider<StoreType, KeyType, ItemType> = {
-  storeIter: (fromIter?: boolean) => IterableIterator<any> | undefined;
-  itemIter: (fromIter?: boolean) => IterableIterator<ItemType> | undefined;
-  keyIter: (fromIter?: boolean) => IterableIterator<KeyType> | undefined;
   clone: (optionsObj?) => collectionObj<StoreType, KeyType, ItemType>; // new collection with cloned item
 };
 
+export type collectionIterProvider<_StoreType, KeyType, ItemType> = {
+  storeIter: (fromIter?: boolean) => IterableIterator<[KeyType, ItemType]>;
+  itemIter: (fromIter?: boolean) => IterableIterator<ItemType>;
+  keyIter: (fromIter?: boolean) => IterableIterator<KeyType>;
+};
+
 export type optionsObj = { quiet?: boolean } & comparatorObj;
-export type collectionBaseIterProvider<
-  StoreType,
+export type collectionBaseIterProvider<StoreType,
   KeyType,
-  ItemType
-> = collectionIterProvider<StoreType, KeyType, ItemType> &
+  ItemType> = collectionIterProvider<StoreType, KeyType, ItemType> &
   collectionBaseObj<StoreType, KeyType, ItemType> &
   optionsObj;
 
@@ -89,6 +92,15 @@ export type collectionObj<StoreType, KeyType, ItemType> = {
   // comparison
   withComp: (action: () => any, config: optionsObj) => any; // performs operations with the given comparators operating, then returns current ones.
 
+  // push, pop
+
+  addAfter: (item: ItemType, key?: KeyType)  => collectionObj<StoreType, KeyType, ItemType>; // self
+  addBefore : (item: ItemType, key?: KeyType) => collectionObj<StoreType, KeyType, ItemType>; // self
+  // removeLast: () => ItemType | undefined;
+  // removeFirst: () => ItemType | undefined;
+ // first: (count?: number) => ItemType | ItemType[];
+ // last: (count?: number) => ItemType | ItemType[];
+
   // changes
   change(newValue): collectionObj<StoreType, KeyType, ItemType>; // self
   set: (
@@ -107,9 +119,9 @@ export type collectionObj<StoreType, KeyType, ItemType> = {
 
   // iteration
   forEach: (
-    action: typesMethods
+    action: iteratorMethods
   ) => collectionObj<StoreType, KeyType, ItemType>; // self
-  map: (action: typesMethods) => collectionObj<StoreType, KeyType, ItemType>; // mutates properties
+  map: (action: iteratorMethods) => collectionObj<StoreType, KeyType, ItemType>; // mutates properties
   filter: (action: filterAction) => collectionObj<StoreType, KeyType, ItemType>; // a new collection wth some of the values;
   reduce: (action: reduceAction, initial: any) => any; // an arbitrary value, computed by looping over the store
   reduceC: (action: reduceAction, initial: any) => collectionObj<any, any, any>; // a new collection for the output of reduce
@@ -118,19 +130,3 @@ export type collectionObj<StoreType, KeyType, ItemType> = {
   // observation
   onChange?: changeObserver;
 } & collectionBaseIterProvider<StoreType, KeyType, ItemType>;
-
-/*
-type _unusedBooleanOperator<ItemType, ValueType> = {
-  union: (
-    other: ValueType | collectionObj<any, any, any>,
-    mode?: booleanMode
-  ) => collectionObj<ValueType, KeyType, ItemType>;
-  difference: (
-    value: ValueType | collectionObj<any, any, any>,
-    mode?: booleanMode
-  ) => collectionObj<ValueType, KeyType, ItemType>;
-  intersection: (
-    other: ValueType | collectionObj<any, any, any>,
-    mode?: booleanMode
-  ) => collectionObj<ValueType, KeyType, ItemType>;
-}*/

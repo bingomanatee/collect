@@ -1,13 +1,13 @@
-import { IntIndexedCollection } from './IntIndexedCollection';
-import { collectionObj, optionsObj } from './types';
-import { Stopper } from './utils/Stopper';
-import { Match } from './utils/Match';
-import { orderingFn } from './types.methods';
+import IntIndexedCollection from './IntIndexedCollection';
+import type { collectionObj, optionsObj, orderingFn } from './types';
+import Stopper from './utils/Stopper';
+import Match from './utils/Match';
 import compare from './utils/compare';
 
 export default class ArrayCollection extends IntIndexedCollection
   implements collectionObj<any[], number, any> {
   protected _store: any[];
+
   constructor(store: any[], options?: optionsObj) {
     super(store, options);
     this.update(store, 'constructor');
@@ -55,7 +55,7 @@ export default class ArrayCollection extends IntIndexedCollection
   }
 
   deleteItem(item: any | any[]) {
-    return this.store.filter(sItem => !Match.sameItem(sItem, item, this));
+    return this.store.filter((sItem) => !Match.sameItem(sItem, item, this));
   }
 
   hasKey(key: number) {
@@ -74,13 +74,15 @@ export default class ArrayCollection extends IntIndexedCollection
   filter(filterTest) {
     const stopper = new Stopper();
     const newStore: any[] = [];
-    for (let i = 0; i < this.size; ++i) {
+    for (let i = 0; i < this.size; i += 1) {
       const item = this.get(i);
       const use = filterTest(item, i, this.store, stopper);
       if (stopper.isStopped) {
         break;
       }
-      if (use) newStore.push(item);
+      if (use) {
+        newStore.push(item);
+      }
       if (stopper.isLast) {
         break;
       }
@@ -88,4 +90,31 @@ export default class ArrayCollection extends IntIndexedCollection
     this.update(newStore, 'filter', filterTest);
     return this;
   }
+
+  // append/prepend
+
+  addAfter(item, _key?: number | undefined) {
+    this.update([...this.store, item], 'addBefore');
+    return this;
+  }
+
+  addBefore(item, _key?: number | undefined) {
+    this.update([item, ...this.store], 'addBefore');
+    return this;
+  }
+
+  removeFirst() : any {
+    const list = [...this.store];
+    const item = list.shift();
+    this.update(list, 'removeFirst');
+    return item;
+  }
+
+  removeLast() : any {
+    const list = [...this.store];
+    const item = list.pop();
+    this.update(list, 'removeFirst');
+    return item;
+  }
+
 }

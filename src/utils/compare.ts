@@ -1,6 +1,6 @@
-import { detectType, formIsCompound, isEmpty } from './tests';
-import { DefEnum, FormEnum, TypeEnum } from '../types';
 import toString from 'lodash.tostring';
+import { detectType, formIsCompound, isEmpty } from './tests';
+import { DefEnum, FormEnum, TypeEnum } from '../constants';
 
 const simpleTypeOrder: DefEnum[] = [
   TypeEnum.undefined,
@@ -8,9 +8,14 @@ const simpleTypeOrder: DefEnum[] = [
   TypeEnum.number,
   TypeEnum.string,
 ];
+
 function compareTypes(a, b, typeA?: DefEnum, typeB?: DefEnum) {
-  if (!typeA) typeA = detectType(a);
-  if (!typeB) typeB = detectType(b);
+  if (!typeA) {
+    typeA = detectType(a);
+  }
+  if (!typeB) {
+    typeB = detectType(b);
+  }
 
   if (typeA === TypeEnum.date) {
     if (typeB === TypeEnum.date) {
@@ -20,8 +25,9 @@ function compareTypes(a, b, typeA?: DefEnum, typeB?: DefEnum) {
         TypeEnum.number,
         TypeEnum.number
       );
+    } else {
+      return compareTypes((a as Date).getTime(), b, TypeEnum.number, typeB);
     }
-    return compareTypes((a as Date).getTime(), b, TypeEnum.number, typeB);
   } else if (typeB === TypeEnum.date) {
     return compareTypes(a, (b as Date).getTime(), typeA, TypeEnum.number);
   }
@@ -29,8 +35,7 @@ function compareTypes(a, b, typeA?: DefEnum, typeB?: DefEnum) {
   // order some types by type
   if (typeA !== typeB) {
     if (simpleTypeOrder.includes(typeA) && simpleTypeOrder.includes(typeB)) {
-      const diff =
-        simpleTypeOrder.indexOf(typeA) - simpleTypeOrder.indexOf(typeB);
+      const diff = simpleTypeOrder.indexOf(typeA) - simpleTypeOrder.indexOf(typeB);
       return diff / Math.abs(diff);
     }
   }
@@ -44,14 +49,18 @@ function compareTypes(a, b, typeA?: DefEnum, typeB?: DefEnum) {
   // sort strings before non-strings
   if (typeA === TypeEnum.string) {
     if (typeB === TypeEnum.string) {
-      if (a > b) return 1;
+      if (a > b) {
+        return 1;
+      }
+      return -1;
+    } else {
       return -1;
     }
-    return -1;
   } else if (typeB === TypeEnum.string) {
     return 1;
   }
 
+  /* eslint-disable no-else-return */
   if (formIsCompound(typeA as FormEnum)) {
     if (formIsCompound(typeB as FormEnum)) {
       return compareTypes(
@@ -60,13 +69,16 @@ function compareTypes(a, b, typeA?: DefEnum, typeB?: DefEnum) {
         TypeEnum.string,
         TypeEnum.string
       );
+    } else {
+      return 1;
     }
-    return 1;
   } else if (formIsCompound(typeB as FormEnum)) {
     return compareTypes(a, toString(b), typeA, TypeEnum.string);
   }
 
-  if (a > b) return 1;
+  if (a > b) {
+    return 1;
+  }
   return -1;
 }
 
@@ -79,7 +91,9 @@ function compareTypes(a, b, typeA?: DefEnum, typeB?: DefEnum) {
  * @param b
  */
 export default function compare(a, b) {
-  if (a === b) return 0;
+  if (a === b) {
+    return 0;
+  }
 
   if (isEmpty(a)) {
     if (isEmpty(b)) {
