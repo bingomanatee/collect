@@ -1,7 +1,6 @@
 import CompoundCollection from './CompoundCollection';
-import { collectionObj, optionsObj } from './types';
-import { Match } from './utils/Match';
-import { orderingFn } from './types.methods';
+import type { collectionObj, optionsObj, orderingFn } from './types';
+import Match from './utils/Match';
 import { clone } from './utils/change';
 import compare from './utils/compare';
 
@@ -49,7 +48,7 @@ export default class MapCollection extends CompoundCollection
   sort(sorter: orderingFn = compare): collectionObj<Map<any, any>, any, any> {
     const map = new Map();
     const sortedKeys = Array.from(this.keys).sort(this.sorter(sorter));
-    for (let i = 0; i < sortedKeys.length; i++) {
+    for (let i = 0; i < sortedKeys.length; i += 1) {
       const key = sortedKeys[i];
       map.set(key, this.store.get(key));
     }
@@ -69,11 +68,11 @@ export default class MapCollection extends CompoundCollection
 
   deleteKey(key) {
     const map = new Map(this.store);
-    for (const storeKey of this.keys) {
+    this.keys.forEach((storeKey) => {
       if (Match.sameKey(storeKey, key, this)) {
         map.delete(storeKey);
       }
-    }
+    });
     this.update(map, 'delete', key);
     return this;
   }

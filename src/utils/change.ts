@@ -1,6 +1,11 @@
-import { ABSENT, DefEnum, FormEnum, TypeEnum } from '../types';
-import { detectForm, detectType, isThere } from './tests';
 import cloneDeep from 'lodash.clonedeep';
+import { detectForm, detectType, isThere } from './tests';
+import {
+  DefEnum,
+  FormEnum,
+  TypeEnum
+} from '../constants';
+import { ABSENT } from "../constants.export";
 
 export const clone = cloneDeep;
 
@@ -39,8 +44,11 @@ export function makeEmpty(likeThis, type?: DefEnum) {
       break;
 
     case TypeEnum.symbol:
-      out = Symbol();
+      out = Symbol('');
       break;
+
+    default:
+      out = null;
   }
   return out;
 }
@@ -66,7 +74,7 @@ export function amend(value, change, form: string | symbol = ABSENT) {
 
     case FormEnum.object:
       out = { ...value };
-      Object.keys(change).forEach(key => {
+      Object.keys(change).forEach((key) => {
         out[key] = change[key];
       });
       break;
@@ -77,6 +85,9 @@ export function amend(value, change, form: string | symbol = ABSENT) {
         out[index] = item;
       });
       break;
+
+    default:
+      console.warn('unhandled amend form:', form);
   }
   return out;
 }

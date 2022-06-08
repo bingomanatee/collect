@@ -1,11 +1,12 @@
 import { detectType } from './utils/tests';
-import { optionsObj, FormEnum, TypeEnum } from './types';
+import type { optionsObj } from './types';
 import MapCollection from './MapCollection';
 import ScalarCollection from './ScalarCollection';
 import StringCollection from './StringCollection';
 import ArrayCollection from './ArrayCollection';
 import ObjectCollection from './ObjectCollection';
 import SetCollection from './SetCollection';
+import { FormEnum, TypeEnum } from './constants';
 
 export default (store, options?: optionsObj) => {
   let out;

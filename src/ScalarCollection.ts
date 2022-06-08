@@ -3,6 +3,7 @@ import { optionsObj } from './types';
 
 export default class ScalarCollection extends Collection {
   protected _store: any;
+
   constructor(store: any, options?: optionsObj) {
     super(store, options);
     this._store = store;
@@ -13,46 +14,46 @@ export default class ScalarCollection extends Collection {
   }
 
   get(_key) {
-    this.err('key');
+    ScalarCollection.err('key');
     return 0;
   }
 
   set(_key, _item) {
-    this.err('set');
+    ScalarCollection.err('set');
     return this;
   }
 
   hasKey(_item) {
-    this.err('hasKey');
+    ScalarCollection.err('hasKey');
     return null;
   }
 
   hasItem(_item) {
-    this.err('hasItem');
+    ScalarCollection.err('hasItem');
     return null;
   }
 
   keyOf(_item) {
-    this.err('keyOf');
+    ScalarCollection.err('keyOf');
     return undefined;
   }
 
-  err(method) {
+  static err(method) {
     throw new Error(`${method} not available for scalar collection`);
   }
 
   get keys() {
-    this.err('keys');
+    ScalarCollection.err('keys');
     return [];
   }
 
   get items() {
-    this.err('items');
+    ScalarCollection.err('items');
     return [];
   }
 
   deleteKey() {
-    this.err('delete');
+    ScalarCollection.err('delete');
   }
 
   clear() {
@@ -60,16 +61,16 @@ export default class ScalarCollection extends Collection {
   }
 
   forEach() {
-    this.err('forEach');
+    ScalarCollection.err('forEach');
   }
 
   map() {
-    this.err('map');
+    ScalarCollection.err('map');
     return [];
   }
 
   reduce() {
-    this.err('reduce');
+    ScalarCollection.err('reduce');
     return null;
   }
 }

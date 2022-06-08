@@ -1,46 +1,50 @@
-import {
-  comparatorFn,
-  filterAction,
-  typesMethods,
-  orderingFn,
-  reduceAction,
-} from './types.methods';
+import type { DefEnum, FormEnum } from "./constants";
+import { stopperEnum } from "./constants";
 
-export enum TypeEnum {
-  string = 'string',
-  number = 'number',
-  date = 'date',
-  null = 'null',
-  symbol = 'symbol',
-  any = 'any',
-  undefined = 'undefined',
-}
+export type StopperObj = {
+  state: stopperEnum;
+  isActive: boolean;
+  isStopped: boolean;
+  isComplete: boolean;
+  final: () => void;
+  stop: () => void;
+  stopAfterThis: () => void;
+};
 
-export enum FormEnum {
-  array = 'Array',
-  map = 'Map',
-  object = 'object',
-  set = 'set',
-  scalar = 'scalar',
-  function = 'function',
-  any = 'any',
-}
+export type typesMethods = (
+  item: any,
+  key: keyType,
+  store: any,
+  flow: StopperObj
+) => any;
+export type reduceAction = (
+  memo: any,
+  item: any,
+  key: keyType,
+  store: any,
+  stopper: StopperObj
+) => any;
+export type filterAction = (
+  item: string,
+  key: number,
+  store: any,
+  stopper: StopperObj
+) => boolean;
+export type combinerFn = any; // a generator function
+export type orderingFn = (item1: any, item2: any, coll?: any) => number;
+export type comparatorFn = (k1, k2) => boolean;
 
-export type DefEnum = TypeEnum | FormEnum;
-
-export const ABSENT = Symbol('ABSENT');
+export type onChangeFn = (
+  newStore: any,
+  source: string,
+  input?: any[]
+) => any | undefined;
 
 export type keyType = any;
 
 export type someValues = Array<any>;
 export type valueType = any;
 export type oneOrMoreValues = valueType | someValues;
-
-export enum booleanMode {
-  byValue = 'value',
-  byKey = 'key',
-  byBoth = 'both',
-}
 
 export type comparatorObj = {
   compKeys?: comparatorFn;
@@ -66,11 +70,9 @@ export type collectionIterProvider<_StoreType, KeyType, ItemType> = {
 };
 
 export type optionsObj = { quiet?: boolean } & comparatorObj;
-export type collectionBaseIterProvider<
-  StoreType,
+export type collectionBaseIterProvider<StoreType,
   KeyType,
-  ItemType
-> = collectionIterProvider<StoreType, KeyType, ItemType> &
+  ItemType> = collectionIterProvider<StoreType, KeyType, ItemType> &
   collectionBaseObj<StoreType, KeyType, ItemType> &
   optionsObj;
 
@@ -119,19 +121,3 @@ export type collectionObj<StoreType, KeyType, ItemType> = {
   // observation
   onChange?: changeObserver;
 } & collectionBaseIterProvider<StoreType, KeyType, ItemType>;
-
-/*
-type _unusedBooleanOperator<ItemType, ValueType> = {
-  union: (
-    other: ValueType | collectionObj<any, any, any>,
-    mode?: booleanMode
-  ) => collectionObj<ValueType, KeyType, ItemType>;
-  difference: (
-    value: ValueType | collectionObj<any, any, any>,
-    mode?: booleanMode
-  ) => collectionObj<ValueType, KeyType, ItemType>;
-  intersection: (
-    other: ValueType | collectionObj<any, any, any>,
-    mode?: booleanMode
-  ) => collectionObj<ValueType, KeyType, ItemType>;
-}*/

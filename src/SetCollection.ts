@@ -1,16 +1,18 @@
 import Collection from './Collection';
-import { collectionObj, optionsObj } from './types';
-import {
+import type {
+  collectionObj,
+  optionsObj,
   filterAction,
   orderingFn,
   reduceAction,
-  typesMethods,
-} from './types.methods';
-import { Stopper } from './utils/Stopper';
+  typesMethods
+} from './types';
+import Stopper from './utils/Stopper';
 
 export default class SetCollection extends Collection
   implements collectionObj<any, any, any> {
   protected _store: Set<any>;
+
   constructor(store, options?: optionsObj) {
     super(store, options);
     this._store = store;
@@ -79,26 +81,32 @@ export default class SetCollection extends Collection
     const stopper = new Stopper();
 
     const iter = set.storeIter();
-    for (const [iterKey, iterItem] of iter) {
+    let done = false;
+    do {
+      const iterValue = iter.next();
+      done = !! iterValue.done;
+      if (done) break;
+      const [iterKey, iterItem] = iterValue.value;
       action(iterItem, iterKey, this.store, stopper);
-      if (stopper.isStopped) {
+      if (!stopper.isActive) {
         break;
       }
-      if (stopper.isLast) {
-        break;
-      }
-    }
+    } while (!done);
 
     return this;
   }
 
   get(key: any): any {
-    if (this.size <= key) return undefined;
+    if (this.size <= key) {
+      return undefined;
+    }
     return this.items[key];
   }
 
   hasItem(item: any): boolean {
-    if (this.store.has(item)) return true;
+    if (this.store.has(item)) {
+      return true;
+    }
     return this.reduce((memo, value, _key, _store, stopper) => {
       if (this.compItems(value, item)) {
         stopper.final();
@@ -118,14 +126,16 @@ export default class SetCollection extends Collection
 
   keyIter(): IterableIterator<any> {
     const keys: number[] = [];
-    for (let i = 0; i < this.size; ++i) {
+    for (let i = 0; i < this.size; i += 1) {
       keys.push(i);
     }
     return Collection.create(keys).keyIter();
   }
 
   keyOf(item: any): any {
-    if (!this.hasItem(item)) return undefined;
+    if (!this.hasItem(item)) {
+      return undefined;
+    }
     return this.reduce((memo, reduceItem, key, _store, stopper) => {
       if (this.compItems(item, reduceItem)) {
         stopper.final();
@@ -149,9 +159,7 @@ export default class SetCollection extends Collection
 
   reduce(action: reduceAction, initial: any): any {
     const arrayStore = Collection.create(this.items, this.options);
-    const subAction = (memo, item, key, _store, stopper) => {
-      return action(memo, item, key, this.store, stopper);
-    };
+    const subAction = (memo, item, key, _store, stopper) => action(memo, item, key, this.store, stopper);
     return arrayStore.reduce(subAction, initial);
   }
 
@@ -167,7 +175,9 @@ export default class SetCollection extends Collection
       return this.add(item);
     }
     return this.map((mapItem, mapKey) => {
-      if (mapKey === key) return item;
+      if (mapKey === key) {
+        return item;
+      }
       return mapItem;
     });
   }
@@ -185,14 +195,12 @@ export default class SetCollection extends Collection
   }
 
   get items(): any[] {
-    const items: any[] = [];
-    this.store.forEach(item => items.push(item));
-    return items;
+    return Array.from(this.store.values());
   }
 
   get keys(): number[] {
     const keys: any[] = [];
-    for (let i = 0; i < this.size; ++i) keys.push(i);
+    for (let i = 0; i < this.size; i += 1) keys.push(i);
     return keys;
   }
 

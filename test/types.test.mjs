@@ -1,44 +1,50 @@
-import _ from 'lodash';
 import tap from 'tap';
 import pkg from '../dist/index.js';
 
-const { utils: { compare }, create } = pkg;
+const { enums: { FormEnum, TypeEnum }, create } = pkg;
 
-describe('type,form detection', () => {
-  it('detects strings', () => {
+tap.test('type,form detection', (suite) => {
+  suite.test('detects strings', (stringTest) => {
     const c = create('');
-    expect(c.form).toBe(FormEnum.scalar);
-    expect(c.type).toBe(TypeEnum.string);
+    stringTest.same(c.form, FormEnum.scalar);
+    stringTest.same(c.type, TypeEnum.string);
+    stringTest.end();
   });
 
-  it('detects numbers', () => {
+  suite.test('detects numbers', (numberTest) => {
     const c = create(3);
-    expect(c.form).toBe(FormEnum.scalar);
-    expect(c.type).toBe(TypeEnum.number);
+    numberTest.same(c.form, FormEnum.scalar);
+    numberTest.same(c.type, TypeEnum.number);
+    numberTest.end();
   });
 
-  it('detects arrays', () => {
+  suite.test('detects arrays', (arrayTest) => {
     const c = create([]);
-    expect(c.form).toBe(FormEnum.array);
-    expect(c.type).toBe(FormEnum.array);
+    arrayTest.same(c.form, FormEnum.array);
+    arrayTest.same(c.type, FormEnum.array);
+    arrayTest.end();
   });
 
-  it('detects maps', () => {
+  suite.test('detects maps', (mapTest) => {
     const c = create(new Map());
-    expect(c.form).toBe(FormEnum.map);
-    expect(c.type).toBe(FormEnum.map);
+    mapTest.same(c.form, FormEnum.map);
+    mapTest.same(c.type, FormEnum.map);
+    mapTest.end();
   });
 
-  it('detects objects', () => {
-    const c = create({foo: 'bar'});
-    expect(c.form).toBe(FormEnum.object);
-    expect(c.type).toBe(FormEnum.object);
+  suite.test('detects objects', (objTest) => {
+    const c = create({ foo: 'bar' });
+    objTest.same(c.form, FormEnum.object);
+    objTest.same(c.type, FormEnum.object);
+    objTest.end();
   });
 
-  it('detects Sets', () => {
+  suite.test('detects Sets', (setTest) => {
     const c = create(new Set([1, 2, 3]));
 
-    expect(c.form).toBe(FormEnum.set);
-    expect(c.type).toBe(FormEnum.set);
+    setTest.same(c.form, FormEnum.set);
+    setTest.same(c.type, FormEnum.set);
+    setTest.end();
   });
+  suite.end();
 });

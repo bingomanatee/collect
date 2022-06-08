@@ -1,9 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { DefEnum, FormEnum, optionsObj } from './types';
-import { detectForm, detectType, e, isFn } from './utils/tests';
+/* eslint-disable jest/no-export */
+import type {
+  optionsObj,
+  comparatorFn,
+  onChangeFn,
+  orderingFn,
+} from './types';
+import {
+  detectForm,
+  detectType,
+  e,
+  isFn
+} from './utils/tests';
 import { clone } from './utils/change';
-import { StandinCollection } from './utils/StandinCollection';
-import { comparatorFn, onChangeFn, orderingFn } from './types.methods';
+import StandinCollection from './utils/StandinCollection';
+import type { DefEnum, FormEnum } from "./constants";
 
 const simpleComparator = (a, b) => a === b;
 
@@ -27,7 +38,9 @@ export default abstract class Collection {
       try {
         const cloned = clone(this.store);
         let updated = newStore(cloned);
-        if (updated === undefined) updated = cloned;
+        if (updated === undefined) {
+          updated = cloned;
+        }
 
         if (updated === newStore) {
           throw e('circular change', { newStore, target: this });
@@ -38,7 +51,7 @@ export default abstract class Collection {
         throw e('functional newStore throws error:', {
           err,
           newStore,
-          target: this,
+          target: this
         });
       }
     }
@@ -47,11 +60,12 @@ export default abstract class Collection {
       throw e('attempt to setStore different type than exists now', {
         target: this,
         newStore,
-        type: newType,
+        type: newType
       });
     }
     return this.update(newStore, 'change');
   }
+
   protected update(newStore, source?: string, ...input) {
     try {
       if (!this.quiet && this.onChange && source) {
@@ -72,31 +86,32 @@ export default abstract class Collection {
   get store(): any {
     return this._store;
   }
+
   protected _store: any;
 
   abstract get size(): number;
 
   abstract get keys(): number[];
+
   abstract get items(): any[];
 
   // options and comparator
 
   mergeOptions(mergeOptions?: optionsObj) {
-    const newOptions = { ...this.options };
-    if (!mergeOptions) return newOptions;
-    for (const newKey of Object.keys(mergeOptions)) {
-      newOptions[newKey] = mergeOptions[newKey];
+    if (!mergeOptions) {
+      return this.options;
     }
-    return newOptions;
+    return { ...this.options, ...mergeOptions };
   }
 
   get options() {
     return {
       quiet: this.quiet,
       compKeys: this.compKeys,
-      compItems: this.compItems,
+      compItems: this.compItems
     };
   }
+
   public quiet = false;
 
   protected _compKeys: comparatorFn = simpleComparator;
@@ -142,8 +157,12 @@ export default abstract class Collection {
 
     const { compKeys, compItems } = this;
     try {
-      if (comp.compKeys) this.compKeys = comp.compKeys;
-      if (comp.compItems) this.compItems = comp.compItems;
+      if (comp.compKeys) {
+        this.compKeys = comp.compKeys;
+      }
+      if (comp.compItems) {
+        this.compItems = comp.compItems;
+      }
       out = action();
     } catch (err) {
       this.compKeys = compKeys;
@@ -155,7 +174,7 @@ export default abstract class Collection {
   }
 
   // must be overridden before any collections are created with a working create method
-  static create = (store, options?: optionsObj) => {
-    return new StandinCollection(store, options);
-  };
+  static create = (store, options?: optionsObj) => (
+    new StandinCollection(store, options)
+  );
 }

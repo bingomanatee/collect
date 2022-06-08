@@ -1,20 +1,23 @@
-import create from '../src';
+import tap from 'tap';
+import pkg from '../dist/index.js';
 
-describe('walkers', () => {
-  describe('reduce', () => {
-    describe('scalars', () => {
-      it('should throw', () => {
+const { create } = pkg;
+
+
+tap.test('walkers', (suite) => {
+  suite.test('reduce', (reduce) => {
+    reduce.test('scalars', (scalarsTest) => {
         const sc = create(1);
-        expect(() =>
+      scalarsTest.throws(() =>
           sc.reduce((sum, value) => {
             return sum + value;
           }, 3)
-        ).toThrow();
-      });
+        );
+      scalarsTest.end();
     });
 
-    describe('strings', () => {
-      it('should go over all the characters', () => {
+    reduce.test('strings', (stringTest) => {
+      stringTest.test('should go over all the characters', (allTest) => {
         const stc = create('All Good Things Must Come To An End');
 
         const vowels = stc.reduce((memo, letter) => {
@@ -24,10 +27,11 @@ describe('walkers', () => {
           return memo;
         }, '');
 
-        expect(vowels).toBe('AooiuoeoAE');
+        allTest.same(vowels, 'AooiuoeoAE');
+        allTest.end();
       });
 
-      it('should stop on command', () => {
+      stringTest.test('should stop on command', (socTest) => {
         const stc = create('All Good Things Must Come To An End');
 
         const phrase = stc.reduce((memo, letter, _index, _phrase, stopper) => {
@@ -43,10 +47,11 @@ describe('walkers', () => {
           return out;
         }, '');
 
-        expect(phrase).toBe('ALL GooD THiN');
+        socTest.same(phrase, 'ALL GooD THiN');
+        socTest.end();
       });
 
-      it('should stop on command longer with stopAfterThis', () => {
+      stringTest.test('should stop on command longer with stopAfterThis', (satTest) => {
         const stc = create('All Good Things Must Come To An End');
 
         const phrase = stc.reduce((memo, letter, _index, _phrase, stopper) => {
@@ -62,12 +67,14 @@ describe('walkers', () => {
           return out;
         }, '');
 
-        expect(phrase).toBe('ALL GooD THiNG');
+        satTest.same(phrase, 'ALL GooD THiNG');
+        satTest.end();
       });
+      stringTest.end();
     });
 
-    describe('Map', () => {
-      it('should reduce the map properties', () => {
+    reduce.test('Map', (mapTest) => {
+      mapTest.test('should reduce the map properties', (propsTest) => {
         const mc = create(new Map());
         mc.set('x', 20)
           .set('y', -50)
@@ -77,10 +84,11 @@ describe('walkers', () => {
           return distance + Math.abs(size);
         }, 0);
 
-        expect(milDistance).toBe(170);
+        propsTest.same(milDistance, 170);
+        propsTest.end();
       });
 
-      it('should stop on stopAfterThis call', () => {
+      mapTest.test('should stop on stopAfterThis call', (satTest) => {
         const mc = create(new Map());
         'abcdefghij'.split('').forEach((letter, index) => {
           mc.set(letter, (index + 1) * 10);
@@ -94,9 +102,10 @@ describe('walkers', () => {
           return nextSum;
         }, 0);
 
-        expect(sum).toBe(280);
+        satTest.same(sum, 280);
+        satTest.end();
       });
-      it('should stop sooner on stop call', () => {
+      mapTest.test('should stop sooner on stop call', (socTest) => {
         const mc = create(new Map());
         'abcdefghij'.split('').forEach((letter, index) => {
           mc.set(letter, (index + 1) * 10);
@@ -110,20 +119,23 @@ describe('walkers', () => {
           return nextSum;
         }, 0);
 
-        expect(sum).toBe(210);
+        socTest.same(sum, 210);
+        socTest.end();
       });
+      mapTest.end();
     });
 
-    describe('array', () => {
-      it('should reduce the array', () => {
+    reduce.test('array', (arrayTest) => {
+      arrayTest.test('should reduce the array', (aRedTest) => {
         const ac = create([1, 2, 3, 5, 8, 13, 21, 34]);
 
         const sum = ac.reduce((sum, value) => sum + value, 0);
 
-        expect(sum).toBe(87);
+        aRedTest.same(sum, 87);
+        aRedTest.end();
       });
 
-      it('should stop on command', () => {
+      arrayTest.test('should stop on command', (socTest) => {
         const ac = create([1, 2, 3, 5, 8, 13, 21, 34]);
 
         const sum = ac.reduce((sum, value, _k, _a, stopper) => {
@@ -133,10 +145,11 @@ describe('walkers', () => {
           return sum + value;
         }, 0);
 
-        expect(sum).toBe(32);
+        socTest.same(sum, 32);
+        socTest.end();
       });
 
-      it('should stop longer on stopAfterThis', () => {
+      arrayTest.test('should stop longer on stopAfterThis', (socTest) => {
         const ac = create([1, 2, 3, 5, 8, 13, 21, 34]);
 
         const sum = ac.reduce((sum, value, _k, _a, stopper) => {
@@ -146,71 +159,79 @@ describe('walkers', () => {
           return sum + value;
         }, 0);
 
-        expect(sum).toBe(53);
+        socTest.same(sum, 53);
+        socTest.end();
       });
-
-      describe('Object', () => {
-        it('should reduce the object properties', () => {
-          const mc = create({});
-          mc.set('x', 20)
-            .set('y', -50)
-            .set('z', 100);
-
-          const milDistance = mc.reduce((distance, size) => {
-            return distance + Math.abs(size);
-          }, 0);
-
-          expect(milDistance).toBe(170);
-        });
-
-        it('should stop on stopAfterThis call', () => {
-          const mc = create({});
-          'abcdefghij'.split('').forEach((letter, index) => {
-            mc.set(letter, (index + 1) * 10);
-          });
-
-          const sum = mc.reduce((sum, value, key, _map, stopper) => {
-            const nextSum = sum + value;
-            if (key === 'g') {
-              stopper.stopAfterThis();
-            }
-            return nextSum;
-          }, 0);
-
-          expect(sum).toBe(280);
-        });
-
-        it('should stop sooner on stop call', () => {
-          const mc = create({});
-          'abcdefghij'.split('').forEach((letter, index) => {
-            mc.set(letter, (index + 1) * 10);
-          });
-
-          const sum = mc.reduce((sum, value, key, _map, stopper) => {
-            const nextSum = sum + value;
-            if (key === 'g') {
-              stopper.stop();
-            }
-            return nextSum;
-          }, 0);
-
-          expect(sum).toBe(210);
-        });
-      });
+      arrayTest.end();
     });
+    reduce.test('Object', (objTest) => {
+      objTest.test('should reduce the object properties', (propsTest) => {
+        const mc = create({});
+        mc.set('x', 20)
+          .set('y', -50)
+          .set('z', 100);
+
+        const milDistance = mc.reduce((distance, size) => {
+          return distance + Math.abs(size);
+        }, 0);
+
+        propsTest.same(milDistance, 170);
+        propsTest.end();
+      });
+
+      objTest.test('should stop on stopAfterThis call', (satTest) => {
+        const mc = create({});
+        'abcdefghij'.split('').forEach((letter, index) => {
+          mc.set(letter, (index + 1) * 10);
+        });
+
+        const sum = mc.reduce((sum, value, key, _map, stopper) => {
+          const nextSum = sum + value;
+          if (key === 'g') {
+            stopper.stopAfterThis();
+          }
+          return nextSum;
+        }, 0);
+
+        satTest.same(sum, 280);
+        satTest.end();
+      });
+
+      objTest.test('should stop sooner on stop call', (socTest) => {
+        const mc = create({});
+        'abcdefghij'.split('').forEach((letter, index) => {
+          mc.set(letter, (index + 1) * 10);
+        });
+
+        const sum = mc.reduce((sum, value, key, _map, stopper) => {
+          const nextSum = sum + value;
+          if (key === 'g') {
+            stopper.stop();
+          }
+          return nextSum;
+        }, 0);
+
+        socTest.same(sum, 210);
+        socTest.end();
+      });
+      objTest.end();
+    });
+
+    reduce.end();
   });
 
-  describe('map', () => {
-    describe('array', () => {
-      it('should double values', () => {
+  suite.test('map', (mapTest) => {
+    mapTest.test('array', (arrayTest) => {
+      arrayTest.test('should double values', (dvTest) => {
         const ac = create([2, 4, 6, 8, 10, 12, 14, 16, 18, 20]);
 
         ac.map(v => v * 2);
 
-        expect(ac.store).toEqual([4, 8, 12, 16, 20, 24, 28, 32, 36, 40]);
+        dvTest.same(ac.store, [4, 8, 12, 16, 20, 24, 28, 32, 36, 40]);
+        dvTest.end();
       });
 
-      it('should stop on command', () => {
+      arrayTest.test('should stop on command', (socTest) => {
         const ac = create([2, 4, 6, 8, 10, 12, 14, 16, 18, 20]);
 
         ac.map((v, index, _list, stopper) => {
@@ -220,10 +241,11 @@ describe('walkers', () => {
           return v * 2;
         });
 
-        expect(ac.store).toEqual([4, 8, 12, 16, 20, 24, 28]);
+        socTest.same(ac.store, [4, 8, 12, 16, 20, 24, 28]);
+        socTest.end();
       });
 
-      it('should stop later on stopAfterThis', () => {
+      arrayTest.test('should stop later on stopAfterThis', (satTest) => {
         const ac = create([2, 4, 6, 8, 10, 12, 14, 16, 18, 20]);
 
         ac.map((v, index, _list, stopper) => {
@@ -233,27 +255,30 @@ describe('walkers', () => {
           return v * 2;
         });
 
-        expect(ac.store).toEqual([4, 8, 12, 16, 20, 24, 28, 32]);
+        satTest.same(ac.store, [4, 8, 12, 16, 20, 24, 28, 32]);
+        satTest.end();
       });
+      arrayTest.end();
     });
 
-    describe('object', () => {
-      it('should mutate the properties', () => {
+    mapTest.test('object', (objectTest) => {
+      objectTest.test('should mutate the properties', (propTest) => {
         const oc = create({});
         'abcde'.split('').forEach((letter, index) => {
           oc.set(letter, (index + 1) * 10);
         });
 
         oc.map((value, key) => `${key}=${value}`);
-        expect(oc.store).toEqual({
+        propTest.same(oc.store, {
           a: `a=10`,
           b: 'b=20',
           c: 'c=30',
           d: 'd=40',
           e: 'e=50',
         });
+        propTest.end();
       });
-      it('should stop on command', () => {
+      objectTest.test('should stop on command', (socTest) => {
         const oc = create({});
         'abcde'.split('').forEach((letter, index) => {
           oc.set(letter, (index + 1) * 10);
@@ -265,12 +290,16 @@ describe('walkers', () => {
           }
           return `${key}=${value}`;
         });
-        expect(oc.store).toEqual({
+        socTest.same(oc.store, {
           a: `a=10`,
           b: 'b=20',
           c: 'c=30',
         });
+        socTest.end();
       });
+      objectTest.end();
     });
+    mapTest.end();
   });
+  suite.end();
 });

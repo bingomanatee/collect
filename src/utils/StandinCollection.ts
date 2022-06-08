@@ -1,19 +1,25 @@
-import { collectionObj, optionsObj, DefEnum, FormEnum } from '../types';
-import { clone } from './change';
-import {
+import type {
+  collectionObj,
+  optionsObj,
   filterAction,
   typesMethods,
   orderingFn,
   reduceAction,
-} from '../types.methods';
+} from '../types';
+import { clone } from './change';
+import { DefEnum, FormEnum } from "../constants";
 
-export class StandinCollection implements collectionObj<any, any, any> {
+export default class StandinCollection implements collectionObj<any, any, any> {
   compItems = (a, b) => a === b;
+
   compKeys = (a, b) => a === b;
-  withComp(fn, {}) {
+
+  withComp(fn) {
     return fn();
   }
+
   public quiet = false;
+
   constructor(store, options?: optionsObj) {
     this.store = store;
     if (options?.compKeys) {
@@ -101,7 +107,9 @@ export class StandinCollection implements collectionObj<any, any, any> {
     this.store = newStore;
     return this;
   }
+
   store: any;
+
   type: DefEnum = FormEnum.object;
 
   // iterators

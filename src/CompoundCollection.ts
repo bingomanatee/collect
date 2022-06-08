@@ -1,12 +1,14 @@
 import Collection from './Collection';
-import { Stopper } from './utils/Stopper';
-import { Match } from './utils/Match';
-import { filterAction, typesMethods, reduceAction } from './types.methods';
-import { collectionObj, optionsObj } from './types';
+import Stopper from './utils/Stopper';
+import Match from './utils/Match';
+import type {
+  filterAction,
+  typesMethods,
+  reduceAction,
+  collectionObj,
+  optionsObj,
+} from './types';
 
-/**
- * This is a baseline
- */
 export default abstract class CompoundCollection extends Collection {
   get size() {
     return this.store.size;
@@ -21,9 +23,9 @@ export default abstract class CompoundCollection extends Collection {
   }
 
   hasItem(item: any) {
-    return Array.from(this.items).some(storeItem =>
+    return Array.from(this.items).some((storeItem) => (
       Match.sameItem(storeItem, item, this)
-    );
+    ));
   }
 
   hasKey(key: any) {
@@ -31,23 +33,37 @@ export default abstract class CompoundCollection extends Collection {
       return true;
     }
     const iter = this.keyIter();
-
-    for (const storeKey of iter) {
+    let done = false;
+    do {
+      const iterValue = iter.next();
+      done = !! iterValue.done;
+      if (done) {
+        break;
+      }
+      const storeKey = iterValue.value;
       if (Match.sameKey(storeKey, key, this)) {
         return true;
       }
-    }
+    } while (!done);
 
     return false;
   }
 
   set(key, item) {
-    for (const storeKey of this.keys) {
+    let done = false;
+    const iter = this.keyIter();
+    do {
+      const iterValue = iter.next();
+      done = !! iterValue.done;
+      if (done) {
+        break;
+      }
+      const storeKey = iterValue.value;
       if (Match.sameKey(storeKey, key, this)) {
         this.store.set(storeKey, item);
         return this;
       }
-    }
+    } while (!done);
     this.store.set(key, item);
     return this;
   }
@@ -76,7 +92,7 @@ export default abstract class CompoundCollection extends Collection {
   }
 
   deleteItem(item: any | any[]) {
-    return this.filter(oItem => !Match.sameItem(oItem, item, this));
+    return this.filter((oItem) => !Match.sameItem(oItem, item, this));
   }
 
   clear() {
@@ -84,15 +100,22 @@ export default abstract class CompoundCollection extends Collection {
     return this;
   }
 
-  filter(test: filterAction) {
+  filter(filterTest: filterAction) {
     const tempC = this.clone({ quiet: true }).clear();
 
     const stopper = new Stopper();
 
     const iter = this.storeIter();
 
-    for (const [key, item] of iter) {
-      const use = test(item, key, this.store, stopper);
+    let done = false;
+    do {
+      const iterValue = iter.next();
+      done = !!iterValue.done;
+      if (done) {
+        break;
+      }
+      const [key, item] = iterValue.value;
+      const use = filterTest(item, key, this.store, stopper);
       if (stopper.isStopped) {
         break;
       }
@@ -102,17 +125,23 @@ export default abstract class CompoundCollection extends Collection {
       if (stopper.isLast) {
         break;
       }
-    }
+    } while (!done);
 
-    this.update(tempC.store, 'filter', test);
+    this.update(tempC.store, 'filter', filterTest);
     return this;
   }
 
   forEach(loop: typesMethods) {
     const stopper = new Stopper();
     const iter = this.storeIter();
-
-    for (const [key, item] of iter) {
+    let done = false;
+    while (!done) {
+      const iterValue = iter.next();
+      done = !! iterValue.done;
+      if (done) {
+        break;
+      }
+      const [key, item] = iterValue.value;
       loop(item, key, this.store, stopper);
       if (stopper.isComplete) {
         break;
@@ -130,7 +159,14 @@ export default abstract class CompoundCollection extends Collection {
 
     const nextMapCollection = this.clone({ quiet: true }).clear();
 
-    for (const [key, keyItem] of iter) {
+    let done = false;
+    while (!done) {
+      const iterValue = iter.next();
+      done =  !!iterValue.done;
+      if (done) {
+        break;
+      }
+      const [key, keyItem] = iterValue.value;
       const newItem = loop(keyItem, key, this.store, stopper);
       if (stopper.isComplete) {
         break;
@@ -150,8 +186,14 @@ export default abstract class CompoundCollection extends Collection {
 
     let out = initial;
     const iter = this.storeIter();
-
-    for (const [key, item] of iter) {
+    let done = false;
+    while (!done) {
+      const iterValue = iter.next();
+      done = !! iterValue.done;
+      if (done) {
+        break;
+      }
+      const [key, item] = iterValue.value;
       const next = looper(out, item, key, this.store, stopper);
       if (stopper.isStopped) {
         return out;

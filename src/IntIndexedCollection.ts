@@ -1,15 +1,15 @@
 import Collection from './Collection';
-import { Stopper } from './utils/Stopper';
-import { typesMethods, reduceAction } from './types.methods';
+import Stopper from './utils/Stopper';
+import type { typesMethods, reduceAction } from './types';
 
 /**
  * this is the base class for items in which the keys are not named strings but are
  * implicit order numbers - such as Arrays and the character indexes of strings.
  */
-export abstract class IntIndexedCollection extends Collection {
+export default abstract class IntIndexedCollection extends Collection {
   get keys() {
     const out: Array<number> = [];
-    for (let i = 0; i < this.size; ++i) {
+    for (let i = 0; i < this.size; i += 1) {
       out.push(i);
     }
     return out;
@@ -20,7 +20,7 @@ export abstract class IntIndexedCollection extends Collection {
 
     const originalValue = this.store;
     const items = this.items;
-    for (let i = 0; i < this.size; ++i) {
+    for (let i = 0; i < this.size; i += 1) {
       action(items[i], i, originalValue, stopper);
       if (stopper.isStopped) {
         break;
@@ -34,8 +34,14 @@ export abstract class IntIndexedCollection extends Collection {
     const stopper = new Stopper();
     const newStore: any[] = [];
     const iter = this.storeIter();
-
-    for (const [key, keyItem] of iter) {
+    let done = false;
+    do {
+      const iterValue = iter.next();
+      done = iterValue.done;
+      if (done) {
+        break;
+      }
+      const [key, keyItem] = iterValue.value;
       const item = looper(keyItem, key, this._store, stopper);
       if (stopper.isStopped) {
         break;
@@ -44,7 +50,7 @@ export abstract class IntIndexedCollection extends Collection {
       if (stopper.isComplete) {
         break;
       }
-    }
+    } while (!done);
 
     this.update(newStore, 'map', looper);
     return this;
@@ -55,7 +61,14 @@ export abstract class IntIndexedCollection extends Collection {
     const iter = this.storeIter();
 
     let out = initial;
-    for (const [key, keyItem] of iter) {
+    let done = false;
+    do {
+      const iterValue = iter.next();
+      done = iterValue.done;
+      if (done) {
+        break;
+      }
+      const [key, keyItem] = iterValue.value;
       const next = looper(out, keyItem, key, this._store, stopper);
       if (stopper.isStopped) {
         break;
@@ -64,7 +77,7 @@ export abstract class IntIndexedCollection extends Collection {
       if (stopper.isComplete) {
         break;
       }
-    }
+    } while (!done);
     return out;
   }
 

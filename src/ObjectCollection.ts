@@ -1,8 +1,7 @@
 import CompoundCollection from './CompoundCollection';
-import { collectionObj, optionsObj } from './types';
-import { Match } from './utils/Match';
+import type { collectionObj, optionsObj, orderingFn } from './types';
+import Match from './utils/Match';
 import { clone } from './utils/change';
-import { orderingFn } from './types.methods';
 import compare from './utils/compare';
 
 type obj = { [key: string]: any };
@@ -38,31 +37,23 @@ export default class ObjectCollection extends CompoundCollection
   }
 
   keyOf(item): string | undefined {
-    for (const oKey of Object.keys(this.store)) {
-      const oItem = this.get(oKey);
+    const keys = this.keys;
+    for (let i = 0; i < keys.length; i += 1) {
+      const key = keys[i];
+      const oItem = this.get(key);
       if (Match.sameItem(oItem, item, this)) {
-        return oKey;
+        return key;
       }
     }
     return undefined;
   }
 
   hasItem(item) {
-    for (const oItem of Object.values(this.store)) {
-      if (Match.sameItem(oItem, item, this)) {
-        return true;
-      }
-    }
-    return false;
+    return this.items.some((oItem) => Match.sameItem(oItem, item, this));
   }
 
   hasKey(key) {
-    for (const oKey of Object.keys(this.store)) {
-      if (Match.sameKey(oKey, key, this)) {
-        return true;
-      }
-    }
-    return false;
+    return this.keys.some((oKey) => Match.sameKey(oKey, key, this));
   }
 
   clear() {
@@ -74,9 +65,10 @@ export default class ObjectCollection extends CompoundCollection
   sort(sortFn: orderingFn = compare) {
     const keyArray = Array.from(this.keys).sort(this.sorter(sortFn));
     const newStore = {};
-    for (const key of keyArray) {
+    keyArray.forEach((key) => {
       newStore[key] = this.get(key);
-    }
+    });
+
     this.update(newStore, 'sort', sortFn);
     return this;
   }
@@ -84,7 +76,7 @@ export default class ObjectCollection extends CompoundCollection
   clone(newOptions?: optionsObj) {
     return new ObjectCollection(
       clone(this._store),
-      this.mergeOptions(newOptions)
+      this.mergeOptions(newOptions),
     );
   }
   // iterators
