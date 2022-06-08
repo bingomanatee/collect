@@ -14,7 +14,8 @@
     "node": ">=10"
   },
   "scripts": {
-    "build": "rimraf dist && tsc && rollup -c rollup.config.js"
+    "build": "rimraf dist && tsc && rollup -c rollup.config.js",
+    "test": "yarn build; tap test"
   },
   "peerDependencies": {},
   "prettier": {
@@ -28,8 +29,7 @@
   "dependencies": {
     "lodash.clonedeep": "^4.5.0",
     "lodash.tostring": "^4.1.4",
-    "parcel": "^2.6.0",
-    "test": "tap ./test"
+    "parcel": "^2.6.0"
   },
   "devDependencies": {
     "@open-wc/building-rollup": "^2.0.1",
