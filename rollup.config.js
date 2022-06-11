@@ -15,7 +15,7 @@ const globals = {
 export default [
   {
     input: "./src/types.ts",
-    output: [{ file: "dist/collect.d.ts", format: "es" }],
+    output: [{ file: "dist/types.d.ts", format: "es" }],
     plugins: [dts()],
   },
   {
