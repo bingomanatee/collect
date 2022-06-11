@@ -4,7 +4,6 @@
   "source": "src/index.ts",
   "main": "dist/index.js",
   "module": "dist/collect.esm.js",
-  "typings": "types/types.d.ts",
   "files": [
     "dist",
     "src",
