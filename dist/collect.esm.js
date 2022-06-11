@@ -3621,4 +3621,4 @@ var create = (store, options) => {
 Collection.create = create;
 
 export { constants_export as constants, create, create as default, constants as enums, index as utils };
-//# sourceMappingURL=collections.esm.js.map
+//# sourceMappingURL=collect.esm.js.map
