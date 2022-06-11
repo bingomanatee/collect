@@ -3,8 +3,8 @@
   "license": "MIT",
   "source": "src/index.ts",
   "main": "dist/index.js",
-  "module": "dist/collections.esm.js",
-  "typings": "dist/index.d.ts",
+  "module": "dist/collect.esm.js",
+  "types": "dist/collect.d.ts",
   "files": [
     "dist",
     "src",
@@ -30,7 +30,8 @@
   "dependencies": {
     "lodash.clonedeep": "^4.5.0",
     "lodash.tostring": "^4.1.4",
-    "parcel": "^2.6.0"
+    "parcel": "^2.6.0",
+    "rollup-plugin-dts": "^4.2.2"
   },
   "devDependencies": {
     "@open-wc/building-rollup": "^2.0.1",
