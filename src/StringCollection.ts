@@ -248,12 +248,14 @@ export default class StringCollection extends IntIndexedCollection
     this.update(`${item}${this.store}`, 'addBefore');
     return this;
   }
+
   removeFirst() {
     const item = this.store.substring(0, 1);
     const rest = this.store.substring(1);
     this.update(rest, 'removeFirst');
     return item;
   }
+
   removeLast() {
     const item = this.store.substring(this.size - 1);
     const rest = this.store.substring(0, this.size - 1);
@@ -264,22 +266,15 @@ export default class StringCollection extends IntIndexedCollection
   // first, last
 
   first(count?: number) {
-    if (this.size === 0) {
-      return undefined;
+    if (this.size && typeof count !== "number") {
+      return [this.store.substring(0, 1)];
     }
-    if(typeof count === 'number' && count >= this.size) return this.items;
-    if (!count) return this.items.slice(0, count);
-    return this.items.slice(0, count);
+    return Collection.create(this.items).first(count);
   }
 
   last(count?: number) {
-    if (this.size === 0) {
-      return undefined;
-    }
-    if(typeof count === 'number' && count >= this.size) return this.items;
-    if (!count) {
-      return this.store[this.size - 1];
-    }
-    return this.items.slice(-count);
+    if (this.size && typeof count !== "number") {
+      return [this.store.substring(this.size - 1)];
+    }  return Collection.create(this.items).last(count);
   }
 }

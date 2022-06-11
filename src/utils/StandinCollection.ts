@@ -140,9 +140,17 @@ export default class StandInCollection implements collectionObj<any, any, any> {
   }
 
   first(_count?: number) {
-    return undefined;
+    return [];
   }
   last(_count?: number) {
+    return [];
+  }
+
+  get firstItem() {
+    return undefined;
+  }
+
+  get lastItem() {
     return undefined;
   }
 

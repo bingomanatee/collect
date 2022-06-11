@@ -9,7 +9,6 @@ import type {
   optionsObj,
 } from './types';
 import { ABSENT } from "./constants.export";
-import { clone } from './utils';
 
 export default abstract class CompoundCollection extends Collection {
   get size() {
@@ -266,44 +265,10 @@ export default abstract class CompoundCollection extends Collection {
   // first, last
 
   first(count?: number) {
-    if ((typeof count === 'number') && count > 1) {
-      if (this.size <= count) {
-        return clone(this.store);
-      }
-      const cloned = this.cloneEmpty({ quiet: true });
-      for (let i = 0; i < count && i < this.size; ++i) {
-        cloned.set(i, this.get(i));
-      }
-      return cloned.store;
-    }
-
-    if (this.size < 1) {
-      return undefined;
-    }
-    const itemIterInstance = this.itemIter().next();
-    if (itemIterInstance.done) {
-      return undefined;
-    }
-    return itemIterInstance.value;
+    return Collection.create(this.items).first(count);
   }
 
   last(count?: number) {
-    if (this.size < 1) {
-      return undefined;
-    }
-    if ((typeof count === 'number') && count > 1) {
-      if (this.size <= count) {
-        return clone(this.store);
-      }
-      const cloned = this.cloneEmpty({ quiet: true });
-      let index = 0;
-      for (let i = this.size - count; i < this.size; ++i) {
-        cloned.set(index, this.get(i));
-        ++index;
-      }
-      return cloned.store;
-    }
-    const lastKey = this.keys.pop();
-    return this.get(lastKey);
+    return Collection.create(this.items).last(count);
   }
 }

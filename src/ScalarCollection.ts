@@ -153,12 +153,12 @@ export default class ScalarCollection extends Collection implements collectionOb
 
   first(_count?: number) {
     ScalarCollection.err('first');
-    return undefined;
+    return [];
   }
 
   last(_count?: number) {
     ScalarCollection.err('last');
-    return undefined;
+    return [];
   }
 
 

@@ -98,8 +98,10 @@ export type collectionObj<StoreType, KeyType, ItemType> = {
   addBefore : (item: ItemType, key?: KeyType) => collectionObj<StoreType, KeyType, ItemType>; // self
   removeLast: () => any;
   removeFirst: () => any;
- first: (count?: number) => ItemType | ItemType[] | undefined;
- last: (count?: number) => ItemType | ItemType[] | undefined;
+ first: (count?: number) => ItemType[];
+ last: (count?: number) => ItemType[];
+ firstItem: ItemType | undefined;
+ lastItem: ItemType | undefined;
 
   // changes
   change(newValue): collectionObj<StoreType, KeyType, ItemType>; // self

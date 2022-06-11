@@ -243,38 +243,13 @@ export default class SetCollection extends Collection
     return new SetCollection(new Set(), this.mergeOptions(options));
   }
 
-  first(count?: number ): any {
-    if (!this.size) {
-      return typeof count === 'number' ? [] : undefined;
-    }
-    if (typeof count !== 'number') {
-      const itemValue = this.itemIter().next();
-      if (itemValue.done) {
-        return [];
-      }
-      return itemValue.value;
-    }
-    if (count > this.size) {
-      return this.items;
-    }
-    return this.items.slice(0, count);
+  // first, last
+
+  first(count?: number) {
+    return Collection.create(this.items).first(count);
   }
 
-  last(count: number | undefined): any {
-    if (!this.size) {
-      return typeof count === 'number' ? [] : undefined;
-    }
-
-    if (typeof count !== 'number') {
-      const itemValue = this.itemIter().next();
-      if (itemValue.done) {
-        return undefined;
-      }
-      return itemValue.value;
-    }
-    if (count > this.size) {
-      return this.items;
-    }
-    return [this.items.pop()];
+  last(count?: number) {
+    return Collection.create(this.items).last(count);
   }
 }

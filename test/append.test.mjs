@@ -4,7 +4,7 @@ import pkg from '../dist/index.js';
 
 const { create } = pkg;
 
-tap.test('apppend', (appendTest) => {
+tap.test('append', (appendTest) => {
   appendTest.test('scalars', (testScalars) => {
     const numCollection = create(42);
     testScalars.throws(() => numCollection.addAfter(7));
@@ -187,6 +187,5 @@ tap.test('apppend', (appendTest) => {
 
     testSet.end();
   });
-
   appendTest.end();
 });

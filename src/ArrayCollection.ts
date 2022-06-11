@@ -124,15 +124,25 @@ export default class ArrayCollection extends IntIndexedCollection
   // first, last
 
   first(count?: number) {
-    if (!count) return this.store[0];
+    if (!count) return [this.store[0]];
     return this.store.slice(0, count);
   }
 
   last(count?: number) {
     if (!count) {
-      return this.store[this.size - 1];
+      return [this.store[this.size - 1]];
     }
     return this.store.slice(-count);
+  }
+
+  get firstItem() {
+    if (!this.size) return undefined;
+    return this.store[0];
+  }
+
+  get lastItem() {
+    if (!this.size) return undefined;
+    return this.store[this.size -1];
   }
 
 }

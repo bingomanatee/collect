@@ -105,17 +105,43 @@ export default abstract class IntIndexedCollection extends Collection {
 
   // first, last
 
-  first() {
-    if (this.size < 1) {
-      return undefined;
+  first(count?: number) {
+    if (!this.size) {
+      return [];
     }
-    return this.get(0);
+   if (typeof count !== 'number') {
+     return [this.get(0)];
+   }
+
+   const out: any[] = [];
+   for(let i = 0; i < this.size && i < count; ++i) {
+     out.push(this.get(i));
+   }
+   return out;
   }
 
-  last() {
-    if (this.size < 1) {
-      return undefined;
+  last(count?: number) {
+    if (!this.size) {
+      return [];
     }
-    return this.get(this.size - 1);
+    if (typeof count !== 'number') {
+      return [this.get(0)];
+    }
+
+    const out: any[] = [];
+    for(let i = 0; i < this.size && i < count; ++i) {
+      const backIndex = this.size - i - 1;
+      out.push(this.get(backIndex));
+    }
+    return out;
+  }
+
+  get firstItem() {
+    if (!this.size) return undefined;
+    return this.get(0);
+  }
+  get lastItem() {
+    if (!this.size) return undefined;
+    return this.get(this.size -1);
   }
 }

@@ -177,4 +177,20 @@ export default abstract class Collection {
   static create = (store, options?: optionsObj) => (
     new StandinCollection(store, options)
   );
+
+  abstract first(): any[];
+
+  abstract last(): any[];
+
+  get firstItem() {
+    if (!this.size) return undefined;
+    const [item] = this.first();
+    return item;
+  }
+
+  get lastItem() {
+    if (!this.size) return undefined;
+    const [item] = this.last();
+    return item;
+  }
 }

@@ -76,8 +76,10 @@ declare type collectionObj<StoreType, KeyType, ItemType> = {
     addBefore: (item: ItemType, key?: KeyType) => collectionObj<StoreType, KeyType, ItemType>;
     removeLast: () => any;
     removeFirst: () => any;
-    first: (count?: number) => ItemType | ItemType[] | undefined;
-    last: (count?: number) => ItemType | ItemType[] | undefined;
+    first: (count?: number) => ItemType[];
+    last: (count?: number) => ItemType[];
+    firstItem: ItemType | undefined;
+    lastItem: ItemType | undefined;
     change(newValue: any): collectionObj<StoreType, KeyType, ItemType>;
     set: (key: KeyType, value: any) => collectionObj<StoreType, KeyType, ItemType>;
     deleteKey: (key: KeyType | Array<KeyType>) => collectionObj<StoreType, KeyType, ItemType>;
