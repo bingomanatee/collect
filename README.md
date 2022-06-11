@@ -1,4 +1,4 @@
-# @wonderlandlabs/Collect
+# @wonderlandlabs/Collect LOCAL
 
 [web docs](https://collect-docs.vercel.app/) are actually more likely to be up to date than these documents
 
