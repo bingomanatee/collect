@@ -3,6 +3,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from 'rollup-plugin-typescript2';
 import dts from "rollup-plugin-dts";
+import { terser } from "rollup-plugin-terser";
 
 // this override is needed because Module format cjs does not support top-level await
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -49,6 +50,7 @@ export default [
         exclude: 'node_modules',
         ignoreGlobal: true,
       }),
+      terser()
     ],
     external: Object.keys(globals),
   }
