@@ -33,6 +33,10 @@ export default class MapCollection extends CompoundCollection
     return new MapCollection(clone(this._store), this.mergeOptions(newOptions));
   }
 
+  cloneEmpty() {
+    return new MapCollection((new Map()));
+  }
+
   keyOf(item: any): any {
     const key = undefined;
 

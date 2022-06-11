@@ -96,10 +96,10 @@ export type collectionObj<StoreType, KeyType, ItemType> = {
 
   addAfter: (item: ItemType, key?: KeyType)  => collectionObj<StoreType, KeyType, ItemType>; // self
   addBefore : (item: ItemType, key?: KeyType) => collectionObj<StoreType, KeyType, ItemType>; // self
-  // removeLast: () => ItemType | undefined;
-  // removeFirst: () => ItemType | undefined;
- // first: (count?: number) => ItemType | ItemType[];
- // last: (count?: number) => ItemType | ItemType[];
+  removeLast: () => any;
+  removeFirst: () => any;
+ first: (count?: number) => ItemType | ItemType[] | undefined;
+ last: (count?: number) => ItemType | ItemType[] | undefined;
 
   // changes
   change(newValue): collectionObj<StoreType, KeyType, ItemType>; // self
@@ -116,6 +116,7 @@ export type collectionObj<StoreType, KeyType, ItemType> = {
   clear: () => collectionObj<StoreType, KeyType, ItemType>; // self
   sort: (sorter?: orderingFn) => collectionObj<StoreType, KeyType, ItemType>; // self
   c: collectionObj<StoreType, KeyType, ItemType>; // a property identical to clone; for convenience.brevity
+  cloneEmpty: (optionsObj?)  => collectionObj<ItemType, KeyType, ItemType>; // new, empty version of this;
 
   // iteration
   forEach: (

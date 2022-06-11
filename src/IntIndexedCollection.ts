@@ -7,6 +7,9 @@ import type { iteratorMethods, reduceAction } from './types';
  * implicit order numbers - such as Arrays and the character indexes of strings.
  */
 export default abstract class IntIndexedCollection extends Collection {
+
+  abstract get(_index: number): any;
+
   get keys() {
     const out: Array<number> = [];
     for (let i = 0; i < this.size; i += 1) {
@@ -98,5 +101,21 @@ export default abstract class IntIndexedCollection extends Collection {
 
   itemIter() {
     return this._store.values();
+  }
+
+  // first, last
+
+  first() {
+    if (this.size < 1) {
+      return undefined;
+    }
+    return this.get(0);
+  }
+
+  last() {
+    if (this.size < 1) {
+      return undefined;
+    }
+    return this.get(this.size - 1);
   }
 }

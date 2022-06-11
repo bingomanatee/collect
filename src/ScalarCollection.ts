@@ -93,6 +93,16 @@ export default class ScalarCollection extends Collection implements collectionOb
     return this;
   }
 
+  removeLast(_count?: number) {
+    ScalarCollection.err('removeLast');
+    return this;
+  }
+
+  removeFirst(_count?: number) {
+    ScalarCollection.err('removeFirst');
+    return this;
+  }
+
   addBefore(_item: any, _key: any): collectionObj<any, any, any> {
     ScalarCollection.err('addAfter');
     return this;
@@ -100,6 +110,10 @@ export default class ScalarCollection extends Collection implements collectionOb
 
   clone(opts?: optionsObj): collectionObj<any, any, any> {
     return new ScalarCollection(clone(this.store), this.mergeOptions(opts));
+  }
+
+  cloneEmpty(opts?: optionsObj) {
+    return new ScalarCollection(undefined, this.mergeOptions(opts));
   }
 
   deleteItem(_item: any): collectionObj<any, any, any> {
@@ -136,4 +150,16 @@ export default class ScalarCollection extends Collection implements collectionOb
     ScalarCollection.err('keyIter');
     return [].entries()
   }
+
+  first(_count?: number) {
+    ScalarCollection.err('first');
+    return undefined;
+  }
+
+  last(_count?: number) {
+    ScalarCollection.err('last');
+    return undefined;
+  }
+
+
 }

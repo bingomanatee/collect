@@ -74,6 +74,10 @@ declare type collectionObj<StoreType, KeyType, ItemType> = {
     withComp: (action: () => any, config: optionsObj) => any;
     addAfter: (item: ItemType, key?: KeyType) => collectionObj<StoreType, KeyType, ItemType>;
     addBefore: (item: ItemType, key?: KeyType) => collectionObj<StoreType, KeyType, ItemType>;
+    removeLast: () => any;
+    removeFirst: () => any;
+    first: (count?: number) => ItemType | ItemType[] | undefined;
+    last: (count?: number) => ItemType | ItemType[] | undefined;
     change(newValue: any): collectionObj<StoreType, KeyType, ItemType>;
     set: (key: KeyType, value: any) => collectionObj<StoreType, KeyType, ItemType>;
     deleteKey: (key: KeyType | Array<KeyType>) => collectionObj<StoreType, KeyType, ItemType>;
@@ -81,6 +85,7 @@ declare type collectionObj<StoreType, KeyType, ItemType> = {
     clear: () => collectionObj<StoreType, KeyType, ItemType>;
     sort: (sorter?: orderingFn) => collectionObj<StoreType, KeyType, ItemType>;
     c: collectionObj<StoreType, KeyType, ItemType>;
+    cloneEmpty: (optionsObj?: any) => collectionObj<ItemType, KeyType, ItemType>;
     forEach: (action: iteratorMethods) => collectionObj<StoreType, KeyType, ItemType>;
     map: (action: iteratorMethods) => collectionObj<StoreType, KeyType, ItemType>;
     filter: (action: filterAction) => collectionObj<StoreType, KeyType, ItemType>;

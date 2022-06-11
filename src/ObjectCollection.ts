@@ -86,6 +86,12 @@ export default class ObjectCollection extends CompoundCollection
       this.mergeOptions(newOptions),
     );
   }
+  cloneEmpty(newOptions?: optionsObj) {
+    return new ObjectCollection(
+      {},
+      this.mergeOptions(newOptions),
+    );
+  }
 
   // iterators
 
@@ -116,8 +122,8 @@ export default class ObjectCollection extends CompoundCollection
     if (key === undefined) {
       throw new Error('you must define a key to addAfter an item for a compound collection');
     }
-    const temp = this.clone({quiet: true});
-    temp.clear();
+    const temp = this.cloneEmpty({quiet: true});
+
     temp.set(String(key), item);
     this.forEach((fItem, fKey) => {
       if (!this.compKeys(key, fKey)) {

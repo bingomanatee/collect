@@ -39,6 +39,10 @@ export default class StandInCollection implements collectionObj<any, any, any> {
     return new StandInCollection(clone(this.store), newOptions);
   }
 
+  cloneEmpty() {
+    return this
+  }
+
   get c() {
     return this.clone();
   }
@@ -132,6 +136,21 @@ export default class StandInCollection implements collectionObj<any, any, any> {
   }
 
   addBefore(_item: any, _key?: number | undefined) {
+    return this;
+  }
+
+  first(_count?: number) {
+    return undefined;
+  }
+  last(_count?: number) {
+    return undefined;
+  }
+
+  removeLast(_count?: number) {
+    return this;
+  }
+
+  removeFirst(_count?: number) {
     return this;
   }
 }

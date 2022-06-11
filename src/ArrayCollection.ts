@@ -71,6 +71,10 @@ export default class ArrayCollection extends IntIndexedCollection
     return new ArrayCollection([...this.store], this.mergeOptions(newOptions));
   }
 
+  cloneEmpty(newOptions?: optionsObj){
+    return new ArrayCollection([], this.mergeOptions(newOptions));
+  }
+
   filter(filterTest) {
     const stopper = new Stopper();
     const newStore: any[] = [];
@@ -115,6 +119,20 @@ export default class ArrayCollection extends IntIndexedCollection
     const item = list.pop();
     this.update(list, 'removeFirst');
     return item;
+  }
+
+  // first, last
+
+  first(count?: number) {
+    if (!count) return this.store[0];
+    return this.store.slice(0, count);
+  }
+
+  last(count?: number) {
+    if (!count) {
+      return this.store[this.size - 1];
+    }
+    return this.store.slice(-count);
   }
 
 }

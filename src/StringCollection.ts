@@ -130,6 +130,10 @@ export default class StringCollection extends IntIndexedCollection
     return new StringCollection(this.store, this.mergeOptions(options));
   }
 
+  cloneEmpty(opts?: optionsObj) {
+    return new StringCollection('', this.mergeOptions(opts));
+  }
+
   filter(filterTest: filterAction) {
     const newStore = this.reduce((memo, letter, key, _original, stopper) => {
       const use = filterTest(letter, key, this.store, stopper);
@@ -255,5 +259,27 @@ export default class StringCollection extends IntIndexedCollection
     const rest = this.store.substring(0, this.size - 1);
     this.update(rest, 'removeLast');
     return item;
+  }
+
+  // first, last
+
+  first(count?: number) {
+    if (this.size === 0) {
+      return undefined;
+    }
+    if(typeof count === 'number' && count >= this.size) return this.items;
+    if (!count) return this.items.slice(0, count);
+    return this.items.slice(0, count);
+  }
+
+  last(count?: number) {
+    if (this.size === 0) {
+      return undefined;
+    }
+    if(typeof count === 'number' && count >= this.size) return this.items;
+    if (!count) {
+      return this.store[this.size - 1];
+    }
+    return this.items.slice(-count);
   }
 }

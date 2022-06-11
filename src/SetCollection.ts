@@ -238,4 +238,43 @@ export default class SetCollection extends Collection
     this.update(set, 'removeFirst');
     return item;
   }
+
+  cloneEmpty(options: optionsObj): collectionObj<any, any, any> {
+    return new SetCollection(new Set(), this.mergeOptions(options));
+  }
+
+  first(count?: number ): any {
+    if (!this.size) {
+      return typeof count === 'number' ? [] : undefined;
+    }
+    if (typeof count !== 'number') {
+      const itemValue = this.itemIter().next();
+      if (itemValue.done) {
+        return [];
+      }
+      return itemValue.value;
+    }
+    if (count > this.size) {
+      return this.items;
+    }
+    return this.items.slice(0, count);
+  }
+
+  last(count: number | undefined): any {
+    if (!this.size) {
+      return typeof count === 'number' ? [] : undefined;
+    }
+
+    if (typeof count !== 'number') {
+      const itemValue = this.itemIter().next();
+      if (itemValue.done) {
+        return undefined;
+      }
+      return itemValue.value;
+    }
+    if (count > this.size) {
+      return this.items;
+    }
+    return [this.items.pop()];
+  }
 }
