@@ -69,6 +69,11 @@ tap.test('I/O', (io) => {
     ac2.deleteKey(3);
     testArray.same(ac2.store, [1, 2, 3, 1000, 3, 2, 1]);
     testArray.same(ac2.size, LIST.length - 1);
+
+    ac2.deleteItem(1);
+    testArray.same(ac2.store, [2, 3, 1000, 3, 2]);
+    testArray.same(ac2.size, 5);
+
     testArray.end();
   });
 

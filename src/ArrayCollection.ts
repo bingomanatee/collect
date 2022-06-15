@@ -55,7 +55,9 @@ export default class ArrayCollection extends IntIndexedCollection
   }
 
   deleteItem(item: any | any[]) {
-    return this.store.filter((sItem) => !Match.sameItem(sItem, item, this));
+    const newStore = this.store.filter((sItem) => !Match.sameItem(sItem, item, this));
+    this.update(newStore, 'deleteItem', item);
+    return this;
   }
 
   hasKey(key: number) {
