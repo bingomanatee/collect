@@ -61,6 +61,7 @@ export type collectionBaseObj<StoreType, KeyType, ItemType> = {
   type: DefEnum;
   size: number;
   clone: (optionsObj?) => collectionObj<StoreType, KeyType, ItemType>; // new collection with cloned item
+  cloneShallow: (optionsObj?) => collectionObj<StoreType, KeyType, ItemType>; // new collection shallow clone of store
 };
 
 export type collectionIterProvider<_StoreType, KeyType, ItemType> = {
@@ -94,14 +95,14 @@ export type collectionObj<StoreType, KeyType, ItemType> = {
 
   // push, pop
 
-  addAfter: (item: ItemType, key?: KeyType)  => collectionObj<StoreType, KeyType, ItemType>; // self
-  addBefore : (item: ItemType, key?: KeyType) => collectionObj<StoreType, KeyType, ItemType>; // self
+  addAfter: (item: ItemType, key?: KeyType) => collectionObj<StoreType, KeyType, ItemType>; // self
+  addBefore: (item: ItemType, key?: KeyType) => collectionObj<StoreType, KeyType, ItemType>; // self
   removeLast: () => any;
   removeFirst: () => any;
- first: (count?: number) => ItemType[];
- last: (count?: number) => ItemType[];
- firstItem: ItemType | undefined;
- lastItem: ItemType | undefined;
+  first: (count?: number) => ItemType[];
+  last: (count?: number) => ItemType[];
+  firstItem: ItemType | undefined;
+  lastItem: ItemType | undefined;
 
   // changes
   change(newValue): collectionObj<StoreType, KeyType, ItemType>; // self
@@ -118,7 +119,7 @@ export type collectionObj<StoreType, KeyType, ItemType> = {
   clear: () => collectionObj<StoreType, KeyType, ItemType>; // self
   sort: (sorter?: orderingFn) => collectionObj<StoreType, KeyType, ItemType>; // self
   c: collectionObj<StoreType, KeyType, ItemType>; // a property identical to clone; for convenience.brevity
-  cloneEmpty: (optionsObj?)  => collectionObj<ItemType, KeyType, ItemType>; // new, empty version of this;
+  cloneEmpty: (optionsObj?) => collectionObj<ItemType, KeyType, ItemType>; // new, empty version of this;
 
   // iteration
   forEach: (

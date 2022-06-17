@@ -3,6 +3,7 @@ import type { collectionObj, optionsObj, orderingFn } from './types';
 import Stopper from './utils/Stopper';
 import Match from './utils/Match';
 import compare from './utils/compare';
+import { clone } from './utils';
 
 export default class ArrayCollection extends IntIndexedCollection
   implements collectionObj<any[], number, any> {
@@ -68,6 +69,10 @@ export default class ArrayCollection extends IntIndexedCollection
   }
 
   clone(newOptions?: optionsObj) {
+    return new ArrayCollection(clone(this.store), this.mergeOptions(newOptions));
+  }
+
+  cloneShallow(newOptions?: optionsObj) {
     return new ArrayCollection([...this.store], this.mergeOptions(newOptions));
   }
 

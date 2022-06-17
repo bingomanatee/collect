@@ -55,6 +55,7 @@ declare type collectionBaseObj<StoreType, KeyType, ItemType> = {
     type: DefEnum;
     size: number;
     clone: (optionsObj?: any) => collectionObj<StoreType, KeyType, ItemType>;
+    cloneShallow: (optionsObj?: any) => collectionObj<StoreType, KeyType, ItemType>;
 };
 declare type collectionIterProvider<_StoreType, KeyType, ItemType> = {
     storeIter: (fromIter?: boolean) => IterableIterator<[KeyType, ItemType]>;

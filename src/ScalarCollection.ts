@@ -112,6 +112,10 @@ export default class ScalarCollection extends Collection implements collectionOb
     return new ScalarCollection(clone(this.store), this.mergeOptions(opts));
   }
 
+  cloneShallow(newOptions?: optionsObj) {
+    return new ScalarCollection(this.store, this.mergeOptions(newOptions));
+  }
+
   cloneEmpty(opts?: optionsObj) {
     return new ScalarCollection(undefined, this.mergeOptions(opts));
   }

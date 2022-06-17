@@ -86,6 +86,11 @@ export default class ObjectCollection extends CompoundCollection
       this.mergeOptions(newOptions),
     );
   }
+
+  cloneShallow(newOptions?: optionsObj) {
+    return new ObjectCollection({...this.store}, this.mergeOptions(newOptions));
+  }
+
   cloneEmpty(newOptions?: optionsObj) {
     return new ObjectCollection(
       {},

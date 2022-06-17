@@ -243,6 +243,10 @@ export default class SetCollection extends Collection
     return new SetCollection(new Set(), this.mergeOptions(options));
   }
 
+  cloneShallow(newOptions?: optionsObj) {
+    return new SetCollection(new Set(this.store), this.mergeOptions(newOptions));
+  }
+
   // first, last
 
   first(count?: number) {

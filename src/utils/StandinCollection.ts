@@ -39,6 +39,10 @@ export default class StandInCollection implements collectionObj<any, any, any> {
     return new StandInCollection(clone(this.store), newOptions);
   }
 
+  cloneShallow(newOptions?: optionsObj) {
+    return new StandInCollection(clone(this.store), newOptions);
+  }
+
   cloneEmpty() {
     return this
   }

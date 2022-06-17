@@ -130,6 +130,10 @@ export default class StringCollection extends IntIndexedCollection
     return new StringCollection(this.store, this.mergeOptions(options));
   }
 
+  cloneShallow(newOptions?: optionsObj) {
+    return new StringCollection(this.store, this.mergeOptions(newOptions));
+  }
+
   cloneEmpty(opts?: optionsObj) {
     return new StringCollection('', this.mergeOptions(opts));
   }
