@@ -86,6 +86,19 @@ export default class MapCollection extends CompoundCollection
     return this;
   }
 
+
+  filter(test) {
+    const clone = this.cloneEmpty();
+    this.forEach((item, key, _s, stop) => {
+      const active = test(item, key, _s, stop);
+      if (stop.isActive && active) {
+        clone.set(key, item);
+      }
+    });
+    this.update(clone.store, 'filter');
+    return this;
+  }
+
   // iterators
 
   keyIter(): IterableIterator<any> {

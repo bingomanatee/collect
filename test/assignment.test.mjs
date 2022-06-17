@@ -132,12 +132,12 @@ tap.test('I/O', (io) => {
       // @ts-ignore
       const ac3 = create(new Map(LIST));
 
-      ac3.deleteItem('angry');
+      ac3.deleteItem('sad');
       // @ts-ignore
       testMap.same(ac3.store, new Map(LIST_WITHOUT_HAPPY));
       testMap.same(ac3.size, LIST.length - 1);
       deleteItem.end();
-    }, {skip: true})
+    })
 
 
     testMap.test('delete many items', (delManyItems) => {

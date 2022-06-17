@@ -37,16 +37,16 @@ export default abstract class Match {
       return item === i2;
     }
     if (many && Array.isArray(i2)) {
-      return i2.some((otherSubItem) => {
-        let out = false;
+      const out = i2.some((otherSubItem) => {
         if (context?.compItems) {
-          out = context.compItems(item, otherSubItem);
+          return context.compItems(item, otherSubItem);
         } else {
-          out = item === otherSubItem;
+          return item === otherSubItem;
         }
-        return out;
       });
+      return out;
     }
-    return context.compItems(item, i2);
+    const out = context.compItems(item, i2);
+    return out;
   }
 }
