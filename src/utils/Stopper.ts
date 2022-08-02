@@ -1,37 +1,37 @@
 import type { StopperObj } from '../types';
-import { stopperEnum } from "../constants";
+import { stopperEnum } from '../constants';
 
 export default class Stopper implements StopperObj {
   public state = stopperEnum.continue;
 
-  get isActive() {
+  get isActive () {
     return this.state === stopperEnum.continue;
   }
 
-  get isStopped() {
+  get isStopped () {
     return this.state === stopperEnum.stop;
   }
 
-  get isComplete() {
+  get isComplete () {
     return this.state !== stopperEnum.continue;
   }
 
-  get isLast() {
+  get isLast () {
     return this.state === stopperEnum.last;
   }
 
   // change methods
 
-  final() {
+  final () {
     this.state = stopperEnum.last;
   }
 
-  stop() {
+  stop () {
     // stop and DO NOT USE the last returned value
     this.state = stopperEnum.stop;
   }
 
-  stopAfterThis() {
+  stopAfterThis () {
     this.final();
   }
 }

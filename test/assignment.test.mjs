@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
 import tap from 'tap';
-import pkg from '../dist/index.js';
-
-const { create } = pkg;
+import { create } from '../dist/collect.es.js';
 
 tap.test('I/O', (io) => {
   io.test('scalars', (testScalars) => {

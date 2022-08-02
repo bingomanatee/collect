@@ -1,8 +1,7 @@
 import _ from 'lodash';
 import tap from 'tap';
-import pkg from '../dist/index.js';
-
-const { utils: { compare }, create } = pkg;
+import { create, utils } from '../dist/collect.es.js';
+const { compare } = utils;
 
 const NUMBERS = [4, 1, 30, 3, 10, 2, 20, 40];
 const LETTERS = 'zaybdxc'.split('');

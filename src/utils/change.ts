@@ -5,11 +5,11 @@ import {
   FormEnum,
   TypeEnum
 } from '../constants';
-import { ABSENT } from "../constants.export";
+import { ABSENT } from '../constants.export';
 
 export const clone = cloneDeep;
 
-export function makeEmpty(likeThis, type?: DefEnum) {
+export function makeEmpty (likeThis, type?: DefEnum) {
   if (!isThere(type)) {
     type = detectType(likeThis);
   }
@@ -59,7 +59,7 @@ export function makeEmpty(likeThis, type?: DefEnum) {
  * @param change
  * @param form
  */
-export function amend(value, change, form: string | symbol = ABSENT) {
+export function amend (value, change, form: string | symbol = ABSENT) {
   if (!isThere(form)) {
     form = detectForm(value);
   }

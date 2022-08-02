@@ -8,9 +8,9 @@ import {
   isSet,
   isStr,
   isSymbol,
-  isUndefined,
+  isUndefined
 } from './tests';
-import {FormEnum, TypeEnum} from "../constants";
+import { FormEnum, TypeEnum } from '../constants';
 
 export const TESTS = [
   { name: TypeEnum.undefined, test: isUndefined, isForm: false },
@@ -23,7 +23,7 @@ export const TESTS = [
   { name: FormEnum.object, test: isObj, isForm: true },
   { name: TypeEnum.string, test: isStr, isForm: false },
   { name: TypeEnum.number, test: isNum, isForm: false },
-  { name: FormEnum.scalar, test: () => true, isForm: true },
+  { name: FormEnum.scalar, test: () => true, isForm: true }
 ];
 
 /**

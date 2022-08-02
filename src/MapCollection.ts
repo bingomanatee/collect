@@ -8,40 +8,40 @@ export default class MapCollection extends CompoundCollection
   implements collectionObj<Map<any, any>, any, any> {
   protected _store: Map<any, any>;
 
-  constructor(store: Map<any, any>, options?: optionsObj) {
+  constructor (store: Map<any, any>, options?: optionsObj) {
     super(store, options);
     this.update(store, 'constructor', options);
     this._store = store;
   }
 
-  get(key) {
+  get (key) {
     if (this._store.has(key)) {
       return this._store.get(key);
     }
     return super.get(key);
   }
 
-  get keys() {
+  get keys () {
     return Array.from(this.store.keys());
   }
 
-  get items() {
+  get items () {
     return Array.from(this.store.values());
   }
 
-  clone(newOptions?: optionsObj) {
+  clone (newOptions?: optionsObj) {
     return new MapCollection(clone(this._store), this.mergeOptions(newOptions));
   }
 
-  cloneShallow(newOptions?: optionsObj) {
+  cloneShallow (newOptions?: optionsObj) {
     return new MapCollection(new Map(this.store), this.mergeOptions(newOptions));
   }
 
-  cloneEmpty() {
+  cloneEmpty () {
     return new MapCollection((new Map()));
   }
 
-  keyOf(item: any): any {
+  keyOf (item: any): any {
     const key = undefined;
 
     return this.reduce((foundKey, mItem, mKey, _store, iter) => {
@@ -53,7 +53,7 @@ export default class MapCollection extends CompoundCollection
     }, key);
   }
 
-  sort(sorter: orderingFn = compare): collectionObj<Map<any, any>, any, any> {
+  sort (sorter: orderingFn = compare): collectionObj<Map<any, any>, any, any> {
     const map = new Map();
     const sortedKeys = Array.from(this.keys).sort(this.sorter(sorter));
     for (let i = 0; i < sortedKeys.length; i += 1) {
@@ -64,7 +64,7 @@ export default class MapCollection extends CompoundCollection
     return this;
   }
 
-  hasItem(item) {
+  hasItem (item) {
     return this.reduce((matches, mItem, _key, _store, iter) => {
       if (Match.sameItem(mItem, item, this)) {
         iter.final();
@@ -74,7 +74,7 @@ export default class MapCollection extends CompoundCollection
     }, false);
   }
 
-  deleteKey(key) {
+  deleteKey (key) {
     const map = new Map(this.store);
     this.forEach((_item, storeKey, _store, stopper) => {
       if (Match.sameKey(storeKey, key, this, Array.isArray(key))) {
@@ -86,8 +86,7 @@ export default class MapCollection extends CompoundCollection
     return this;
   }
 
-
-  filter(test) {
+  filter (test) {
     const clone = this.cloneEmpty();
     this.forEach((item, key, _s, stop) => {
       const active = test(item, key, _s, stop);
@@ -101,15 +100,15 @@ export default class MapCollection extends CompoundCollection
 
   // iterators
 
-  keyIter(): IterableIterator<any> {
+  keyIter (): IterableIterator<any> {
     return this._store.keys();
   }
 
-  itemIter(): IterableIterator<any> {
+  itemIter (): IterableIterator<any> {
     return this._store.values();
   }
 
-  storeIter(): IterableIterator<any> {
+  storeIter (): IterableIterator<any> {
     return this._store.entries();
   }
 }

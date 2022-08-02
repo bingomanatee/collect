@@ -6,10 +6,10 @@ const simpleTypeOrder: DefEnum[] = [
   TypeEnum.undefined,
   TypeEnum.null,
   TypeEnum.number,
-  TypeEnum.string,
+  TypeEnum.string
 ];
 
-function compareTypes(a, b, typeA?: DefEnum, typeB?: DefEnum) {
+function compareTypes (a, b, typeA?: DefEnum, typeB?: DefEnum) {
   if (!typeA) {
     typeA = detectType(a);
   }
@@ -90,7 +90,7 @@ function compareTypes(a, b, typeA?: DefEnum, typeB?: DefEnum) {
  * @param a
  * @param b
  */
-export default function compare(a, b) {
+export default function compare (a, b) {
   if (a === b) {
     return 0;
   }
@@ -98,8 +98,8 @@ export default function compare(a, b) {
   if (isEmpty(a)) {
     if (isEmpty(b)) {
       return 0;
-      return -1;
     }
+    return -1;
   } else if (isEmpty(b)) {
     return 1;
   }

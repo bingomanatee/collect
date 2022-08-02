@@ -7,10 +7,9 @@ import type { iteratorMethods, reduceAction } from './types';
  * implicit order numbers - such as Arrays and the character indexes of strings.
  */
 export default abstract class IntIndexedCollection extends Collection {
-
   abstract get(_index: number): any;
 
-  get keys() {
+  get keys () {
     const out: Array<number> = [];
     for (let i = 0; i < this.size; i += 1) {
       out.push(i);
@@ -18,11 +17,11 @@ export default abstract class IntIndexedCollection extends Collection {
     return out;
   }
 
-  forEach(action: iteratorMethods) {
+  forEach (action: iteratorMethods) {
     const stopper = new Stopper();
 
     const originalValue = this.store;
-    const items = this.items;
+    const { items } = this;
     for (let i = 0; i < this.size; i += 1) {
       action(items[i], i, originalValue, stopper);
       if (stopper.isStopped) {
@@ -33,7 +32,7 @@ export default abstract class IntIndexedCollection extends Collection {
     return this;
   }
 
-  map(looper) {
+  map (looper) {
     const stopper = new Stopper();
     const newStore: any[] = [];
     const iter = this.storeIter();
@@ -59,7 +58,7 @@ export default abstract class IntIndexedCollection extends Collection {
     return this;
   }
 
-  reduce(looper: reduceAction, initial?: any): any {
+  reduce (looper: reduceAction, initial?: any): any {
     const stopper = new Stopper();
     const iter = this.storeIter();
 
@@ -84,43 +83,28 @@ export default abstract class IntIndexedCollection extends Collection {
     return out;
   }
 
-  reduceC(looper, start) {
+  reduceC (looper, start) {
     const out = this.reduce(looper, start);
     return Collection.create(out);
   }
 
   // iterators
 
-  storeIter() {
+  storeIter () {
     return this._store.entries();
   }
 
-  keyIter() {
+  keyIter () {
     return this._store.keys();
   }
 
-  itemIter() {
+  itemIter () {
     return this._store.values();
   }
 
   // first, last
 
-  first(count?: number) {
-    if (!this.size) {
-      return [];
-    }
-   if (typeof count !== 'number') {
-     return [this.get(0)];
-   }
-
-   const out: any[] = [];
-   for(let i = 0; i < this.size && i < count; ++i) {
-     out.push(this.get(i));
-   }
-   return out;
-  }
-
-  last(count?: number) {
+  first (count?: number) {
     if (!this.size) {
       return [];
     }
@@ -129,19 +113,35 @@ export default abstract class IntIndexedCollection extends Collection {
     }
 
     const out: any[] = [];
-    for(let i = 0; i < this.size && i < count; ++i) {
+    for (let i = 0; i < this.size && i < count; ++i) {
+      out.push(this.get(i));
+    }
+    return out;
+  }
+
+  last (count?: number) {
+    if (!this.size) {
+      return [];
+    }
+    if (typeof count !== 'number') {
+      return [this.get(0)];
+    }
+
+    const out: any[] = [];
+    for (let i = 0; i < this.size && i < count; ++i) {
       const backIndex = this.size - i - 1;
       out.push(this.get(backIndex));
     }
     return out;
   }
 
-  get firstItem() {
+  get firstItem () {
     if (!this.size) return undefined;
     return this.get(0);
   }
-  get lastItem() {
+
+  get lastItem () {
     if (!this.size) return undefined;
-    return this.get(this.size -1);
+    return this.get(this.size - 1);
   }
 }

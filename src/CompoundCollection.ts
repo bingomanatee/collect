@@ -6,30 +6,30 @@ import type {
   iteratorMethods,
   reduceAction,
   collectionObj,
-  optionsObj,
+  optionsObj
 } from './types';
-import { ABSENT } from "./constants.export";
+import { ABSENT } from './constants.export';
 
 export default abstract class CompoundCollection extends Collection {
-  get size() {
+  get size () {
     return this.store.size;
   }
 
-  get keys(): any[] {
+  get keys (): any[] {
     return this.store.keys();
   }
 
-  get items(): any[] {
+  get items (): any[] {
     return this.store.values();
   }
 
-  hasItem(item: any) {
+  hasItem (item: any) {
     return Array.from(this.items).some((storeItem) => (
       Match.sameItem(storeItem, item, this)
     ));
   }
 
-  hasKey(key: any) {
+  hasKey (key: any) {
     if (this.store.has(key)) {
       return true;
     }
@@ -50,7 +50,7 @@ export default abstract class CompoundCollection extends Collection {
     return false;
   }
 
-  set(key, item) {
+  set (key, item) {
     let done = false;
     const iter = this.keyIter();
     do {
@@ -69,7 +69,7 @@ export default abstract class CompoundCollection extends Collection {
     return this;
   }
 
-  get(key) {
+  get (key) {
     return this.reduce((found, item, itemKey, _store, stopper) => {
       if (Match.sameKey(itemKey, key, this)) {
         stopper.final();
@@ -79,7 +79,7 @@ export default abstract class CompoundCollection extends Collection {
     }, undefined);
   }
 
-  keyOf(item): any | undefined {
+  keyOf (item): any | undefined {
     const index = this.items.indexOf(item);
     if (index === -1) {
       return undefined;
@@ -87,21 +87,21 @@ export default abstract class CompoundCollection extends Collection {
     return index;
   }
 
-  deleteKey(key) {
+  deleteKey (key) {
     this.store.delete(key);
     return this;
   }
 
-  deleteItem(item: any | any[]) {
+  deleteItem (item: any | any[]) {
     return this.filter((oItem) => !Match.sameItem(oItem, item, this));
   }
 
-  clear() {
+  clear () {
     this.store.clear();
     return this;
   }
 
-  filter(filterTest: filterAction) {
+  filter (filterTest: filterAction) {
     const tempC = this.cloneEmpty();
 
     const stopper = new Stopper();
@@ -132,7 +132,7 @@ export default abstract class CompoundCollection extends Collection {
     return this;
   }
 
-  forEach(loop: iteratorMethods) {
+  forEach (loop: iteratorMethods) {
     const stopper = new Stopper();
     const iter = this.storeIter();
     let done = false;
@@ -155,7 +155,7 @@ export default abstract class CompoundCollection extends Collection {
   abstract clone(opts?: optionsObj): collectionObj<any, any, any>;
   abstract cloneEmpty(options?: optionsObj): collectionObj<any, any, any>
 
-  map(loop: iteratorMethods) {
+  map (loop: iteratorMethods) {
     const stopper = new Stopper();
     const iter = this.storeIter();
 
@@ -183,7 +183,7 @@ export default abstract class CompoundCollection extends Collection {
     return this;
   }
 
-  reduce(looper: reduceAction, initial?: any) {
+  reduce (looper: reduceAction, initial?: any) {
     const stopper = new Stopper();
 
     let out = initial;
@@ -212,15 +212,15 @@ export default abstract class CompoundCollection extends Collection {
   // append
 
   // assume that adding a value by key adds to the end of the item
-  addAfter(item: any, key: any = ABSENT) {
+  addAfter (item: any, key: any = ABSENT) {
     if (key === ABSENT) {
       throw new Error('you must define a key to addAfter an item for a compound collection');
     }
     this.set(key, item);
-    return this
+    return this;
   }
 
-  addBefore(item: any, key: any = ABSENT) {
+  addBefore (item: any, key: any = ABSENT) {
     if (key === ABSENT) {
       throw new Error('you must define a key to addAfter an item for a compound collection');
     }
@@ -235,19 +235,19 @@ export default abstract class CompoundCollection extends Collection {
     return this;
   }
 
-  reduceC(action, start) {
+  reduceC (action, start) {
     const value = this.reduce(action, start);
     return Collection.create(value);
   }
 
-  removeFirst() {
+  removeFirst () {
     const key = this.keys.shift();
     const item = this.get(key);
     this.deleteKey(key);
     return item;
   }
 
-  removeLast() {
+  removeLast () {
     const key = this.keys.pop();
     const item = this.get(key);
     this.deleteKey(key);
@@ -264,11 +264,11 @@ export default abstract class CompoundCollection extends Collection {
 
   // first, last
 
-  first(count?: number) {
+  first (count?: number) {
     return Collection.create(this.items).first(count);
   }
 
-  last(count?: number) {
+  last (count?: number) {
     return Collection.create(this.items).last(count);
   }
 }

@@ -1,7 +1,7 @@
 import tap from 'tap';
-import pkg from '../dist/index.js';
+import { create, enums } from '../dist/collect.es.js';
 
-const { enums: { FormEnum, TypeEnum }, create } = pkg;
+const { FormEnum, TypeEnum } = enums;
 
 tap.test('type,form detection', (suite) => {
   suite.test('detects strings', (stringTest) => {

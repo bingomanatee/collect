@@ -1,9 +1,21 @@
 {
-  "version": "0.1.18",
+  "version": "0.1.19",
   "license": "MIT",
+  "name": "@wonderlandlabs/collect",
+  "author": "David Edelhart",
   "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/collect.esm.js",
+  "main": "dist/collect.es.js",
+  "module": "dist/collect.es.js",
+  "homepage": "https://collect-docs.vercel.app",
+  "repository": "github:bingomanatee/collect",
+  "private": false,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "test": "NODE_ENV=test bash yarn build && tap test",
+    "preview": "vite preview"
+  },
   "files": [
     "dist",
     "src",
@@ -13,45 +25,39 @@
   "engines": {
     "node": ">=10"
   },
-  "scripts": {
-    "build": "rimraf dist && tsc && rollup -c rollup.config.js",
-    "lint": "eslint . --ext .ts",
-    "test": "tap test"
-  },
-  "peerDependencies": {},
   "prettier": {
     "printWidth": 80,
     "semi": true,
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "@wonderlandlabs/collect",
-  "author": "David Edelhart",
   "dependencies": {
     "lodash.clonedeep": "^4.5.0",
     "lodash.tostring": "^4.1.4"
   },
   "devDependencies": {
-    "@open-wc/building-rollup": "^2.0.1",
-    "@rollup/plugin-commonjs": "^22.0.0",
-    "@rollup/plugin-node-resolve": "^13.3.0",
-    "@swc/helpers": "latest",
-    "@typescript-eslint/eslint-plugin": "^5.27.1",
-    "@typescript-eslint/parser": "^5.27.1",
+    "@babel/eslint-parser": "^7.18.9",
+    "@babel/polyfill": "^7.12.1",
+    "@babel/preset-env": "^7.18.9",
+    "@originjs/vite-plugin-commonjs": "^1.0.3",
+    "@typescript-eslint/eslint-plugin": "^5.31.0",
+    "@typescript-eslint/parser": "^5.31.0",
     "deepmerge": "^4.2.2",
     "eslint": "^8.17.0",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-n": "^15.0.0",
+    "eslint-plugin-promise": "^6.0.0",
+    "install-peers": "^1.0.4",
+    "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
     "rimraf": "^3.0.2",
-    "rollup": "^2.75.6",
-    "rollup-plugin-dts": "^4.2.2",
-    "rollup-plugin-peer-deps-external": "^2.2.4",
-    "rollup-plugin-terser": "^7.0.2",
-    "rollup-plugin-typescript2": "^0.32.1",
-    "size-limit": "^7.0.8",
     "tap": "^16.2.0",
-    "tslib": "^2.4.0",
-    "typescript": "^4.7.3"
-  },
-  "homepage": "https://collect-docs.vercel.app",
-  "repository": "github:bingomanatee/colect"
+    "typescript": "^4.7.4",
+    "vite": "^3.0.4",
+    "vite-plugin-eslint": "^1.7.0",
+    "vite-tsconfig-paths": "^3.5.0",
+    "vue-tsc": "^0.39.2"
+  }
 }

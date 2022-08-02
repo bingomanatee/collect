@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import type {
   optionsObj,
   comparatorFn,
   onChangeFn,
-  orderingFn,
+  orderingFn
 } from './types';
 import {
   detectForm,
@@ -14,13 +12,13 @@ import {
 } from './utils/tests';
 import { clone } from './utils/change';
 import StandinCollection from './utils/StandinCollection';
-import type { DefEnum, FormEnum } from "./constants";
+import type { DefEnum, FormEnum } from './constants';
 
 const simpleComparator = (a, b) => a === b;
 
 // note - Collection is NOT compatible with the full collectionObj signature
 export default abstract class Collection {
-  constructor(_store, options) {
+  constructor (_store, options) {
     // note - does NOT set store, as that should be done at the implementor level, for type reasons
     if (options?.compKeys) {
       this.compKeys = options?.compKeys || simpleComparator;
@@ -33,7 +31,7 @@ export default abstract class Collection {
 
   public onChange?: onChangeFn;
 
-  change(newStore) {
+  change (newStore) {
     if (typeof newStore === 'function') {
       try {
         const cloned = clone(this.store);
@@ -66,7 +64,7 @@ export default abstract class Collection {
     return this.update(newStore, 'change');
   }
 
-  protected update(newStore, source?: string, ...input) {
+  protected update (newStore, source?: string, ...input) {
     try {
       if (!this.quiet && this.onChange && source) {
         this.onChange(newStore, source, input);
@@ -79,11 +77,11 @@ export default abstract class Collection {
     return this;
   }
 
-  protected sorter(sortFn?: orderingFn) {
+  protected sorter (sortFn?: orderingFn) {
     return sortFn ? (a, b) => sortFn(a, b, this) : undefined;
   }
 
-  get store(): any {
+  get store (): any {
     return this._store;
   }
 
@@ -97,14 +95,14 @@ export default abstract class Collection {
 
   // options and comparator
 
-  mergeOptions(mergeOptions?: optionsObj) {
+  mergeOptions (mergeOptions?: optionsObj) {
     if (!mergeOptions) {
       return this.options;
     }
     return { ...this.options, ...mergeOptions };
   }
 
-  get options() {
+  get options () {
     return {
       quiet: this.quiet,
       compKeys: this.compKeys,
@@ -116,11 +114,11 @@ export default abstract class Collection {
 
   protected _compKeys: comparatorFn = simpleComparator;
 
-  get compKeys(): comparatorFn {
+  get compKeys (): comparatorFn {
     return this._compKeys || simpleComparator;
   }
 
-  set compKeys(value: comparatorFn) {
+  set compKeys (value: comparatorFn) {
     if (!isFn(value)) {
       throw e('improper compKeys function', { target: this, fn: value });
     }
@@ -129,30 +127,30 @@ export default abstract class Collection {
 
   protected _compItems: comparatorFn = simpleComparator;
 
-  get compItems(): comparatorFn {
+  get compItems (): comparatorFn {
     return this._compItems || simpleComparator;
   }
 
-  set compItems(value: comparatorFn) {
+  set compItems (value: comparatorFn) {
     if (!isFn(value)) {
       throw e('improper compItems function', { target: this, fn: value });
     }
     this._compItems = value;
   }
 
-  get form(): FormEnum {
+  get form (): FormEnum {
     return detectForm(this._store);
   }
 
-  get type(): DefEnum {
+  get type (): DefEnum {
     return detectType(this._store);
   }
 
-  get c() {
+  get c () {
     return Collection.create(clone(this._store));
   }
 
-  withComp(action, comp: optionsObj) {
+  withComp (action, comp: optionsObj) {
     let out = null;
 
     const { compKeys, compItems } = this;
@@ -182,13 +180,13 @@ export default abstract class Collection {
 
   abstract last(): any[];
 
-  get firstItem() {
+  get firstItem () {
     if (!this.size) return undefined;
     const [item] = this.first();
     return item;
   }
 
-  get lastItem() {
+  get lastItem () {
     if (!this.size) return undefined;
     const [item] = this.last();
     return item;

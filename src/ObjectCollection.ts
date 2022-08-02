@@ -9,35 +9,35 @@ export default class ObjectCollection extends CompoundCollection
   implements collectionObj<obj, any, any> {
   protected _store: object;
 
-  constructor(store: object, options?: optionsObj) {
+  constructor (store: object, options?: optionsObj) {
     super(store, options);
     this.update(store, 'constructor', options);
     this._store = store;
   }
 
-  get size() {
+  get size () {
     return Array.from(this.keys).length;
   }
 
-  get keys() {
+  get keys () {
     return Array.from(Object.keys(this.store));
   }
 
-  get items() {
+  get items () {
     return Array.from(Object.values(this.store));
   }
 
-  get(key) {
+  get (key) {
     return this.store[key];
   }
 
-  set(key: string, item) {
+  set (key: string, item) {
     this._store[key] = item;
     return this;
   }
 
-  keyOf(item): string | undefined {
-    const keys = this.keys;
+  keyOf (item): string | undefined {
+    const { keys } = this;
     for (let i = 0; i < keys.length; i += 1) {
       const key = keys[i];
       const oItem = this.get(key);
@@ -48,28 +48,28 @@ export default class ObjectCollection extends CompoundCollection
     return undefined;
   }
 
-  hasItem(item) {
+  hasItem (item) {
     return this.items.some((oItem) => Match.sameItem(oItem, item, this));
   }
 
-  hasKey(key) {
+  hasKey (key) {
     return this.keys.some((oKey) => Match.sameKey(oKey, key, this));
   }
 
-  clear() {
+  clear () {
     this.update({}, 'clear');
     return this;
   }
 
-  deleteKey(key) {
-    const store = {...this.store};
+  deleteKey (key) {
+    const store = { ...this.store };
     delete store[key];
     this.update(store, 'deleteKey', key);
     return this;
   }
 
   // this is a little dicey but...
-  sort(sortFn: orderingFn = compare) {
+  sort (sortFn: orderingFn = compare) {
     const keyArray = Array.from(this.keys).sort(this.sorter(sortFn));
     const newStore = {};
     keyArray.forEach((key) => {
@@ -80,54 +80,54 @@ export default class ObjectCollection extends CompoundCollection
     return this;
   }
 
-  clone(newOptions?: optionsObj) {
+  clone (newOptions?: optionsObj) {
     return new ObjectCollection(
       clone(this._store),
-      this.mergeOptions(newOptions),
+      this.mergeOptions(newOptions)
     );
   }
 
-  cloneShallow(newOptions?: optionsObj) {
-    return new ObjectCollection({...this.store}, this.mergeOptions(newOptions));
+  cloneShallow (newOptions?: optionsObj) {
+    return new ObjectCollection({ ...this.store }, this.mergeOptions(newOptions));
   }
 
-  cloneEmpty(newOptions?: optionsObj) {
+  cloneEmpty (newOptions?: optionsObj) {
     return new ObjectCollection(
       {},
-      this.mergeOptions(newOptions),
+      this.mergeOptions(newOptions)
     );
   }
 
   // iterators
 
-  keyIter(): IterableIterator<any> {
+  keyIter (): IterableIterator<any> {
     return Object.keys(this.store)[Symbol.iterator]();
   }
 
-  itemIter(): IterableIterator<any> {
+  itemIter (): IterableIterator<any> {
     return Object.values(this.store)[Symbol.iterator]();
   }
 
-  storeIter(): IterableIterator<any> {
+  storeIter (): IterableIterator<any> {
     return Object.entries(this.store)[Symbol.iterator]();
   }
 
   // append/prepend
 
   // assume that adding a value by key adds to the end of the item
-  addAfter(item: any, key?: string) {
+  addAfter (item: any, key?: string) {
     if (key === undefined) {
       throw new Error('you must define a key to addAfter an item for a compound collection');
     }
     this.set(String(key), item);
-    return this
+    return this;
   }
 
-  addBefore(item: any, key?: string) {
+  addBefore (item: any, key?: string) {
     if (key === undefined) {
       throw new Error('you must define a key to addAfter an item for a compound collection');
     }
-    const temp = this.cloneEmpty({quiet: true});
+    const temp = this.cloneEmpty({ quiet: true });
 
     temp.set(String(key), item);
     this.forEach((fItem, fKey) => {

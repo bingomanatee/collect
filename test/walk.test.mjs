@@ -1,8 +1,5 @@
 import tap from 'tap';
-import pkg from '../dist/index.js';
-
-const { create } = pkg;
-
+import { create } from '../dist/collect.es.js';
 
 tap.test('walkers', (suite) => {
   suite.test('reduce', (reduce) => {

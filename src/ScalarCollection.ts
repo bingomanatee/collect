@@ -5,165 +5,163 @@ import { clone } from './utils';
 export default class ScalarCollection extends Collection implements collectionObj<any, any, any> {
   protected _store: any;
 
-  constructor(store: any, options?: optionsObj) {
+  constructor (store: any, options?: optionsObj) {
     super(store, options);
     this._store = store;
   }
 
-  get size() {
+  get size () {
     return 0;
   }
 
-  get(_key) {
+  get (_key) {
     ScalarCollection.err('key');
     return 0;
   }
 
-  set(_key: any, _item) {
+  set (_key: any, _item) {
     ScalarCollection.err('set');
     return this;
   }
 
-  hasKey(_item) {
+  hasKey (_item) {
     ScalarCollection.err('hasKey');
     return false;
   }
 
-  hasItem(_item) {
+  hasItem (_item) {
     ScalarCollection.err('hasItem');
     return false;
   }
 
-  keyOf(_item) {
+  keyOf (_item) {
     ScalarCollection.err('keyOf');
     return undefined;
   }
 
-  static err(method) {
+  static err (method) {
     throw new Error(`${method} not available for scalar collection`);
   }
 
-  get keys() {
+  get keys () {
     ScalarCollection.err('keys');
     return [];
   }
 
-  get items() {
+  get items () {
     ScalarCollection.err('items');
     return [];
   }
 
-  deleteKey(_key) {
+  deleteKey (_key) {
     ScalarCollection.err('delete');
     return this;
   }
 
-  clear() {
+  clear () {
     this.update(undefined, 'clear');
     return this;
   }
 
-  forEach(_action: iteratorMethods) {
+  forEach (_action: iteratorMethods) {
     ScalarCollection.err('forEach');
     return this;
   }
 
-  map(_action: iteratorMethods) {
+  map (_action: iteratorMethods) {
     ScalarCollection.err('map');
     return this;
   }
 
-  reduce() {
+  reduce () {
     ScalarCollection.err('reduce');
     return null;
   }
 
-  appendBefore(_item, _key?) {
+  appendBefore (_item, _key?) {
     ScalarCollection.err('reduce');
     return null;
   }
 
-  appendAfter(_item, _key?) {
+  appendAfter (_item, _key?) {
     ScalarCollection.err('reduce');
     return null;
   }
 
-  addAfter(_item: any, _key: any): collectionObj<any, any, any> {
+  addAfter (_item: any, _key: any): collectionObj<any, any, any> {
     ScalarCollection.err('addAfter');
     return this;
   }
 
-  removeLast(_count?: number) {
+  removeLast (_count?: number) {
     ScalarCollection.err('removeLast');
     return this;
   }
 
-  removeFirst(_count?: number) {
+  removeFirst (_count?: number) {
     ScalarCollection.err('removeFirst');
     return this;
   }
 
-  addBefore(_item: any, _key: any): collectionObj<any, any, any> {
+  addBefore (_item: any, _key: any): collectionObj<any, any, any> {
     ScalarCollection.err('addAfter');
     return this;
   }
 
-  clone(opts?: optionsObj): collectionObj<any, any, any> {
+  clone (opts?: optionsObj): collectionObj<any, any, any> {
     return new ScalarCollection(clone(this.store), this.mergeOptions(opts));
   }
 
-  cloneShallow(newOptions?: optionsObj) {
+  cloneShallow (newOptions?: optionsObj) {
     return new ScalarCollection(this.store, this.mergeOptions(newOptions));
   }
 
-  cloneEmpty(opts?: optionsObj) {
+  cloneEmpty (opts?: optionsObj) {
     return new ScalarCollection(undefined, this.mergeOptions(opts));
   }
 
-  deleteItem(_item: any): collectionObj<any, any, any> {
+  deleteItem (_item: any): collectionObj<any, any, any> {
     ScalarCollection.err('deleteItem');
     return this;
   }
 
-  filter(_action: filterAction): collectionObj<any, any, any> {
+  filter (_action: filterAction): collectionObj<any, any, any> {
     ScalarCollection.err('filter');
     return this;
   }
 
-  itemIter(_fromIter: boolean | undefined): IterableIterator<any> {
+  itemIter (_fromIter: boolean | undefined): IterableIterator<any> {
     ScalarCollection.err('itemIter');
-    return [].entries()
+    return [].entries();
   }
 
-  keyIter(_fromIter: boolean | undefined): IterableIterator<any> {
+  keyIter (_fromIter: boolean | undefined): IterableIterator<any> {
     ScalarCollection.err('keyIter');
-    return [].entries()
+    return [].entries();
   }
 
-  reduceC(_action: reduceAction, _initial: any): collectionObj<any, any, any> {
+  reduceC (_action: reduceAction, _initial: any): collectionObj<any, any, any> {
     ScalarCollection.err('reduceC');
     return this;
   }
 
-  sort(_sorter: orderingFn | undefined): collectionObj<any, any, any> {
+  sort (_sorter: orderingFn | undefined): collectionObj<any, any, any> {
     ScalarCollection.err('sort');
     return this;
   }
 
-  storeIter(_fromIter: boolean | undefined): IterableIterator<[any, any]> {
+  storeIter (_fromIter: boolean | undefined): IterableIterator<[any, any]> {
     ScalarCollection.err('keyIter');
-    return [].entries()
+    return [].entries();
   }
 
-  first(_count?: number) {
+  first (_count?: number) {
     ScalarCollection.err('first');
     return [];
   }
 
-  last(_count?: number) {
+  last (_count?: number) {
     ScalarCollection.err('last');
     return [];
   }
-
-
 }

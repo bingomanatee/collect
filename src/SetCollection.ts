@@ -13,28 +13,28 @@ export default class SetCollection extends Collection
   implements collectionObj<any, any, any> {
   protected _store: Set<any>;
 
-  constructor(store, options?: optionsObj) {
+  constructor (store, options?: optionsObj) {
     super(store, options);
     this._store = store;
   }
 
-  clear() {
+  clear () {
     this.update(new Set(), 'clear');
     return this;
   }
 
-  clone(options?: optionsObj) {
+  clone (options?: optionsObj) {
     return new SetCollection(new Set(this.store), this.mergeOptions(options));
   }
 
-  deleteItem(item: any) {
+  deleteItem (item: any) {
     const store = new Set(this._store);
     store.delete(item);
     this.update(store, 'deleteItem');
     return this;
   }
 
-  deleteKey(key: any) {
+  deleteKey (key: any) {
     if (Array.isArray(key)) {
       const store = this.reduce((memo, item, rKey) => {
         if (!key.includes(rKey)) {
@@ -56,13 +56,13 @@ export default class SetCollection extends Collection
     return this;
   }
 
-  add(item) {
+  add (item) {
     const store = new Set(this._store);
     store.add(item);
     return this.update(store, 'add');
   }
 
-  filter(action: filterAction) {
+  filter (action: filterAction) {
     const newSet = new Set(this._store);
 
     this.forEach((item, key, store, stopper) => {
@@ -76,7 +76,7 @@ export default class SetCollection extends Collection
     return this;
   }
 
-  forEach(action: iteratorMethods) {
+  forEach (action: iteratorMethods) {
     const set = this.clone(this.mergeOptions({ quiet: true }));
     const stopper = new Stopper();
 
@@ -84,7 +84,7 @@ export default class SetCollection extends Collection
     let done = false;
     do {
       const iterValue = iter.next();
-      done = !! iterValue.done;
+      done = !!iterValue.done;
       if (done) break;
       const [iterKey, iterItem] = iterValue.value;
       action(iterItem, iterKey, this.store, stopper);
@@ -96,14 +96,14 @@ export default class SetCollection extends Collection
     return this;
   }
 
-  get(key: any): any {
+  get (key: any): any {
     if (this.size <= key) {
       return undefined;
     }
     return this.items[key];
   }
 
-  hasItem(item: any): boolean {
+  hasItem (item: any): boolean {
     if (this.store.has(item)) {
       return true;
     }
@@ -116,15 +116,15 @@ export default class SetCollection extends Collection
     }, false);
   }
 
-  hasKey(key: any): boolean {
+  hasKey (key: any): boolean {
     return typeof key === 'number' && this.size > key;
   }
 
-  itemIter(): IterableIterator<any> {
+  itemIter (): IterableIterator<any> {
     return this.store.values();
   }
 
-  keyIter(): IterableIterator<any> {
+  keyIter (): IterableIterator<any> {
     const keys: number[] = [];
     for (let i = 0; i < this.size; i += 1) {
       keys.push(i);
@@ -132,7 +132,7 @@ export default class SetCollection extends Collection
     return Collection.create(keys).keyIter();
   }
 
-  keyOf(item: any): any {
+  keyOf (item: any): any {
     if (!this.hasItem(item)) {
       return undefined;
     }
@@ -145,7 +145,7 @@ export default class SetCollection extends Collection
     }, undefined);
   }
 
-  map(action: iteratorMethods) {
+  map (action: iteratorMethods) {
     const newItems = new Set();
     this.forEach((item, key, _store, stopper) => {
       const newItem = action(item, key, this.store, stopper);
@@ -157,17 +157,17 @@ export default class SetCollection extends Collection
     return this;
   }
 
-  reduce(action: reduceAction, initial: any): any {
+  reduce (action: reduceAction, initial: any): any {
     const arrayStore = Collection.create(this.items, this.options);
     const subAction = (memo, item, key, _store, stopper) => action(memo, item, key, this.store, stopper);
     return arrayStore.reduce(subAction, initial);
   }
 
-  reduceC(action: reduceAction, initial: any) {
+  reduceC (action: reduceAction, initial: any) {
     return this.c.reduce(action, initial);
   }
 
-  set(key: any, item: any) {
+  set (key: any, item: any) {
     console.warn(
       'set key/value has unpredictable results on a set collection; use add(item) for consistent results'
     );
@@ -182,7 +182,7 @@ export default class SetCollection extends Collection
     });
   }
 
-  sort(sorter: orderingFn | undefined) {
+  sort (sorter: orderingFn | undefined) {
     const arrayOfItems = Collection.create(this.items, this.options);
     arrayOfItems.sort(sorter);
 
@@ -190,40 +190,40 @@ export default class SetCollection extends Collection
     return this;
   }
 
-  storeIter(): IterableIterator<any> {
+  storeIter (): IterableIterator<any> {
     return Collection.create(this.items).storeIter();
   }
 
-  get items(): any[] {
+  get items (): any[] {
     return Array.from(this.store.values());
   }
 
-  get keys(): number[] {
+  get keys (): number[] {
     const keys: any[] = [];
     for (let i = 0; i < this.size; i += 1) keys.push(i);
     return keys;
   }
 
-  get size(): number {
+  get size (): number {
     return this.store.size;
   }
 
   // append/prepend
 
-  addAfter(item, _key?: number | undefined) {
+  addAfter (item, _key?: number | undefined) {
     const set = new Set(this.store);
     set.add(item);
     this.update(set, 'addBefore');
     return this;
   }
 
-  addBefore(item, _key?: number | undefined) {
+  addBefore (item, _key?: number | undefined) {
     const set = new Set([item, ...this.items.filter((other) => !this.compItems(other, item))]);
     this.update(set, 'addBefore');
     return this;
   }
 
-  removeFirst() {
+  removeFirst () {
     const set = new Set(this.store);
     const item = this.keys.shift();
     set.delete(item);
@@ -231,7 +231,7 @@ export default class SetCollection extends Collection
     return item;
   }
 
-  removeLast() {
+  removeLast () {
     const set = new Set(this.store);
     const item = this.keys.pop();
     set.delete(item);
@@ -239,21 +239,21 @@ export default class SetCollection extends Collection
     return item;
   }
 
-  cloneEmpty(options: optionsObj): collectionObj<any, any, any> {
+  cloneEmpty (options: optionsObj): collectionObj<any, any, any> {
     return new SetCollection(new Set(), this.mergeOptions(options));
   }
 
-  cloneShallow(newOptions?: optionsObj) {
+  cloneShallow (newOptions?: optionsObj) {
     return new SetCollection(new Set(this.store), this.mergeOptions(newOptions));
   }
 
   // first, last
 
-  first(count?: number) {
+  first (count?: number) {
     return Collection.create(this.items).first(count);
   }
 
-  last(count?: number) {
+  last (count?: number) {
     return Collection.create(this.items).last(count);
   }
 }

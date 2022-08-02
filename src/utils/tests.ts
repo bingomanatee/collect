@@ -1,22 +1,22 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import {
   DefEnum,
   FormEnum,
   TypeEnum
 } from '../constants';
-import { ABSENT } from "../constants.export";
+import { ABSENT } from '../constants.export';
 
-export function typeTest(type) {
-  return (value) => typeof value === type;
+export function typeTest (type) {
+  // eslint-disable-next-line valid-typeof
+  return (value) => typeof (value) === type;
 }
 
-export function isThere(item) {
+export function isThere (item) {
   return ![ABSENT, undefined].includes(item);
 }
 
 // isEmpty is NOT a simple syntactic inverse of isThere; it includes null,
 // which is not a qualifier of isThere.
-export function isEmpty(item) {
+export function isEmpty (item) {
   return [ABSENT, null, undefined].includes(item);
 }
 
@@ -28,7 +28,7 @@ export const isNum = typeTest('number');
  * @param nonEmpty
  * @returns {boolean}
  */
-export function isArr(a, nonEmpty = false) {
+export function isArr (a, nonEmpty = false) {
   return !!(Array.isArray(a) && (!nonEmpty || a.length));
 }
 
@@ -42,7 +42,7 @@ export const isMap = (m) => m instanceof Map;
  * @param isAnyObj {boolean} whether arrays, maps should be included as objecg
  * @returns {boolean}
  */
-export function isObj(o, isAnyObj = false) {
+export function isObj (o, isAnyObj = false) {
   return o && typeof o === 'object' && (isAnyObj || !(isArr(o) || isMap(o)));
 }
 
@@ -54,7 +54,7 @@ export const isSet = (d) => d instanceof Set;
 
 export const isSymbol = typeTest('symbol');
 
-export function isWhole(value) {
+export function isWhole (value) {
   if (!isNum(value)) {
     return false;
   }
@@ -78,7 +78,7 @@ export const e = (err, notes = {}) => {
   return Object.assign(err, notes);
 };
 
-export function isStr(s, nonEmpty = false) {
+export function isStr (s, nonEmpty = false) {
   if (typeof s === 'string') {
     return nonEmpty ? !!s : true;
   }
@@ -105,7 +105,7 @@ export const TESTS = [
  * detectForm is only concerned with containment patterns.
  * @param value
  */
-export function detectForm(value: any): FormEnum {
+export function detectForm (value: any): FormEnum {
   for (let i = 0; i < TESTS.length; i += 1) {
     const def = TESTS[i];
     if (!def.isForm) {
@@ -119,7 +119,7 @@ export function detectForm(value: any): FormEnum {
   return FormEnum.scalar;
 }
 
-export function formIsCompound(form: FormEnum) {
+export function formIsCompound (form: FormEnum) {
   return [
     FormEnum.map,
     FormEnum.map,
@@ -129,7 +129,7 @@ export function formIsCompound(form: FormEnum) {
   ].includes(form);
 }
 
-export function detectType(value: any) {
+export function detectType (value: any) {
   for (let i = 0; i < TESTS.length; i += 1) {
     const def = TESTS[i];
     if (def.isForm) {
@@ -149,7 +149,7 @@ export function detectType(value: any) {
 
 // const FIND_SYMBOL = /Symbol\((.*:)?(.*)\)/;
 
-export function returnOrError(fn, ...args) {
+export function returnOrError (fn, ...args) {
   if (typeof fn !== 'function') {
     throw new Error('returnOrError MUST be passed a function');
   }

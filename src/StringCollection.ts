@@ -8,39 +8,39 @@ import IntIndexedCollection from './IntIndexedCollection';
 import Match from './utils/Match';
 import Stopper from './utils/Stopper';
 import Collection from './Collection';
-import { booleanMode } from "./constants";
+import { booleanMode } from './constants';
 
 export default class StringCollection extends IntIndexedCollection
   implements collectionObj<string, number, string> {
-  constructor(store: string, options?: optionsObj) {
+  constructor (store: string, options?: optionsObj) {
     super(store, options);
     this._store = store;
   }
 
   // region inspection
-  get size() {
+  get size () {
     return this.store.length;
   }
 
-  get items() {
+  get items () {
     return this.store.split('');
   }
 
-  hasItem(str) {
+  hasItem (str) {
     if (str instanceof RegExp) {
       return str.test(this.store);
     }
     return this.store.includes(str);
   }
 
-  hasKey(i: number) {
+  hasKey (i: number) {
     if (i % 1) {
       return false;
     }
     return i >= 0 && i < this.size;
   }
 
-  keyOf(item: string) {
+  keyOf (item: string) {
     const indexOf = this.store.indexOf(item);
     if (indexOf === -1) {
       return undefined;
@@ -57,28 +57,28 @@ export default class StringCollection extends IntIndexedCollection
    * @param key
    * @param item
    */
-  set(key: number, item: string) {
+  set (key: number, item: string) {
     const prefix = this.store.substring(0, key) || '';
     const suffix = this.store.substring(key + Math.max(item.length, 1)) || '';
     this.update(prefix + item + suffix, 'set', key, item);
     return this;
   }
 
-  get(key: number) {
+  get (key: number) {
     if (key < 0 || key > this.size) {
       return undefined;
     }
     return this.store.substring(key, key + 1);
   }
 
-  deleteKey(key: number | Array<number>) {
+  deleteKey (key: number | Array<number>) {
     if (Array.isArray(key)) {
       return this.filter((_item, itemKey) => !Match.sameKey(itemKey, key, this));
     }
     return this.set(key, '');
   }
 
-  deleteItem(
+  deleteItem (
     item: Array<string> | string
   ): collectionObj<string, number, string> {
     if (Array.isArray(item)) {
@@ -87,7 +87,7 @@ export default class StringCollection extends IntIndexedCollection
       this.update(cloned.store, 'deleteItem', item);
     }
     let newStore: string = this.store;
-    let length = newStore.length;
+    let { length } = newStore;
     do {
       length = newStore.length;
       newStore = newStore.replace(item as string, '');
@@ -97,18 +97,18 @@ export default class StringCollection extends IntIndexedCollection
     return this;
   }
 
-  clear() {
+  clear () {
     this.update('', 'clear');
     return this;
   }
 
-  reverse(): collectionObj<string, number, string> {
+  reverse (): collectionObj<string, number, string> {
     return new StringCollection(this.items.reverse().join(''));
   }
 
   // note - this is the one version of sort where the item types are known to be 1-char strings
   // so the default array sort works fine as a default
-  sort(sort?: orderingFn): collectionObj<string, number, string> {
+  sort (sort?: orderingFn): collectionObj<string, number, string> {
     const letters = Collection.create(
       this.store.split(''),
       this.mergeOptions({ quiet: true })
@@ -126,19 +126,19 @@ export default class StringCollection extends IntIndexedCollection
 
   // region duplication
 
-  clone(options?: optionsObj) {
+  clone (options?: optionsObj) {
     return new StringCollection(this.store, this.mergeOptions(options));
   }
 
-  cloneShallow(newOptions?: optionsObj) {
+  cloneShallow (newOptions?: optionsObj) {
     return new StringCollection(this.store, this.mergeOptions(newOptions));
   }
 
-  cloneEmpty(opts?: optionsObj) {
+  cloneEmpty (opts?: optionsObj) {
     return new StringCollection('', this.mergeOptions(opts));
   }
 
-  filter(filterTest: filterAction) {
+  filter (filterTest: filterAction) {
     const newStore = this.reduce((memo, letter, key, _original, stopper) => {
       const use = filterTest(letter, key, this.store, stopper);
       if (use && stopper.isActive) {
@@ -155,7 +155,7 @@ export default class StringCollection extends IntIndexedCollection
 
   // region boolean
 
-  difference(
+  difference (
     itemsToRemove: collectionObj<any, any, any> | string | string[],
     _mode: booleanMode = booleanMode.byKey
   ): collectionObj<string, number, string> {
@@ -167,7 +167,7 @@ export default class StringCollection extends IntIndexedCollection
     return this.difference(itemsToRemove.store);
   }
 
-  union(
+  union (
     other: collectionObj<any, any, any> | string | string[],
     _mode: booleanMode = booleanMode.byKey
   ): collectionObj<string, number, string> {
@@ -187,7 +187,7 @@ export default class StringCollection extends IntIndexedCollection
     return this.union(other.store);
   }
 
-  map(looper) {
+  map (looper) {
     const stopper = new Stopper();
     const newStore: string[] = [];
     const iter = this.storeIter();
@@ -214,7 +214,7 @@ export default class StringCollection extends IntIndexedCollection
     return this;
   }
 
-  intersection(
+  intersection (
     other: collectionObj<any, any, any> | string | string[]
   ): collectionObj<string, number, string> {
     if (typeof other === 'string') {
@@ -229,38 +229,38 @@ export default class StringCollection extends IntIndexedCollection
 
   // endregion
 
-  storeIter() {
+  storeIter () {
     return this.items.entries();
   }
 
-  keyIter() {
+  keyIter () {
     return this.keys[Symbol.iterator]();
   }
 
-  itemIter() {
+  itemIter () {
     return this.items[Symbol.iterator]();
   }
 
   // append/prepend
 
-  addAfter(item, _key?: number | undefined) {
+  addAfter (item, _key?: number | undefined) {
     this.update(`${this.store}${item}`, 'addBefore');
     return this;
   }
 
-  addBefore(item, _key?: number | undefined) {
+  addBefore (item, _key?: number | undefined) {
     this.update(`${item}${this.store}`, 'addBefore');
     return this;
   }
 
-  removeFirst() {
+  removeFirst () {
     const item = this.store.substring(0, 1);
     const rest = this.store.substring(1);
     this.update(rest, 'removeFirst');
     return item;
   }
 
-  removeLast() {
+  removeLast () {
     const item = this.store.substring(this.size - 1);
     const rest = this.store.substring(0, this.size - 1);
     this.update(rest, 'removeLast');
@@ -269,16 +269,16 @@ export default class StringCollection extends IntIndexedCollection
 
   // first, last
 
-  first(count?: number) {
-    if (this.size && typeof count !== "number") {
+  first (count?: number) {
+    if (this.size && typeof count !== 'number') {
       return [this.store.substring(0, 1)];
     }
     return Collection.create(this.items).first(count);
   }
 
-  last(count?: number) {
-    if (this.size && typeof count !== "number") {
+  last (count?: number) {
+    if (this.size && typeof count !== 'number') {
       return [this.store.substring(this.size - 1)];
-    }  return Collection.create(this.items).last(count);
+    } return Collection.create(this.items).last(count);
   }
 }

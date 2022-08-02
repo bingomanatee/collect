@@ -1,6 +1,6 @@
 const twoDStore = new Map();
 
-function store3DPoint(x, y, z) {
+function store3DPoint (x, y, z) {
   const key = { x, y };
   const data = { x, y, z };
   const others = twoDStore.has(key) ? twoDStore.get(key) : [];

@@ -1,5 +1,5 @@
-import type { DefEnum, FormEnum } from "./constants";
-import { stopperEnum } from "./constants";
+import type { DefEnum, FormEnum } from './constants';
+import { stopperEnum } from './constants';
 
 export type StopperObj = {
   state: stopperEnum;

@@ -1,7 +1,7 @@
 import type { optionsObj } from '../types';
 
 export default abstract class Match {
-  static sameKey(
+  static sameKey (
     key: any,
     k2: any,
     context: optionsObj,
@@ -32,7 +32,7 @@ export default abstract class Match {
     return context.compKeys(key, k2);
   }
 
-  static sameItem(item: any, i2: any, context: optionsObj, many = true) {
+  static sameItem (item: any, i2: any, context: optionsObj, many = true) {
     if (!context?.compItems) {
       return item === i2;
     }
